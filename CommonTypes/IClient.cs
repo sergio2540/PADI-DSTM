@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client
+namespace CommonTypes
 {
-    class Program
+    public interface IClient : MarshalByRefObject
     {
-        static void Main(string[] args)
-        {
-        }
+
     }
+
 }
