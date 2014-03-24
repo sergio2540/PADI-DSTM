@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Master
+namespace Client
 {
-    class Program
+
+    class ClientProgram
     {
+
+
         static void Main(string[] args)
         {
         }
+    
     }
+
+
 }

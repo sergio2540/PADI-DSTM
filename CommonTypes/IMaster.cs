@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server
+namespace CommonTypes
 {
-    class Program
+    public interface IMaster : MarshalByRefObject
     {
-        static void Main(string[] args)
-        {
-        }
     }
 }
