@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DSTMManager.cs" />
+    <Compile Include="Oracle.cs" />
     <Compile Include="PadInt.cs" />
     <Compile Include="Coordinator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

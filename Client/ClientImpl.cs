@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server
+using CommonTypes;
+
+namespace Client
 {
-    class ServerProgram
+    class ClientImpl : CommonTypes.IClient
     {
-        static void Main(string[] args)
-        {
-        }
     }
 }
