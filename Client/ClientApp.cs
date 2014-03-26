@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Client
 {
 
-    class ClientProgram
+    class ClientApp
     {
 
 

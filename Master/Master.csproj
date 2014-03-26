@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MasterImpl.cs" />
-    <Compile Include="MasterProgram.cs" />
+    <Compile Include="MasterApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
