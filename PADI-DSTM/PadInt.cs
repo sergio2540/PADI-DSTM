@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PADI_DSTM
 {
-    class PadInt
+    public class PadInt
     {
 
         private int padInt = 0;
