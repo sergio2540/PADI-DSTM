@@ -46,6 +46,7 @@
     <Compile Include="ServerImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
+    <Compile Include="TransactionalManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -29,5 +29,40 @@ namespace Server
         {
             throw new NotImplementedException();
         }
+
+        public bool StartTransaction(ulong transactionId, string coordinatorAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool canCommit(ulong transactioId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool doCommit(ulong transactionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool doAbort(ulong transactionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CreatePadInt(ulong transactionId, int padintUid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ReadPadInt(ulong transactionId, int padintUid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WritePadInt(ulong transactionId, int padintUid, int newValue)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
