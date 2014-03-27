@@ -42,11 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ServerApp.cs" />
-    <Compile Include="ServerImpl.cs" />
+    <Compile Include="PadInt\PadIntCommitted.cs" />
+    <Compile Include="Exceptions\PadIntNotExists.cs" />
+    <Compile Include="PadInt\PadIntRemote.cs" />
+    <Compile Include="PadInt\PadIntTentative.cs" />
+    <Compile Include="PadInt\PadIntTransaction.cs" />
+    <Compile Include="Server\ServerApp.cs" />
+    <Compile Include="Server\ServerImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction.cs" />
-    <Compile Include="TransactionalManager.cs" />
+    <Compile Include="Exceptions\PadIntReadTooLate.cs" />
+    <Compile Include="Exceptions\PadIntWriteTooLate.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
+    <Compile Include="Transactions\TransactionalManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -57,6 +64,7 @@
       <Name>CommonTypes</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

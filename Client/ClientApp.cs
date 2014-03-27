@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using PADI_DSTM;
 
+using CommonTypes;
+
 namespace Client
 {
 

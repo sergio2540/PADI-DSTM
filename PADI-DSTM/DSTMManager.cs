@@ -6,73 +6,83 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
+using DSTMServices;
+using CommonTypes;
+
 namespace PADI_DSTM
 {
     public class DSTMManager
     {
-        private ulong currentTransactionId = 0;
-        private Coordinator coordinator;
+        //private ulong currentTransactionId = 0;
+
+        private CoordinatorService coordinatorService;
+        private TimestampService timestampService;
+        private DataService dataService;
+        private DebugService debugService;
 
         public bool Init()
         {
-            coordinator = new Coordinator();
+            coordinatorService = new CoordinatorService();
+            timestampService = new TimestampService();
+            dataService = new DataService();
+            debugService = new DebugService();
+
             return true;
         }
 
         public bool TxBegin()
         {
-
-            ulong timestamp = Oracle.getTimestamp();
-
-            currentTransactionId = timestamp;
+            var timestamp = timestampService.getTimestamp();
             
             //quando retornar falso?quando se tenta criar uma transaccao com outra a decorrer?
-            return coordinator.BeginTransaction(timestamp);
+            return coordinatorService.Begin(timestamp);
 
            
         }
 
         public bool TxCommit()
         {
-            return coordinator.CommitTransaction();
+            return coordinatorService.Commit();
         }
 
         public bool TxAbort()
         {
-            return coordinator.AbortTransaction();
+            return coordinatorService.Abort();
         }
 
         public bool Status()
         {
-            throw new NotImplementedException();
+            return debugService.Status();
         }
 
         public bool Fail(String URL)
         {
-            throw new NotImplementedException();
+            return debugService.Fail(URL);
         }
 
         public bool Freeze(String URL)
         {
-            throw new NotImplementedException();
+            return debugService.Freeze(URL);
         }
 
         public bool Recover(String URL)
         {
-            throw new NotImplementedException();
+            return debugService.Recover(URL);
         }
 
         public PadInt CreatePadInt(int uid)
         {
-            //Informa servidor que existe novo Padint
-            //INCOMPLETO
-            return new PadInt(uid);
+
+            dataService.CreatePadInt(uid);
+           
+           
+            return new PadIntLocal(uid);
         }
         
 
         public PadInt AccessPadInt(int uid)
         {
-            throw new NotImplementedException();
+            return dataService.AccessPadInt(uid);
         }
 
        

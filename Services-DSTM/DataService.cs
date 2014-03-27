@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PADI_DSTM
+namespace DSTMServices
 {
-    public class TxException : SystemException
+    public class DataService
     {
     }
 }

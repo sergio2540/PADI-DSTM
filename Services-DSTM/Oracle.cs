@@ -6,9 +6,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PADI_DSTM
+namespace DSTMServices
 {
-    class Oracle
+    class TimestampService
     {
         private static string getLocalIp() { 
         

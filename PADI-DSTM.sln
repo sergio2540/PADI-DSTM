@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTypes", "CommonTypes\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PADI-DSTM", "PADI-DSTM\PADI-DSTM.csproj", "{84C10448-993E-44E9-8680-F56B6054094E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTMServices", "DSTMServices\DSTMServices.csproj", "{3C55F04C-3940-422F-82B2-EA103A0294A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{84C10448-993E-44E9-8680-F56B6054094E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84C10448-993E-44E9-8680-F56B6054094E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84C10448-993E-44E9-8680-F56B6054094E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C55F04C-3940-422F-82B2-EA103A0294A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C55F04C-3940-422F-82B2-EA103A0294A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C55F04C-3940-422F-82B2-EA103A0294A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C55F04C-3940-422F-82B2-EA103A0294A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

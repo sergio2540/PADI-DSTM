@@ -49,6 +49,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">
+      <Project>{3b4aa21a-791e-43b9-89f4-451b0f605928}</Project>
+      <Name>CommonTypes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PADI-DSTM\PADI-DSTM.csproj">
       <Project>{84c10448-993e-44e9-8680-f56b6054094e}</Project>
       <Name>PADI-DSTM</Name>

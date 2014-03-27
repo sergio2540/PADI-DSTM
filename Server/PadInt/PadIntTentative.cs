@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using CommonTypes;
+
+namespace Server
+{
+    public class PadIntTentative : PadIntRemote
+    {
+        public ulong ReadTimestamp { get; set; }
+
+        public PadIntTentative(int uid, ulong readTimestamp, ulong writeTimestamp) : base(uid)
+        {
+            this.State = PadIntState.Tentative;
+            this.ReadTimestamp = readTimestamp;
+            this.WriteTimestamp = writeTimestamp;
+        }
+       
+        public override int Read()
+        {
+            return this.Value;
+        }
+
+        public override void Write(int value)
+        {
+            this.Value = value;
+        }
+    }
+}
