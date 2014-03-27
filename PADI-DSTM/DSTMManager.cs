@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace PADI_DSTM
 {
-    class DSTMManager
+    public class DSTMManager
     {
         private ulong currentTransactionId = 0;
         private Coordinator coordinator;
 
-        bool Init()
+        public bool Init()
         {
             coordinator = new Coordinator();
+            return true;
         }
 
-        bool TxBegin()
+        public bool TxBegin()
         {
 
             ulong timestamp = Oracle.getTimestamp();
@@ -31,31 +32,46 @@ namespace PADI_DSTM
            
         }
 
-        bool TxCommit()
+        public bool TxCommit()
         {
             return coordinator.CommitTransaction();
         }
 
-        bool TxAbort()
+        public bool TxAbort()
         {
             return coordinator.AbortTransaction();
         }
 
-        bool Status();
+        public bool Status()
+        {
+            throw new NotImplementedException();
+        }
 
-        bool Fail(String URL);
+        public bool Fail(String URL)
+        {
+            throw new NotImplementedException();
+        }
 
-        bool Freeze(String URL);
+        public bool Freeze(String URL)
+        {
+            throw new NotImplementedException();
+        }
 
-        bool Recover(String URL);
+        public bool Recover(String URL)
+        {
+            throw new NotImplementedException();
+        }
 
-        PadInt CreatePadInt(int uid)
+        public PadInt CreatePadInt(int uid)
         {
             //Informa servidor que existe novo Padint
             //INCOMPLETO
             return new PadInt(uid);
         }
 
-        PadInt AccessPadInt(int uid); 
+        public PadInt AccessPadInt(int uid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
