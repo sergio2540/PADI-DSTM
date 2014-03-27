@@ -45,6 +45,7 @@
     <Compile Include="PadInt.cs" />
     <Compile Include="Coordinator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TxException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">
