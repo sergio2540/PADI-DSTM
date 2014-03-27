@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace PADI_DSTM
 {
-    class PadInt
+    public class PadInt
     {
 
         private int padInt = 0;
-        private int uid;
+        
+        //private int uid;
+        public int Uid { get; set; }
+        
         public event EventHandler changeHandler;
 
         public PadInt(int uid) {
-            this.uid = uid;
+            this.Uid = uid;
         }
 
         public int Read() {
@@ -27,7 +30,7 @@ namespace PADI_DSTM
                 changeHandler(this, null);
         }
 
-        public int Uid{get;}
+       
 
     }
 }

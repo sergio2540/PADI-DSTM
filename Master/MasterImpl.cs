@@ -8,7 +8,7 @@ using CommonTypes;
 
 namespace Master
 {
-    class MasterImpl :  CommonTypes.IMaster
+    class MasterImpl : MarshalByRefObject, IMaster 
     {
 
 

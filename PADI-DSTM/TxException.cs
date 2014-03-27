@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommonTypes
+namespace PADI_DSTM
 {
-    public interface IMaster
+    public class TxException : SystemException
     {
     }
 }

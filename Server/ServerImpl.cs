@@ -8,38 +8,22 @@ using CommonTypes;
 
 namespace Server
 {
-    class ServerImpl : IServer
+    class ServerImpl : MarshalByRefObject, IServer
     {
-        public bool StartTransaction(long transactionId, string coordinatorAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CreatePadint(long transactionId, int padintUid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int ReadPadint(long transactionId, int padintUid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WritePadInt(long transactionId, int padintUid, int newValue)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool StartTransaction(ulong transactionId, string coordinatorAddress)
         {
             throw new NotImplementedException();
         }
 
+        //Transacções
+
+        //Participante retorna voto true - commit false - abort
         public bool canCommit(ulong transactioId)
         {
             throw new NotImplementedException();
         }
 
+        //Participante deve fazer commit
         public bool doCommit(ulong transactionId)
         {
             throw new NotImplementedException();
@@ -50,10 +34,13 @@ namespace Server
             throw new NotImplementedException();
         }
 
+
+        //PadInt
         public bool CreatePadInt(ulong transactionId, int padintUid)
         {
             throw new NotImplementedException();
         }
+
 
         public int ReadPadInt(ulong transactionId, int padintUid)
         {
@@ -64,5 +51,6 @@ namespace Server
         {
             throw new NotImplementedException();
         }
+
     }
 }

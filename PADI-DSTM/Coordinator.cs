@@ -1,17 +1,19 @@
-﻿using CommonTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Tcp;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
+
+using CommonTypes;
+
 namespace PADI_DSTM
 {
-    public class Coordinator
+    class Coordinator
     {
-        private long currentTransactionId = 0;
+        private ulong currentTransactionId = 0;
         //saber quem tem int
         private Dictionary<int, String> intServerMapping;
 
@@ -27,11 +29,31 @@ namespace PADI_DSTM
             return obj;
         }
 
-        public void BeginTransaction(long transactionId) {
+
+
+        //Transaccoes
+        public bool BeginTransaction(ulong transactionId) {
             intServerMapping = new Dictionary<int, String>();
             currentTransactionId = transactionId;
+            return true;
         }
 
+        public bool CommitTransaction()
+        {
+            throw new NotImplementedException();
+           
+        }
+
+        public bool AbortTransaction()
+        {
+            throw new NotImplementedException();
+
+        }
+
+
+
+
+        //PadInt
         public PadInt ReadPadInt(int uid) { 
             //remoting para server
             String serverUrl = null;
@@ -46,7 +68,7 @@ namespace PADI_DSTM
                 return null;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.
             }
 
-            int answerValue = serverRef.ReadPadint(currentTransactionId, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
+            int answerValue = serverRef.ReadPadInt(currentTransactionId, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
             PadInt padInt = new PadInt(answerValue);
             padInt.changeHandler += this.OnPadintChange;
             return padInt;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CommonTypes
 {
-    public interface IClient : MarshalByRefObject
+    public interface IClient
     {
 
     }
