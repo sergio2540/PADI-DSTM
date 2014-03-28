@@ -71,5 +71,25 @@ namespace Server
             transactionalManager.Write(tid,uid,value);
         }
 
+
+        public bool Status()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Fail(string URL)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Freeze(string URL)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Recover(string URL)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
