@@ -46,12 +46,12 @@ namespace Server
         //PadInt
         public PadInt CreatePadInt(ulong tid, int uid)
         {
-            return transactionalManager.CreatePadInt(tid, uid);
+            return transactionalManager.CreatePadInt(uid);
         }
 
         public PadInt AccessPadInt(ulong tid, int uid)
         {
-            return transactionalManager.AccessPadInt(tid, uid);
+            return transactionalManager.AccessPadInt(uid);
         }
 
         public int ReadPadInt(ulong tid, int uid)

@@ -65,7 +65,7 @@ namespace Client
         
         static void Main(string[] args)
         {
-            var clientApp = new ClientApp();
+            ClientApp clientApp = new ClientApp();
 
             clientApp.Manager = new DSTMManager();
             
