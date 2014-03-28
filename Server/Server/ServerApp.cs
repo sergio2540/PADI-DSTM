@@ -18,7 +18,7 @@ namespace Server
             TcpChannel channel = new TcpChannel(8086);
             ChannelServices.RegisterChannel(channel, true);
 
-            RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.SingleCall);
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "tcp://ip:porta/Server", WellKnownObjectMode.Singleton);
 
             Console.WriteLine("Server App - Listening for requests.");
             Console.WriteLine("Press enter to exit...");
