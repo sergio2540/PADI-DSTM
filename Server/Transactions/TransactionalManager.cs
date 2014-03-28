@@ -77,12 +77,6 @@ namespace Server
             if (tc <= tMax)//pode ler
                 return mostUpdated.Value;
             else return -1;//espera
-
-
-
-
-
-
         }
 
         internal void Write(ulong tid, int uid, int value)
