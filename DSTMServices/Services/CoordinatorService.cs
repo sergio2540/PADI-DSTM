@@ -137,8 +137,8 @@ namespace DSTMServices
             localP.Write(0);
 
             localP.changeHandler += this.OnPadintChange;
-            localP.readHandler += this.OnPadintChange;
-            return padInt;
+            localP.readHandler += this.OnPadintRead;
+            return localP;
 
         }
 
@@ -153,10 +153,12 @@ namespace DSTMServices
         }
 
         public void OnPadintChange(Object sender ,EventArgs e) {
+            Console.WriteLine("change event  called!");
+
             PadIntLocal changedPadInt = (PadIntLocal) sender;
-            changedPadInt.changeHandler -= OnPadintRead;
+            changedPadInt.readHandler -= OnPadintRead;
             WritePadInt(changedPadInt.Uid,changedPadInt.Read());
-            changedPadInt.changeHandler += OnPadintRead;
+            changedPadInt.readHandler += OnPadintRead;
 
         }
 

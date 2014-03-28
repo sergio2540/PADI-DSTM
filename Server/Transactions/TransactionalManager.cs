@@ -58,7 +58,7 @@ namespace Server
         internal int Read(ulong tid, int uid)
         {
 
-            ServerApp.debug = "Read called!";
+            //ServerApp.debug = "Read called!";
             //PadIntTransaction obj = objectsInServer[uid];
            
             if (!objectsInServer.ContainsKey(uid))
@@ -72,7 +72,7 @@ namespace Server
            // return committed.Read();
 
             ulong tc = committed.WriteTimestamp;
-            ServerApp.debug = "Object commited with value: " + committed.Value;
+            //ServerApp.debug = "Object commited with value: " + committed.Value;
 
 
             if (tid < tc)
@@ -83,7 +83,11 @@ namespace Server
                 return committed.Value;
 
             PadIntTentative mostUpdated = tentatives.Values.Where(x => ((x.WriteTimestamp < tid) ? true : false)).Max(x => x.WriteTimestamp < tid ? x : null);
-            ulong tMax = (ulong) mostUpdated.WriteTimestamp;
+
+            if (mostUpdated == null)
+                return committed.Value;
+
+            ulong tMax = (ulong) mostUpdated.WriteTimestamp;//no inicio isto é nulo. deve ler o commited? 
 
             if (tc <= tMax)//pode ler
                 return mostUpdated.Value;
@@ -93,10 +97,10 @@ namespace Server
         internal void Write(ulong tid, int uid, int value)
         {
 
-            ServerApp.debug = "Write called!";
+            //ServerApp.debug = "Write called!";
 
-            PadIntTransaction obj = objectsInServer[uid];//verificar se existe. isto é perigoso.
-            obj.getTentatives()[tid].Value = 9;
+            //PadIntTransaction obj = objectsInServer[uid];//verificar se existe. isto é perigoso.
+           // obj.getTentatives()[tid].Value = 9;
 
             if (!objectsInServer.ContainsKey(uid))
             {
@@ -104,6 +108,7 @@ namespace Server
                 throw new PadIntNotExists(tid, uid);
             }
 
+            PadIntTransaction obj = objectsInServer[uid];
             PadIntCommitted committed = obj.getCommitted();
             ulong tc = committed.WriteTimestamp;
 
@@ -116,9 +121,9 @@ namespace Server
             
             PadIntTentative t;
             if(tentatives.Count == 0){
-                ServerApp.debug = "First tentative";
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
+                ServerApp.debug = "Written value: " + t.Read();
                 obj.addTentative(tid,t);
                 return;
             }
