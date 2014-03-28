@@ -42,13 +42,11 @@ namespace Master
                 {
                     return row.GetServerPair().GetPrimary();
                 }
-                else
-                {
-                    Console.WriteLine("Servidor reponsável por uid não encontrado na LookupTable");
-                    return " ";
-                }
 
             }
+
+            Console.WriteLine("Servidor responsável por uid não encontrado");
+            return "";
 
         }
 
