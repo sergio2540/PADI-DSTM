@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using CommonTypes;
 
-namespace PADI_DSTM
+namespace Services
 {
 
     //PadInt Local
@@ -20,18 +20,21 @@ namespace PADI_DSTM
         public int Uid { get; set; }
         
         public event EventHandler changeHandler;
+        public event EventHandler readHandler;
 
         public PadIntLocal(int uid) {
             this.Uid = uid;
         }
 
         public int Read() {
+            if (readHandler != null)
+                readHandler(this, null);
+            return padInt;
             
-            return this.padInt;
         }
 
         public void Write(int value) {
-            this.padInt = value;
+            this.padInt = value;//temos de verificar que a escrita teve sucesso. 
             if (changeHandler != null)
                 changeHandler(this, null);
         }

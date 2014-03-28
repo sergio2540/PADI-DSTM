@@ -8,6 +8,7 @@ using CommonTypes;
 
 namespace Server
 {
+    [Serializable]
     class PadIntCommitted : PadIntRemote
     {
         public PadIntCommitted(int uid, ulong writeTimestamp) : base(uid)

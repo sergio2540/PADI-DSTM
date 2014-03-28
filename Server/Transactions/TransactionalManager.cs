@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Server.Transactions;
+using System.Diagnostics;
 
 
 //PadIntRemote
@@ -36,6 +37,7 @@ namespace Server
             PadIntCommitted committed = new PadIntCommitted(uid, writeTimestampDefault);
 
             obj.setCommited(committed);
+            objectsInServer[uid] = obj;
 
             return committed;
            
@@ -55,23 +57,32 @@ namespace Server
 
         internal int Read(ulong tid, int uid)
         {
-            PadIntTransaction obj = objectsInServer[uid];
+
+            ServerApp.debug = "Read called!";
+            //PadIntTransaction obj = objectsInServer[uid];
            
-            if (obj == null)
+            if (!objectsInServer.ContainsKey(uid))
             {
                 //O objecto nao foi criado no servidor
                 throw new PadIntNotExists(tid,uid);
             }
 
+            PadIntTransaction obj = objectsInServer[uid];
             PadIntCommitted committed = obj.getCommitted();
+           // return committed.Read();
 
             ulong tc = committed.WriteTimestamp;
+            ServerApp.debug = "Object commited with value: " + committed.Value;
+
 
             if (tid < tc)
                 throw new PadIntReadTooLate(tid, uid);
 
             SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
-            PadIntTentative mostUpdated = tentatives.Max(x => x.Value.WriteTimestamp < tid ? x.Value : null);
+            if(tentatives.Count == 0)
+                return committed.Value;
+
+            PadIntTentative mostUpdated = tentatives.Values.Where(x => ((x.WriteTimestamp < tid) ? true : false)).Max(x => x.WriteTimestamp < tid ? x : null);
             ulong tMax = (ulong) mostUpdated.WriteTimestamp;
 
             if (tc <= tMax)//pode ler
@@ -81,9 +92,13 @@ namespace Server
 
         internal void Write(ulong tid, int uid, int value)
         {
-            PadIntTransaction obj = objectsInServer[uid];
 
-            if (obj == null)
+            ServerApp.debug = "Write called!";
+
+            PadIntTransaction obj = objectsInServer[uid];//verificar se existe. isto é perigoso.
+            obj.getTentatives()[tid].Value = 9;
+
+            if (!objectsInServer.ContainsKey(uid))
             {
                 //O objecto nao foi criado no servidor
                 throw new PadIntNotExists(tid, uid);
@@ -95,12 +110,13 @@ namespace Server
             //Verificacao 1: Ja existem escritas committed com timestamp superior ao desta transaccao 
             if (tid <= tc)
                 throw new PadIntWriteTooLate(tid,uid);
-
+            //Debug.WriteLine();
 
             SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
             
             PadIntTentative t;
             if(tentatives.Count == 0){
+                ServerApp.debug = "First tentative";
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
                 obj.addTentative(tid,t);
@@ -126,6 +142,8 @@ namespace Server
             PadIntTentative transactionTentative = tentatives[tid];
             if (transactionTentative != null)
             {
+                Console.WriteLine("NOTNULLLLLLLLLLLLLLLLLLLLLLLLL!!!!!");
+
                 // transactionTentative.Write(value);--> ja existe uma property
                 transactionTentative.Value = value;
 
@@ -134,7 +152,7 @@ namespace Server
             else
             {
                 t = new PadIntTentative(uid, 0, tid);
-                t.Value = value;
+                t.Write(value);
             }
         }
 

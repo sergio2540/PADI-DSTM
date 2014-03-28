@@ -23,6 +23,13 @@ namespace Server
             throw new NotImplementedException();
         }
 
+        public override object InitializeLifetimeService()
+        {
+
+            return null;
+
+        }
+
         //Transacções
 
         //Participante retorna voto true - commit false - abort

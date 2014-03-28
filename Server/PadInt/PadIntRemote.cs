@@ -10,6 +10,8 @@ namespace Server
 {
     public enum PadIntState { Tentative, Commited }
 
+
+    [Serializable]
     public abstract class PadIntRemote : PadInt
     {
         public int Value { get; set; }

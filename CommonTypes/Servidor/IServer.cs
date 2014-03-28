@@ -24,7 +24,7 @@ namespace CommonTypes
 
 
       //PadInt
-      PadInt CreatePadInt(ulong transactionId, int padintUid);
+      PadInt CreatePadInt(ulong transactionId, int padintUid);//estes objectos deveriam devolver apenas booleanos
       PadInt AccessPadInt(ulong transactionId, int padintUid);
       int ReadPadInt(ulong transactionId, int padintUid);
       void WritePadInt(ulong transactionId, int padintUid, int newValue);

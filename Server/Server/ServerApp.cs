@@ -12,17 +12,26 @@ namespace Server
 {
     class ServerApp
     {
+        public static String debug = null;
         public static void Main(String[] args) {
 
 
             TcpChannel channel = new TcpChannel(8086);
             ChannelServices.RegisterChannel(channel, true);
 
-            RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "tcp://ip:porta/Server", WellKnownObjectMode.Singleton);
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
 
             Console.WriteLine("Server App - Listening for requests.");
             Console.WriteLine("Press enter to exit...");
-            Console.ReadLine();
+
+            while (true)
+            {
+                if (debug != null)
+                {
+                    Console.WriteLine(debug);
+                    debug = null;
+                }
+            }
 
             /*
             ServerImpl receiver = new ServerImpl();
