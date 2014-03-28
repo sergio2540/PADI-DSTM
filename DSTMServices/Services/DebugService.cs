@@ -11,6 +11,8 @@ namespace DSTMServices
 
         public bool Status()
         {
+            //get master
+            //master.Status()
             return false;  
         }
         public bool Fail(String URL)
