@@ -22,7 +22,7 @@ namespace Server
 
         }
 
-        internal PadIntCommitted CreatePadInt(ulong tid, int uid)
+        internal PadIntCommitted CreatePadInt(int uid)////////////////para qur o 
         {
 
             if(objectsInServer.ContainsKey(uid))
@@ -42,7 +42,7 @@ namespace Server
 
         }
 
-        internal PadIntCommitted AccessPadInt(ulong tid, int uid)
+        internal PadIntCommitted AccessPadInt(int uid)
         {
             PadIntTransaction obj = objectsInServer[uid];
             
@@ -70,9 +70,19 @@ namespace Server
             if (tid < tc)
                 throw new PadIntReadTooLate(tid, uid);
 
+            SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
+            PadIntTentative mostUpdated = tentatives.Max(x => x.Value.WriteTimestamp < tid ? x.Value : null);
+            ulong tMax = (ulong) mostUpdated.WriteTimestamp;
+
+            if (tc <= tMax)//pode ler
+                return mostUpdated.Value;
+            else return -1;//espera
 
 
-            throw new NotImplementedException();
+
+
+
+
         }
 
         internal void Write(ulong tid, int uid, int value)
@@ -93,18 +103,25 @@ namespace Server
                 throw new PadIntWriteTooLate(tid,uid);
 
 
-            SortedSet<PadIntTentative> tentatives = obj.getTentatives();
+            SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
             
             PadIntTentative t;
             if(tentatives.Count == 0){
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
-                obj.addTentative(t);
+                obj.addTentative(tid,t);
                 return;
             }
 
             //Max de timestamp de leitura das versoes
-            ulong tMax = tentatives.Max.ReadTimestamp;
+
+            //Func<PadIntTentative, decimal> lam = tent => (decimal) tent.ReadTimestamp;
+
+           // ulong tMax = tentatives.Max<PadIntTentative,ulong>(x => x.ReadTimestamp); //metodos extendidos. porque nao da?
+
+            ulong tMax = (ulong) tentatives.Max(x => x.Value.ReadTimestamp);
+
+            
 
             //Verificacao 2: Ja existem leituras de transaccoes a serem processadas
             if (tid < tMax)
@@ -112,13 +129,19 @@ namespace Server
                 throw new PadIntWriteTooLate(tid, uid);
             }
 
-            if(tentatives.Contains()){
+            PadIntTentative transactionTentative = tentatives[tid];
+            if (transactionTentative != null)
+            {
+                // transactionTentative.Write(value);--> ja existe uma property
+                transactionTentative.Value = value;
 
             }
-            t = new PadIntTentative(uid, 0, tid);
-            t.Write(value);
-            
-            if(tentatives.Add())
+
+            else
+            {
+                t = new PadIntTentative(uid, 0, tid);
+                t.Value = value;
+            }
         }
 
         internal bool canCommit(ulong tid)

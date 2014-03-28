@@ -12,8 +12,11 @@ namespace Server
 
         //Ordenado por readTimestamp
         //Sera possivel haver duplicados
-        private SortedSet<PadIntTentative> tentatives = new SortedSet<PadIntTentative>(Comparer<PadIntTentative>.Create(
-                                                                                            (p1, p2) => p1.ReadTimestamp.CompareTo(p2.ReadTimestamp)));
+       // private SortedSet<PadIntTentative> tentatives = new SortedSet<PadIntTentative>(Comparer<PadIntTentative>.Create(
+         //                                                                                   (p1, p2) => p1.ReadTimestamp.CompareTo(p2.ReadTimestamp)));
+
+       
+        private SortedList<ulong,PadIntTentative> tentatives = new SortedList<ulong,PadIntTentative>(); // deveria ser readonly para funcoes exteriores
         
         private PadIntCommitted committed;
 
@@ -22,14 +25,14 @@ namespace Server
             this.Uid = uid;
         }
         
-        public SortedSet<PadIntTentative> getTentatives()
+        public SortedList<ulong,PadIntTentative> getTentatives()
         {
             return tentatives;
         }
 
-        public void addTentative(PadIntTentative tentative)
+        public void addTentative(ulong tid,PadIntTentative tentative)
         {
-            tentatives.Add(tentative);
+            tentatives[tid] = tentative; ;
         }
 
         public PadIntCommitted getCommitted()
