@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CommonTypes
 {
-    public interface IServer 
+    public interface IServer : IDebug
     {
 
       bool StartTransaction(ulong transactionId, String coordinatorAddress);
