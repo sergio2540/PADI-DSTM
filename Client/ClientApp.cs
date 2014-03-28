@@ -38,6 +38,15 @@ namespace Client
                 int a = padInt1.Read();
                 Console.WriteLine(a);
 
+
+                padInt1.Write(3);
+                Console.WriteLine(padInt1.Read());
+
+                PadInt pad  = Manager.AccessPadInt(1);
+                Console.WriteLine(pad.Read());
+                Console.Read();
+
+                /*
                 PadInt padInt2 = Manager.CreatePadInt(uid2);
                 if (padInt2 == null)
                 {
@@ -53,6 +62,7 @@ namespace Client
                     Manager.TxAbort();
                     return false;
                 }
+                */
 
             }
             catch (TxException e)

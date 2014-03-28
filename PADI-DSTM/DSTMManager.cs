@@ -72,17 +72,14 @@ namespace PADI_DSTM
 
         public PadInt CreatePadInt(int uid)
         {
-
-            dataService.CreatePadInt(uid);
+            return coordinatorService.CreatePadInt(uid);
            
-           
-            return new PadIntLocal(uid);
         }
         
 
         public PadInt AccessPadInt(int uid)
         {
-            return dataService.AccessPadInt(uid);
+            return coordinatorService.AccessPadInt(uid);
         }
 
        
