@@ -21,6 +21,21 @@ namespace DSTMServices
         private Dictionary<int, String> uidServerAssociation;//vao haver colisões
         private Dictionary<int, IServer> uidServerRefAssociation;
 
+        /*
+         
+            class Participant{
+         *  
+         *  String endpoint;
+         *  IServer endpoint;
+         *  Integer[] uids;
+         * 
+         * 
+         * }
+         
+         
+         
+         */
+
         //Transaccoes
         public bool Begin(ulong transactionId) {
             uidServerAssociation = new Dictionary<int, String>();
@@ -32,15 +47,41 @@ namespace DSTMServices
             return true;
         }
 
-        public bool Commit()
+        public bool Commit()//metodo deve ser repensado. pessimo codigo!!!!!!!!!!!!!!!!!!!!!!!!!
         {
-            throw new NotImplementedException();
-           
+            Dictionary<String, int> endpointUidAssociation = new Dictionary<String, int>();
+            bool decision = true;
+
+            foreach (KeyValuePair<int, String> entry in uidServerAssociation)
+                if(!endpointUidAssociation.ContainsKey(entry.Value))
+                    endpointUidAssociation[entry.Value] = entry.Key;
+
+            foreach (KeyValuePair<String, int> entry in endpointUidAssociation)
+                decision &= uidServerRefAssociation[entry.Value].canCommit(currentTransactionId);  //verificar se respondeu.usar metodo ping.isto funciona assumindo que respondem
+
+            if(decision == true)
+                foreach (KeyValuePair<String, int> entry in endpointUidAssociation)
+                decision &= uidServerRefAssociation[entry.Value].doCommit(currentTransactionId);
+
+            else
+                foreach (KeyValuePair<String, int> entry in endpointUidAssociation)
+                    decision &= uidServerRefAssociation[entry.Value].doAbort(currentTransactionId);
+            return decision;
         }
 
         public bool Abort()
         {
-            throw new NotImplementedException();
+            Dictionary<String, int> endpointUidAssociation = new Dictionary<String, int>();
+            bool result = true;
+
+            foreach (KeyValuePair<int, String> entry in uidServerAssociation)
+                if (!endpointUidAssociation.ContainsKey(entry.Value))
+                    endpointUidAssociation[entry.Value] = entry.Key;
+
+            foreach (KeyValuePair<String, int> entry in endpointUidAssociation)
+                result &= uidServerRefAssociation[entry.Value].doAbort(currentTransactionId);
+
+            return result;
 
         }
 
@@ -49,7 +90,7 @@ namespace DSTMServices
             String endpoint = uidServerAssociation[uid];
             IServer serverRef = null;
 
-            if (!uidServerRefAssociation.ContainsKey(uid))
+            if (!uidServerRefAssociation.ContainsKey(uid)) //verifica se temos referencia para o servidor que guarda o uid.nao temos
             {
                 //url = ....procura no master
                 //adicionar ao dicionario de strings e de referencias.
@@ -59,12 +100,28 @@ namespace DSTMServices
                 uidServerAssociation[uid] = endpoint;
                 uidServerRefAssociation[uid] = serverRef;
 
+        
+                //temos de criar transaccao se o coordenador ainda não existir
+
+
                 if (serverRef == null)
                 {
                     System.Console.WriteLine("Could not locate server");
                     return null;
                 }
-                return serverRef;
+
+
+                 foreach(String server in uidServerAssociation.Values)
+                {
+                    if(server.Equals(endpoint))
+                        return serverRef; 
+
+                }
+
+                bool canBegin = serverRef.BeginTransaction(currentTransactionId,"");
+                if (canBegin)
+                    return serverRef;
+                else return null;
             }
             else return uidServerRefAssociation[uid];
            
@@ -83,7 +140,7 @@ namespace DSTMServices
 
             IServer serverRef = InteractWithServer(uid);
             if (serverRef == null){
-                System.Console.WriteLine("Coordinator failed to connect to server. Null reference returned.");
+                System.Console.WriteLine("Coordinator failed to connect to server. Null reference returned.");//pode acontecer que nao seja possivel criar transaccao
                 return -1;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.
             }
             

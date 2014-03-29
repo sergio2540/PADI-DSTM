@@ -12,15 +12,18 @@ namespace Server
     {
         TransactionalManager transactionalManager;
 
+        public String a;
         public ServerImpl()
         {
             transactionalManager = new TransactionalManager();
         }
 
 
-        public bool StartTransaction(ulong tid, string coordinatorAddress)
+        public bool BeginTransaction(ulong tid, string coordinatorAddress)
         {
-            throw new NotImplementedException();
+            return transactionalManager.BeginTransaction(tid, coordinatorAddress);
+            //Transaction newTransaction = new Transaction(tid,coordinatorAddress);
+            //throw new NotImplementedException();
         }
 
         public override object InitializeLifetimeService()

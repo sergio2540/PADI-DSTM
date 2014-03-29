@@ -18,6 +18,7 @@ namespace Server
     public class TransactionalManager
     {
         private Dictionary<int,PadIntTransaction> objectsInServer = new Dictionary<int,PadIntTransaction>();
+        private Dictionary<ulong, Transaction> transactions = new Dictionary<ulong, Transaction>();
 
         internal TransactionalManager(){
 
@@ -160,6 +161,20 @@ namespace Server
                 t.Write(value);
             }
         }
+
+
+
+
+        internal bool BeginTransaction(ulong tid, string coordinatorAddress)
+        {
+            //TODO: Lançar excepção.
+            if (transactions.ContainsKey(tid))
+                return false;
+
+            transactions[tid] = new Transaction(tid,coordinatorAddress);
+            return true;
+        }
+
 
         internal bool canCommit(ulong tid)
         {

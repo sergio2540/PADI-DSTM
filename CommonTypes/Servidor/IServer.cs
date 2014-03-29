@@ -9,7 +9,7 @@ namespace CommonTypes
     public interface IServer : IDebug
     {
 
-      bool StartTransaction(ulong transactionId, String coordinatorAddress);
+      bool BeginTransaction(ulong transactionId, String coordinatorAddress);
 
 
       //Transacções

@@ -9,11 +9,11 @@ namespace Server
     public enum TransactionInServerState { Running, VoteCommit, Committed, VoteAbort, Aborted}
     class Transaction
     {
-        private long transactionId;
+        private ulong transactionId;
         private String coordinatorAddress;
         private TransactionInServerState TransactionState{ get; set; }
 
-        public Transaction(long transactionId, String coordinatorAddress) {
+        public Transaction(ulong transactionId, String coordinatorAddress) {
             this.transactionId = transactionId;
             this.coordinatorAddress = coordinatorAddress;
             TransactionState = TransactionInServerState.Running;
@@ -21,3 +21,4 @@ namespace Server
 
     }
 }
+                                                      
