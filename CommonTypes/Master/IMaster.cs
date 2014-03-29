@@ -17,7 +17,8 @@ namespace CommonTypes
 
         void ReplicaFailed(String URL);
 
-        string GetServer(long uid);
+        string GetPrimaryEndpoint(int uid);
+        string GetReplicaEndpoint(int uid);
 
     }
 }

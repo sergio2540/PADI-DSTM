@@ -13,9 +13,31 @@ namespace Master
 
         private LookupTable lookupTable = new LookupTable();
         
+        private int getIndex()
+        {
+            int table_size = lookupTable.Size();
+            //Arrendondar para a potencia de 2 mais acima do numero tabela_size
+            int end = (int)Math.Pow(2, Math.Ceiling(Math.Log(table_size) / Math.Log(2)));
+
+            //Arrendondar para a potencia de 2 mais abaixo do numero tabela_size
+            int start = (int)Math.Pow(2, (Math.Log(end) / Math.Log(2)) - 1);
+
+            return start == 0 ? 0 : 2 * (table_size % start);
+        }
+        
+        //Entradas/Saidas dos servidores de dados
+
         public bool AddServer(string URL)
         {
-            throw new NotImplementedException();
+            int index = getIndex();
+            //Fazer Split
+            //TableRow temp = lookupTable.GetRow(index);
+            //UIDRange newUIDRange = temp.GetUIDRange().Split();
+            //Buscar replica
+            //ServerPair newServerPair = new ServerPair(primary_url, replica_url);
+            //TableRow newTableRow = new TableRow(newServerPair,newUIDRange);
+            //lookupTable.InsertRow(index,newTableRow);
+            return true;
         }
 
         public bool RemoveServer(string URL)
@@ -23,6 +45,31 @@ namespace Master
             throw new NotImplementedException();
         }
 
+
+        //Get endpoints
+        public string GetPrimaryEndpoint(int uid)
+        {
+            ServerPair pair = lookupTable.GetServerPair(uid);
+
+            if (pair == null)
+                return null;
+
+            return pair.GetPrimary();
+        }
+
+        public string GetReplicaEndpoint(int uid)
+        {
+
+            ServerPair pair = lookupTable.GetServerPair(uid);
+
+            return pair == null ? null : pair.GetPrimary();
+                
+
+        
+
+        }
+
+        //Falhas
         public void PrimaryFailed(string URL)
         {
             throw new NotImplementedException();
@@ -33,22 +80,7 @@ namespace Master
             throw new NotImplementedException();
         }
 
-        public string GetServer(long uid)
-        {
 
-            foreach(TableRow row in lookupTable.GetTableRows()) 
-            {
-                if (row.GetUIDRange().UIDInRange(uid))
-                {
-                    return row.GetServerPair().GetPrimary();
-                }
-
-            }
-
-            Console.WriteLine("Servidor responsável por uid não encontrado");
-            return "";
-
-        }
 
         public bool Status()
         {

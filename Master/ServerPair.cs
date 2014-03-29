@@ -22,7 +22,7 @@ namespace Master
             return URLPrimary;
         }
 
-        public string GetSecondary() {
+        public string GetReplica() {
             return URLReplica;
         }
 

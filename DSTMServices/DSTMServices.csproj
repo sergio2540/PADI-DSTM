@@ -41,10 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Services\CoordinatorService.cs" />
-    <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\DebugService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Lookup.cs" />
+    <Compile Include="Services\LookupService.cs" />
     <Compile Include="Services\PadIntLocal.cs" />
     <Compile Include="Services\TimestampService.cs" />
   </ItemGroup>

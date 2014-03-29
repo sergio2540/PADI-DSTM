@@ -18,17 +18,46 @@ namespace Master
             
         }
 
+        /*
         public List<TableRow> GetTableRows()
         {
             return lookupTable;
+        }*/
+
+
+       //ADD
+       public int Size(){
+           return lookupTable.Count;
+       }
+
+       public TableRow GetRow(int index)
+       {
+           return lookupTable[index];
+       }
+
+       public ServerPair GetServerPair(int uid)
+       {
+
+            foreach (TableRow row in lookupTable)
+            {
+                if (row.GetUIDRange().UIDInRange(uid))
+                {
+                    return row.GetServerPair();
+                }
+
+            }
+
+            Console.WriteLine("Servidor responsável por uid não encontrado");
+            return null;
         }
 
-        public void AddRow(TableRow row, int index) 
-        {
 
-            lookupTable.Add(row);
+       public void InsertRow(int index, TableRow row) 
+       {
+           
+            lookupTable.Insert(index,row);
 
-        }
+       }
 
         public void RemoveRow(TableRow row)
         {
