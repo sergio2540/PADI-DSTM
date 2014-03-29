@@ -22,7 +22,7 @@ namespace Server
             modifiedObjects = new HashSet<int>();
         }
 
-        public int[] getModifiedObjects(){
+        public int[] getModifiedObjectIds(){
             
             int[] changeableModifiedObjects = new int[modifiedObjects.Count];
             modifiedObjects.CopyTo(changeableModifiedObjects);
@@ -30,7 +30,7 @@ namespace Server
             
         }
 
-        public void addModifiedObject(int objectId)
+        public void addModifiedObjectId(int objectId)
         {
             modifiedObjects.Add(objectId);
         }

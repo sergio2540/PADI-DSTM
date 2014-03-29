@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Server.Transactions;
 using System.Diagnostics;
+using System.Threading;
 
 
 //PadIntRemote
@@ -17,11 +18,15 @@ namespace Server
 {
     public class TransactionalManager
     {
-        private Dictionary<int,PadIntTransaction> objectsInServer = new Dictionary<int,PadIntTransaction>();
-        private Dictionary<ulong, Transaction> transactions = new Dictionary<ulong, Transaction>();
+        private Dictionary<int,PadIntTransaction> objectsInServer; 
+        private Dictionary<ulong, Transaction> transactions;  
+        private Dictionary <int,EventWaitHandle> objectWaitHandle; 
 
         internal TransactionalManager(){
 
+            objectsInServer = new Dictionary<int,PadIntTransaction>();
+            transactions = new Dictionary<ulong, Transaction>();
+            objectWaitHandle = new Dictionary<int,EventWaitHandle>();
         }
 
         internal PadIntCommitted CreatePadInt(int uid)////////////////para qur o 
@@ -32,13 +37,14 @@ namespace Server
 
 
             PadIntTransaction obj = new PadIntTransaction(uid);
-
             ulong writeTimestampDefault = 0;
-
             PadIntCommitted committed = new PadIntCommitted(uid, writeTimestampDefault);
 
             obj.setCommited(committed);
             objectsInServer[uid] = obj;
+
+            //wait handle não notificado e com manual reset pois deve ser o write a fechar a passagem às threads.
+            objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
 
             return committed;
            
@@ -107,12 +113,15 @@ namespace Server
                 mostUpdated.ReadTimestamp = tid;
                 return mostUpdated.Value;
             }
-            else return -1;//espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
-                            
+            else //espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
+            {
+                objectWaitHandle[uid].WaitOne(); //bloqueia e quando fôr desbloqueada, volta a tentar.
+                return Read(tid,uid);
+            }           
         }
 
         internal void Write(ulong tid, int uid, int value)
-        {
+        {//addicionar objecto modificado
 
             //ServerApp.debug = "Write called!";
 
@@ -142,7 +151,8 @@ namespace Server
                 t.Write(value);
                 ServerApp.debug = "Written value: " + t.Read();
                 obj.addTentative(tid,t);
-                transactions[tid].addModifiedObject(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+                transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+                objectWaitHandle[uid].Reset();//escreveu, bloqueia as threads. O que acontece se não fôr a tempo de bloquear as threads???????
                 return;
             }
 
@@ -150,7 +160,8 @@ namespace Server
 
             //Func<PadIntTentative, decimal> lam = tent => (decimal) tent.ReadTimestamp;
 
-           // ulong tMax = tentatives.Max<PadIntTentative,ulong>(x => x.ReadTimestamp); //metodos extendidos. porque nao da?
+           // ulong tMax = tentatives.Max<PadIntTentative,ulong>(x => x.ReadTimestamp); //metodos extendidos. porque nao da? Não apagar. Ainda tenho de 
+            //perceber isto Ass:Braga :)
 
             ulong tMax = (ulong) tentatives.Max(x => x.Value.ReadTimestamp);
 
@@ -168,8 +179,8 @@ namespace Server
             {
                 PadIntTentative transactionTentative = tentatives[tid];
                 Console.WriteLine("NOTNULLLLLLLLLLLLLLLLLLLLLLLLL!!!!!");
-
                 // transactionTentative.Write(value);--> ja existe uma property
+                //se tem tentativa é porque já escreveu antes. Não é preciso resetar o handle? Ou é????????
                 transactionTentative.Value = value;
                 
 
@@ -179,7 +190,8 @@ namespace Server
             {
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
-                transactions[tid].addModifiedObject(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+                transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+                objectWaitHandle[uid].Reset();///primeira tentativa de escrita. Reseta handle para bloquear threads.
 
             }
         }
@@ -205,6 +217,10 @@ namespace Server
 
         internal bool doCommit(ulong tid)
         {
+            //desbloquear threads em espera no read com
+            foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
+                objectWaitHandle[modifiedObject].Set();
+
             throw new NotImplementedException();
         }
 

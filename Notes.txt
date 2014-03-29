@@ -12,3 +12,32 @@ Abordagens:
 Duvidas:
 ->A transaction’s read operation is directed to the version with the maximum write timestamp less than the transaction timestamp.
 ->If transaction Tc has already written its own version of the object, this will be used.
+
+
+
+Abordagem usada:
+As threads esperam no read. Quando uma thread faz commit, a thread é notificada para continuar.
+
+
+class TransactionalManager{
+private static EventWaitHandle readWait = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+if(espera){
+	
+	readWait.WaitOne();
+
+	//chamada recursiva a Read. Tem de testar tudo de novo. São desbloqueadas por ordem?
+	//deveria ser assinalada pelo doCommit que está na mesma classe usando Set()
+	Read(tid,uid);
+	
+
+}
+
+
+}
+
+->Podem haver diversas threads à espera para ler diferentes objectos. Deviamos libertar handles consoante o uid.
+
+O read deve permitir leitura durante todo o tempo em que não há writes anteriores a esse read. O ideal deveria ser:
+->A cada write, bloquear o fluxo de threads pois todas as que quiserem ler esse objecto, teem de ficar bloqueadas se vierem antes;
+O ideal deveria ser, haver um reset a cada write e um set a cada do commit.
