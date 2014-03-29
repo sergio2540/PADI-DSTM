@@ -44,6 +44,17 @@ namespace Client
 
                 PadInt pad  = Manager.AccessPadInt(1);
                 Console.WriteLine(pad.Read());
+                Manager.TxAbort();
+
+                succeed = Manager.TxBegin();
+
+                if (!succeed)
+                    return false;
+                PadInt pad2 = Manager.AccessPadInt(1);
+                Console.WriteLine("Reading again:" + pad2.Read());
+
+
+
                 Console.Read();
 
                 /*

@@ -36,10 +36,17 @@ namespace DSTMServices
          
          */
 
-        //Transaccoes
-        public bool Begin(ulong transactionId) {
+
+        public CoordinatorService() {
+
             uidServerAssociation = new Dictionary<int, String>();
             uidServerRefAssociation = new Dictionary<int, IServer>();
+        }
+
+        //Transaccoes
+        public bool Begin(ulong transactionId) {
+            //uidServerAssociation = new Dictionary<int, String>();//-->idealmente isto deveria ser aqui, mas por agora fica no constructor para termos estado.
+            //uidServerRefAssociation = new Dictionary<int, IServer>();
             uidServerAssociation[1] = "tcp://localhost:8086/Server";
             uidServerAssociation[2] = "tcp://localhost:8086/Server";
             currentTransactionId = transactionId;
@@ -92,13 +99,13 @@ namespace DSTMServices
 
             if (!uidServerRefAssociation.ContainsKey(uid)) //verifica se temos referencia para o servidor que guarda o uid.nao temos
             {
+                Console.WriteLine("We have no reference for the server. Looking for uid: " + uid);
                 //url = ....procura no master
                 //adicionar ao dicionario de strings e de referencias.
-                TcpChannel channel = new TcpChannel();
+                TcpChannel channel = new TcpChannel();      //convem deitar abaixo este canal no fim
                 ChannelServices.RegisterChannel(channel, true);
                 serverRef = (IServer)Activator.GetObject(typeof(IServer), endpoint);
-                uidServerAssociation[uid] = endpoint;
-                uidServerRefAssociation[uid] = serverRef;
+                
 
         
                 //temos de criar transaccao se o coordenador ainda não existir
@@ -111,14 +118,19 @@ namespace DSTMServices
                 }
 
 
-                 foreach(String server in uidServerAssociation.Values)
-                {
-                    if(server.Equals(endpoint))
-                        return serverRef; 
+                //este foreach so deve estar activo quando ainda não existirem endpoints por defeito.
+                //Console.WriteLine("Vamos verificar se já ligámos a este server");
+                 //foreach(String server in uidServerAssociation.Values)
+                //{
+                  //  if(server.Equals(endpoint))
+                    //    return serverRef; 
 
-                }
+//                }
 
+                 Console.WriteLine("About to begin transaction!");
                 bool canBegin = serverRef.BeginTransaction(currentTransactionId,"");
+                uidServerAssociation[uid] = endpoint;
+                uidServerRefAssociation[uid] = serverRef;
                 if (canBegin)
                     return serverRef;
                 else return null;
