@@ -12,7 +12,6 @@ namespace Server
     {
         TransactionalManager transactionalManager;
 
-        public String a;
         public ServerImpl()
         {
             transactionalManager = new TransactionalManager();

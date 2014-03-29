@@ -1,0 +1,14 @@
+Notas para esperar por transacções na leitura:
+->Se lermos um objecto que foi escrito, temos de esperar que a outra termine e faca commit para ler depois esse valor, para que nao hajam dirty reads. Convem que o object saiba quando
+e que o outro terminou, ou quando não tem ninguém antes dele:
+
+Abordagens:
+->Verificar se há objectos tentativa antes deste. Se não houverem, chama funcao de escrita.
+->poderiamos por o objecto antes do que quer fazer commit a notificá-lo caso aborte ou faça commit.
+->Poderiamos ter um gestor de transaccoes pendentes.
+->Podiamos parar a thread 
+
+
+Duvidas:
+->A transaction’s read operation is directed to the version with the maximum write timestamp less than the transaction timestamp.
+->If transaction Tc has already written its own version of the object, this will be used.

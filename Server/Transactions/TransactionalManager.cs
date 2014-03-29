@@ -80,19 +80,35 @@ namespace Server
                 throw new PadIntReadTooLate(tid, uid);
 
             SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
+            //se não existirem versões tentativa, ele não/ninguém escreveu. pode ler do commited.
             if(tentatives.Count == 0)
                 return committed.Value;
 
+            //se ja foi escrita uma versao, entao le-se dessa versão.
+            if (tentatives.ContainsKey(tid))
+            {
+                PadIntTentative ownTentative = tentatives[tid];
+                ownTentative.ReadTimestamp = tid;
+                return ownTentative.Value;
+            }
+            
+            //versao de tentativa que tem um timestamp de escrita superior a todos os inferiores ao da transaccao que quer ler.
             PadIntTentative mostUpdated = tentatives.Values.Where(x => ((x.WriteTimestamp < tid) ? true : false)).Max(x => x.WriteTimestamp < tid ? x : null);
 
+            //se nao existe nenhum que tenha escrito e que tenha timestamp inferior, significa que a transaccao actual pode ler o valor do commited.
             if (mostUpdated == null)
                 return committed.Value;
 
-            ulong tMax = (ulong) mostUpdated.WriteTimestamp;//no inicio isto é nulo. deve ler o commited? 
+            ulong tMax = (ulong) mostUpdated.WriteTimestamp;// este e o valor do maior timestamp de escrita menor que o da transaccao
 
-            if (tc <= tMax)//pode ler
+            //verificar se a versao commited tem um timestamp igual ao de tmax. se tiver, significa que o tmax está commited. pode então ler
+            if (tc == tMax)//pode ler 
+            {
+                mostUpdated.ReadTimestamp = tid;
                 return mostUpdated.Value;
-            else return -1;//espera
+            }
+            else return -1;//espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
+                            
         }
 
         internal void Write(ulong tid, int uid, int value)
@@ -126,6 +142,7 @@ namespace Server
                 t.Write(value);
                 ServerApp.debug = "Written value: " + t.Read();
                 obj.addTentative(tid,t);
+                transactions[tid].addModifiedObject(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
                 return;
             }
 
@@ -145,13 +162,16 @@ namespace Server
                 throw new PadIntWriteTooLate(tid, uid);
             }
 
-            PadIntTentative transactionTentative = tentatives[tid];
-            if (transactionTentative != null)
+            
+            if(tentatives.ContainsKey(tid))
+            //if (transactionTentative != null)
             {
+                PadIntTentative transactionTentative = tentatives[tid];
                 Console.WriteLine("NOTNULLLLLLLLLLLLLLLLLLLLLLLLL!!!!!");
 
                 // transactionTentative.Write(value);--> ja existe uma property
                 transactionTentative.Value = value;
+                
 
             }
 
@@ -159,6 +179,8 @@ namespace Server
             {
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
+                transactions[tid].addModifiedObject(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+
             }
         }
 
