@@ -34,7 +34,28 @@ namespace Server
         {
             modifiedObjects.Add(objectId);
         }
-        
+
+        public void setVoteAbort()
+        {
+
+            TransactionState = TransactionInServerState.VoteAbort;
+        }
+        public void setVoteCommit()
+        {
+
+            TransactionState = TransactionInServerState.VoteCommit;
+        }
+
+        public void setCommited() {
+
+            TransactionState = TransactionInServerState.Committed;
+        }
+
+        public void setAborted()
+        {
+
+            TransactionState = TransactionInServerState.Aborted;
+        }
 
     }
 }

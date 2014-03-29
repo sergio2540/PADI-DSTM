@@ -13,7 +13,7 @@ namespace Server
     {
         public PadIntCommitted(int uid, ulong writeTimestamp) : base(uid)
         {
-            this.State = PadIntState.Commited;
+            this.State = PadIntState.Committed;
             this.WriteTimestamp = writeTimestamp;
         }
        

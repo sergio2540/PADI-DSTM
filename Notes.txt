@@ -41,3 +41,15 @@ if(espera){
 O read deve permitir leitura durante todo o tempo em que não há writes anteriores a esse read. O ideal deveria ser:
 ->A cada write, bloquear o fluxo de threads pois todas as que quiserem ler esse objecto, teem de ficar bloqueadas se vierem antes;
 O ideal deveria ser, haver um reset a cada write e um set a cada do commit.
+
+
+doCommit e doAbort:
+->quando faço can commit, tenho de esperar por outras transacções terminarem para verificar se podem fazer commit. convinha que
+caso houvessem transaccoes que têem objectos tentativa, a transacção espere. se houverem objectos tentativa com timestamp inferior,
+deve esperar-se por elas.
+
+Faz sentido libertar as threads todas ao mesmo tempo?
+No can commit, se houvessem, bloqueavam numa fila que bloqueia por identificador de objecto.
+No do commit ou abort, libertávamos transacções pendentes por objecto.
+O reset deveria ser feito quando ha writes num dado objecto. Isto é semelhante ao read.
+

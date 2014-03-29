@@ -8,7 +8,7 @@ using CommonTypes;
 
 namespace Server
 {
-    public enum PadIntState { Tentative, Commited }
+    public enum PadIntState { Tentative, Committed, Aborted }
 
 
     [Serializable]
@@ -19,6 +19,21 @@ namespace Server
         public readonly int uid;
 
         public PadIntState State {get;set;}
+
+        public void SetTentative()
+        {
+            State = PadIntState.Tentative;
+        }
+
+        public void SetCommited()
+        {
+            State = PadIntState.Committed;
+        }
+
+        public void SetAborted()
+        {
+            State = PadIntState.Aborted;
+        }
 
         public ulong WriteTimestamp { get; set; }
 

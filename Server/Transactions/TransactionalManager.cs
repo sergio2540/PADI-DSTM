@@ -20,13 +20,15 @@ namespace Server
     {
         private Dictionary<int,PadIntTransaction> objectsInServer; 
         private Dictionary<ulong, Transaction> transactions;  
-        private Dictionary <int,EventWaitHandle> objectWaitHandle; 
+        private Dictionary <int,EventWaitHandle> objectWaitHandle;
+        private Dictionary<int, EventWaitHandle> pendingTransactions;
 
         internal TransactionalManager(){
 
             objectsInServer = new Dictionary<int,PadIntTransaction>();
             transactions = new Dictionary<ulong, Transaction>();
             objectWaitHandle = new Dictionary<int,EventWaitHandle>();
+            pendingTransactions = new Dictionary<int, EventWaitHandle>();
         }
 
         internal PadIntCommitted CreatePadInt(int uid)////////////////para qur o 
@@ -153,6 +155,8 @@ namespace Server
                 obj.addTentative(tid,t);
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
                 objectWaitHandle[uid].Reset();//escreveu, bloqueia as threads. O que acontece se não fôr a tempo de bloquear as threads???????
+                pendingTransactions[uid].Reset(); // dado que escrevemos, as que forem fazer commit teem de esperar
+                //evitar que venha a esperar por si mesma espera por si mesma?
                 return;
             }
 
@@ -192,11 +196,10 @@ namespace Server
                 t.Write(value);
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
                 objectWaitHandle[uid].Reset();///primeira tentativa de escrita. Reseta handle para bloquear threads.
+                pendingTransactions[uid].Reset(); // dado que escrevemos, as que forem fazer commit teem de esperar
 
             }
         }
-
-
 
 
         internal bool BeginTransaction(ulong tid, string coordinatorAddress)
@@ -210,23 +213,76 @@ namespace Server
         }
 
 
-        internal bool canCommit(ulong tid)
+        internal bool canCommit(ulong tid)//vai dar sempre canCommit???
         {
-            throw new NotImplementedException();
+            Transaction transaction = transactions[tid];//assume-se que existe!!!!!!!!!!!!!!!!
+            bool decision = true;
+            foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
+            {
+                while (objectsInServer[modifiedObjectId].getTentatives().Min(x => x.Value.WriteTimestamp) < tid)
+                {
+                    pendingTransactions[modifiedObjectId].WaitOne();//se houver um objecto com um write time stamp inferior, temos de esperar por ele.
+
+                }
+                decision &= true;
+            }
+
+            if (decision)
+                transaction.setVoteCommit();
+            else
+                transaction.setVoteAbort();
+
+
+            return decision;
         }
 
+        //o doCommit deveria ser atomico. pode dar problema?
         internal bool doCommit(ulong tid)
         {
+            PadIntTransaction objectTransaction = null;
+            PadIntTentative tentative = null;
             //desbloquear threads em espera no read com
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
-                objectWaitHandle[modifiedObject].Set();
+            {
+                //por commited
+                //remover objecto transaccao
+                //remover objecto tentativa
+                //por tentativa como commited se vamos remover vale a pena? ter em atenção que no read ele ve se o anterior esta commited. nao sei se deviamos eliminar.
+                //actualizar o valor do commited
 
-            throw new NotImplementedException();
+                transactions[tid].setCommited();
+                objectTransaction = objectsInServer[modifiedObject];
+                tentative = objectTransaction.getTentatives()[tid];
+                objectTransaction.getCommitted().Value = tentative.Value;
+                tentative.SetCommited();
+                objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+            }
+
+            return true; //sempre verdade?
+
         }
 
         internal bool doAbort(ulong tid)
         {
-            throw new NotImplementedException();
+            PadIntTransaction objectTransaction = null;
+            PadIntTentative tentative = null;
+            //desbloquear threads em espera no read com
+            foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
+            {
+                //por commited
+                //remover objecto transaccao
+                //remover objecto tentativa
+                //por tentativa como commited se vamos remover vale a pena? ter em atenção que no read ele ve se o anterior esta commited. nao sei se deviamos eliminar.
+                //actualizar o valor do commited
+
+                transactions[tid].setAborted();
+                objectTransaction = objectsInServer[modifiedObject];
+                tentative = objectTransaction.getTentatives()[tid];
+                tentative.SetAborted();
+                objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+            }
+
+            return true; //sempre verdade?
         }
     }
 }
