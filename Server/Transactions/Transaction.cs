@@ -11,21 +11,24 @@ namespace Server
     {
         private ulong transactionId;
         private String coordinatorAddress;
+
         private HashSet<int> modifiedObjects;
+
         private TransactionInServerState TransactionState{ get; set; }
       
 
         public Transaction(ulong transactionId, String coordinatorAddress) {
             this.transactionId = transactionId;
             this.coordinatorAddress = coordinatorAddress;
-            TransactionState = TransactionInServerState.Running;
-            modifiedObjects = new HashSet<int>();
+            this.TransactionState = TransactionInServerState.Running;
+            this.modifiedObjects = new HashSet<int>();
         }
 
         public int[] getModifiedObjectIds(){
             
             int[] changeableModifiedObjects = new int[modifiedObjects.Count];
             modifiedObjects.CopyTo(changeableModifiedObjects);
+           
             return changeableModifiedObjects;
             
         }

@@ -20,7 +20,7 @@ namespace DSTMServices
         {
             //Chave uid
             endpoints[1] = "tcp://localhost:8086/Server";
-            //endpoints[2] = "tcp://localhost:8086/Server";
+            endpoints[2] = "tcp://localhost:8086/Server";
             
         }
 
@@ -45,7 +45,8 @@ namespace DSTMServices
                     serversEndpoints[entry.Value] = entry.Key;
 
             foreach (KeyValuePair<String, int> entry in serversEndpoints)
-                participants.Add(servers[entry.Value]);
+                if(servers.ContainsKey(entry.Value)) //Deve ser removido!!!!
+                    participants.Add(servers[entry.Value]);
 
             return participants;
         }

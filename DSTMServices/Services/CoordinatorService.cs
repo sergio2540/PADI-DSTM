@@ -95,13 +95,19 @@ namespace DSTMServices
             bool result = true;
 
             if (decision == true)
+            {
+                Console.WriteLine("CAN COMMIT!!!!!");
                 foreach (IServer participant in participants)
                     result &= participant.doCommit(currentTid);
+            }
 
             else
+            {
+
+                Console.WriteLine("Is going to abort!!!!!");
                 foreach (IServer participant in participants)
                     result &= participant.doAbort(currentTid);
-
+            }
             return decision;
         }
 
@@ -177,32 +183,47 @@ namespace DSTMServices
         public PadInt CreatePadInt(int uid)
         {
             Console.WriteLine("CreatePadint called with: " + uid);
-            IServer serverRef = lookupService.GetServer(currentTid, uid);
 
-
-            PadInt padInt = serverRef.CreatePadInt(currentTid, uid);
+            IServer server = lookupService.GetServer(currentTid, uid);
+            PadInt padInt = server.CreatePadInt(currentTid, uid);
 
             if (padInt == null)
                 return null;
-            padInt.Write(0);
+           
 
-            PadIntLocal localP = new PadIntLocal(uid);
-            localP.Write(0);
+            PadIntLocal local = new PadIntLocal(uid);
 
-            localP.changeHandler += this.OnPadintChange;
-            localP.readHandler += this.OnPadintRead;
-            return localP;
+            if (local == null)
+                return null;
+            
+
+            local.changeHandler += this.OnPadintChange;
+            local.readHandler += this.OnPadintRead;
+
+            return local;
 
         }
 
         public PadInt AccessPadInt(int uid)
         {
-            int padintValue = ReadPadInt(uid);
-            PadIntLocal padInt = new PadIntLocal(uid);
-            padInt.Write(padintValue);
-            padInt.changeHandler += this.OnPadintChange;
-            padInt.readHandler += this.OnPadintRead;
-            return padInt;
+            IServer server = lookupService.GetServer(currentTid, uid);
+            PadInt remote = server.AccessPadInt(currentTid, uid);
+            
+            if (remote == null)
+            {
+                return null;
+            }
+            
+            int value = remote.Read();
+
+            PadIntLocal local = new PadIntLocal(uid,value);
+          
+
+            local.changeHandler += this.OnPadintChange;
+            local.readHandler += this.OnPadintRead;
+            
+            return local;
+        
         }
 
         public void OnPadintChange(Object sender, EventArgs e)

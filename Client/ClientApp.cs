@@ -103,8 +103,8 @@ namespace Client
             
             clientApp.Manager.Init();
 
-            clientApp.transaction1();
-            //clientApp.transaction2();
+            //clientApp.transaction1();
+            clientApp.transaction2();
 
             
 
@@ -193,7 +193,7 @@ namespace Client
 
             try {
 
-                Console.WriteLine("Primeira transaccao começa");
+            Console.WriteLine("Primeira transaccao começa");
             succeed = Manager.TxBegin();
             if (!succeed)
                 return false;
@@ -204,7 +204,9 @@ namespace Client
             pad.Write(10);
             Console.WriteLine("Depois dow write");
 
+            
             succeed = Manager.TxCommit();
+            
 
             if (!succeed)
             {
@@ -217,6 +219,7 @@ namespace Client
                 return false;
 
             pad = Manager.AccessPadInt(2);
+            Console.WriteLine("Accc: ");
             Console.WriteLine("LOL: " + pad.Read());
 
             succeed = Manager.TxCommit();

@@ -12,7 +12,13 @@ namespace Server
     {
         public ulong ReadTimestamp { get; set; }
 
-        public PadIntTentative(int uid, ulong readTimestamp, ulong writeTimestamp) : base(uid)
+        public PadIntTentative(int uid, ulong writeTimestamp, int value)
+            : this(uid,0,writeTimestamp, value)
+        {
+           
+        }
+
+        public PadIntTentative(int uid, ulong readTimestamp, ulong writeTimestamp, int value) : base(uid,value)
         {
             this.State = PadIntState.Tentative;
             this.ReadTimestamp = readTimestamp;

@@ -11,7 +11,13 @@ namespace Server
     [Serializable]
     class PadIntCommitted : PadIntRemote
     {
-        public PadIntCommitted(int uid, ulong writeTimestamp) : base(uid)
+
+        public PadIntCommitted(int uid) : this(uid,0,0)
+        {
+           
+        }
+
+        public PadIntCommitted(int uid, ulong writeTimestamp, int value) : base(uid,value)
         {
             this.State = PadIntState.Committed;
             this.WriteTimestamp = writeTimestamp;

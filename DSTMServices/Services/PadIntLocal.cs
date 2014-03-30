@@ -14,7 +14,7 @@ namespace Services
     public class PadIntLocal : PadInt
     {
 
-        private int padInt = 0;
+        private int value = 0;
         
         //private int uid;
         public int Uid { get; set; }
@@ -22,20 +22,26 @@ namespace Services
         public event EventHandler changeHandler;
         public event EventHandler readHandler;
 
-        public PadIntLocal(int uid) {
+        public PadIntLocal(int uid, int value)
+        {
             this.Uid = uid;
+            this.value = value;
+        }
+
+        public PadIntLocal(int uid) : this(uid,0) {
+           
         }
 
         public int Read() {
             if (readHandler != null)
                 readHandler(this, null);
-            return padInt;
+            return value;
             
         }
 
         public void Write(int value) {
             Console.WriteLine("write called!");
-            this.padInt = value;//temos de verificar que a escrita teve sucesso. 
+            this.value = value;//temos de verificar que a escrita teve sucesso. 
             if (changeHandler != null)
                 changeHandler(this, null);
         }

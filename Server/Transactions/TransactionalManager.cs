@@ -20,7 +20,15 @@ namespace Server
     {
         private Dictionary<int,PadIntTransaction> objectsInServer; 
         private Dictionary<ulong, Transaction> transactions;  
+
+        //Objecto esta a espera que uma transacção faça commit
+        // int -> uid do objecto
+        // EventWaitHandle -> thread
         private Dictionary <int,EventWaitHandle> objectWaitHandle;
+
+        //Depois de votar commit, esta transacção deve esperar pelo doCommit por parte do coordenador
+        // int -> uid do objecto
+        // EventWaitHandle -> thread
         private Dictionary<int, EventWaitHandle> pendingTransactions;
 
         internal TransactionalManager(){
@@ -31,7 +39,7 @@ namespace Server
             pendingTransactions = new Dictionary<int, EventWaitHandle>();
         }
 
-        internal PadIntCommitted CreatePadInt(int uid)////////////////para qur o 
+        internal PadIntCommitted CreatePadInt(int uid)
         {
 
             if(objectsInServer.ContainsKey(uid))
@@ -39,10 +47,10 @@ namespace Server
 
 
             PadIntTransaction obj = new PadIntTransaction(uid);
-            ulong writeTimestampDefault = 0;
-            PadIntCommitted committed = new PadIntCommitted(uid, writeTimestampDefault);
-
+        
+            PadIntCommitted committed = new PadIntCommitted(uid);
             obj.setCommited(committed);
+
             objectsInServer[uid] = obj;
 
             //wait handle não notificado e com manual reset pois deve ser o write a fechar a passagem às threads.
@@ -56,8 +64,16 @@ namespace Server
 
         internal PadIntCommitted AccessPadInt(int uid)
         {
+            
+
+            //Nao foi encontrado o PadInt procurado
+            //Se calhar devia lançar excepção
+            if (!objectsInServer.ContainsKey(uid))
+                return null;
+
             PadIntTransaction obj = objectsInServer[uid];
             
+            //O PadInt foi encontrado mas é null
             if (obj == null)
                 return null;
             
@@ -69,7 +85,7 @@ namespace Server
         {
 
             //ServerApp.debug = "Read called!";
-            //PadIntTransaction obj = objectsInServer[uid];
+          
            
             if (!objectsInServer.ContainsKey(uid))
             {
@@ -85,10 +101,11 @@ namespace Server
             //ServerApp.debug = "Object commited with value: " + committed.Value;
 
 
-            if (tid < tc)
+            if (tid <= tc)
                 throw new PadIntReadTooLate(tid, uid);
 
             SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
+           
             //se não existirem versões tentativa, ele não/ninguém escreveu. pode ler do commited.
             if(tentatives.Count == 0)
                 return committed.Value;
@@ -96,7 +113,7 @@ namespace Server
             //se ja foi escrita uma versao, entao le-se dessa versão.
             if (tentatives.ContainsKey(tid))
             {
-                ServerApp.debug = "estamos a ler e ha uma versao de tentativa.";
+                ServerApp.debug = "estamos a ler e ha uma versao tentativa.";
                 PadIntTentative ownTentative = tentatives[tid];
                 ownTentative.ReadTimestamp = tid;
                 return ownTentative.Value;
@@ -109,7 +126,7 @@ namespace Server
             if (mostUpdated == null)
                 return committed.Value;
 
-            ulong tMax = (ulong) mostUpdated.WriteTimestamp;// este e o valor do maior timestamp de escrita menor que o da transaccao
+            ulong tMax =  mostUpdated.WriteTimestamp;// este e o valor do maior timestamp de escrita menor que o da transaccao
 
             //verificar se a versao commited tem um timestamp igual ao de tmax. se tiver, significa que o tmax está commited. pode então ler
             if (tc == tMax)//pode ler 
@@ -119,18 +136,18 @@ namespace Server
             }
             else //espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
             {
+                ServerApp.debug = "About to get stuck on read!!";
                 objectWaitHandle[uid].WaitOne(); //bloqueia e quando fôr desbloqueada, volta a tentar.
+                ServerApp.debug = "Free bitches!!!!!";
                 return Read(tid,uid);
             }           
         }
 
         internal void Write(ulong tid, int uid, int value)
-        {//addicionar objecto modificado
+        {
+            //addicionar objecto modificado
 
             //ServerApp.debug = "Write called!";
-
-            //PadIntTransaction obj = objectsInServer[uid];//verificar se existe. isto é perigoso.
-           // obj.getTentatives()[tid].Value = 9;
 
             if (!objectsInServer.ContainsKey(uid))
             {
@@ -150,15 +167,20 @@ namespace Server
             SortedList<ulong,PadIntTentative> tentatives = obj.getTentatives();
             
             PadIntTentative t;
+
+            //Não existem transações a mexer no objecto com identificador uid
             if(tentatives.Count == 0){
                 ServerApp.debug = "tentative added for 0 tentatives";
-                t = new PadIntTentative(uid, 0, tid);
-                t.Write(value);
+                t = new PadIntTentative(uid, tid, value);
+               
                 ServerApp.debug = "Written value: " + t.Read();
                 obj.addTentative(tid,t);
+
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+                
                 objectWaitHandle[uid].Reset();//escreveu, bloqueia as threads. O que acontece se não fôr a tempo de bloquear as threads???????
                 pendingTransactions[uid].Reset(); // dado que escrevemos, as que forem fazer commit teem de esperar
+
                 //evitar que venha a esperar por si mesma espera por si mesma?
                 return;
             }
@@ -167,7 +189,7 @@ namespace Server
 
             //Func<PadIntTentative, decimal> lam = tent => (decimal) tent.ReadTimestamp;
 
-           // ulong tMax = tentatives.Max<PadIntTentative,ulong>(x => x.ReadTimestamp); //metodos extendidos. porque nao da? Não apagar. Ainda tenho de 
+            // ulong tMax = tentatives.Max<PadIntTentative,ulong>(x => x.ReadTimestamp); //metodos extendidos. porque nao da? Não apagar. Ainda tenho de 
             //perceber isto Ass:Braga :)
 
             ulong tMax = (ulong) tentatives.Max(x => x.Value.ReadTimestamp);
@@ -193,12 +215,13 @@ namespace Server
 
             }
 
-            else//primeira tentativa
+            else//primeira tentativa da transacçao tid
             {
                 ServerApp.debug = "new tentative. not empty";
-                t = new PadIntTentative(uid, 0, tid);
-                t.Write(value);
+                
+                t = new PadIntTentative(uid, tid, value);
                 obj.addTentative(tid,t);
+
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
                 objectWaitHandle[uid].Reset();///primeira tentativa de escrita. Reseta handle para bloquear threads.
                 pendingTransactions[uid].Reset(); // dado que escrevemos, as que forem fazer commit teem de esperar
@@ -261,16 +284,26 @@ namespace Server
                 //por tentativa como commited se vamos remover vale a pena? ter em atenção que no read ele ve se o anterior esta commited. nao sei se deviamos eliminar.
                 //actualizar o valor do commited
 
-                transactions[tid].setCommited();
+               
                 objectTransaction = objectsInServer[modifiedObject];
-                tentative = objectTransaction.getTentatives()[tid];
+
+                SortedList<ulong, PadIntTentative> tentatives = objectTransaction.getTentatives();
+                tentative = tentatives[tid];
+                
                 commited = objectTransaction.getCommitted();
                 commited.WriteTimestamp = tid;
                 commited.Value = tentative.Value;
+                
                 tentative.SetCommited();
+                tentatives.Remove(tid);
+
                 objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
                 pendingTransactions[modifiedObject].Set();
             }
+
+            transactions[tid].setCommited();
+            //Transacção efectuda e agora removida
+            transactions.Remove(tid);
 
             return true; //sempre verdade?
 
@@ -285,18 +318,30 @@ namespace Server
             //desbloquear threads em espera no read com
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
-                //por commited
-                //remover objecto transaccao
-                //remover objecto tentativa
+                //por abort
+                //remover objecto transaccao check
+                //remover objecto tentativa check
                 //por tentativa como commited se vamos remover vale a pena? ter em atenção que no read ele ve se o anterior esta commited. nao sei se deviamos eliminar.
                 //actualizar o valor do commited
 
-                transactions[tid].setAborted();
+               
                 objectTransaction = objectsInServer[modifiedObject];
-                tentative = objectTransaction.getTentatives()[tid];
+
+                SortedList<ulong,PadIntTentative> tentatives = objectTransaction.getTentatives();
+                
+                tentative = tentatives[tid];
                 tentative.SetAborted();
+
+                tentatives.Remove(tid);
+              
                 objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+                pendingTransactions[modifiedObject].Set();
             }
+
+            transactions[tid].setAborted();
+            //Transacção efectuda e agora removida
+            transactions.Remove(tid);
+
 
             return true; //sempre verdade?
         }

@@ -37,9 +37,10 @@ namespace Server
 
         public ulong WriteTimestamp { get; set; }
 
-        public PadIntRemote(int uid)
+        public PadIntRemote(int uid, int value)
         {
             this.uid = uid;
+            this.Value = value;
         }
 
         public abstract int Read();
