@@ -18,75 +18,7 @@ namespace Client
         
         public DSTMManager Manager { get; set; }
 
-        bool transaction_only_reads()
-        {
-            bool succeed = false;
-            int uid1 = 1;
-            int uid2 = 2;
-
-            try
-            {
-                //T1
-                succeed = Manager.TxBegin();
-                
-                if (!succeed)
-                    return false;
-
-                PadInt padInt1 = Manager.CreatePadInt(uid1);
-                if (padInt1 == null)
-                {
-                    Manager.TxAbort();
-                }
-
-                int a = padInt1.Read();
-                Console.WriteLine(a);
-
-
-                padInt1.Write(3);
-                Console.WriteLine(padInt1.Read());
-
-                PadInt pad  = Manager.AccessPadInt(1);
-                Console.WriteLine(pad.Read());
-                Manager.TxAbort();
-
-                //T2
-                succeed = Manager.TxBegin();
-
-                if (!succeed)
-                    return false;
-                PadInt pad2 = Manager.AccessPadInt(1);
-                Console.WriteLine("Reading again:" + pad2.Read());
-
-
-                /*
-                PadInt padInt2 = Manager.CreatePadInt(uid2);
-                if (padInt2 == null)
-                {
-                    Manager.TxAbort();
-                }
-                
-                padInt2.Write(7);
-               */
-
-                succeed = Manager.TxCommit();
-
-                if (!succeed)
-                {
-                    Manager.TxAbort();
-                    return false;
-                }
-   
-                Console.Read();
-                
-
-            }
-            catch (TxException e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return true;
-        }
+      
         
         static void Main(string[] args)
         {
@@ -104,6 +36,9 @@ namespace Client
 
         }
 
+        //Criado 1 e 2
+        //1-> 3
+        //2 -> 7
         private bool transaction1()
         {
             bool succeed = false;
@@ -112,6 +47,7 @@ namespace Client
 
             try
             {
+               
                 //T1
                 succeed = Manager.TxBegin();
 
@@ -134,6 +70,7 @@ namespace Client
                 PadInt pad = Manager.AccessPadInt(1);
                 Console.WriteLine("Third read: " + pad.Read());
                 Manager.TxAbort();
+                
 
                 //T2
                 succeed = Manager.TxBegin();
@@ -141,18 +78,18 @@ namespace Client
                 if (!succeed)
                     return false;
                 PadInt pad2 = Manager.AccessPadInt(1);
-                Console.WriteLine("Reading again:" + pad2.Read());
+                Console.WriteLine("Reading again padInt 1:" + pad2.Read());
 
 
-                /*
-                PadInt padInt2 = Manager.CreatePadInt(uid2);
+                
+                PadInt padInt2 = Manager.CreatePadInt(2);
                 if (padInt2 == null)
                 {
                     Manager.TxAbort();
                 }
                 
                 padInt2.Write(7);
-               */
+                Console.WriteLine("Reading again padInt 2:" + padInt2.Read());
 
                 succeed = Manager.TxCommit();
 
@@ -178,6 +115,10 @@ namespace Client
             return true;
         }
 
+        //Criado 3 
+        //1-> 3
+        //2 -> 10
+        //3-> 30
         private bool transaction2()
         {
             bool succeed;
@@ -189,12 +130,13 @@ namespace Client
             if (!succeed)
                 return false;
 
-            PadInt pad = Manager.CreatePadInt(2);
+            //PadInt pad = Manager.CreatePadInt(2);
             Console.WriteLine("Antes do write");
-            pad = Manager.AccessPadInt(2);
+            PadInt pad = Manager.AccessPadInt(2);
             pad.Write(10);
+            pad.Write(20);
             
-            Console.WriteLine("Depois dow write" + pad.Read());
+            Console.WriteLine("Deve ler 20 ->" + pad.Read());
 
             
             succeed = Manager.TxCommit();
@@ -206,13 +148,14 @@ namespace Client
                 return false;
             }
             Console.WriteLine("Segunda transaccao começa");
+
             succeed = Manager.TxBegin();
             if (!succeed)
                 return false;
 
             pad = Manager.AccessPadInt(2);
-            Console.WriteLine("Accc: ");
-            Console.WriteLine("LOL: " + pad.Read());
+            pad.Write(10);
+            Console.WriteLine("Deve dar 10 -> " + pad.Read());
 
             succeed = Manager.TxCommit();
 
@@ -221,6 +164,24 @@ namespace Client
                 Manager.TxAbort();
                 return false;
             }
+
+            //T3
+            succeed = Manager.TxBegin();
+            if (!succeed)
+                return false;
+
+            pad = Manager.CreatePadInt(3);
+            pad.Write(30);
+            Console.WriteLine("Deve dar 30 -> " + pad.Read());
+
+            succeed = Manager.TxCommit();
+
+            if (!succeed)
+            {
+                Manager.TxAbort();
+                return false;
+            }
+
             Console.ReadLine();
 
             }
@@ -231,6 +192,87 @@ namespace Client
 
             return true;
         }
+
+
+        //Criado 3 
+        //1-> 3
+        //2 -> 10
+        //3-> 30
+        private bool transaction3()
+        {
+            bool succeed;
+
+            try
+            {
+
+                Console.WriteLine("Primeira transaccao começa");
+                succeed = Manager.TxBegin();
+                if (!succeed)
+                    return false;
+
+                //PadInt pad = Manager.CreatePadInt(2);
+                Console.WriteLine("Antes do write");
+                PadInt pad = Manager.AccessPadInt(2);
+                pad.Write(10);
+                pad.Write(20);
+
+                Console.WriteLine("Deve ler 20 ->" + pad.Read());
+
+
+                succeed = Manager.TxCommit();
+
+
+                if (!succeed)
+                {
+                    Manager.TxAbort();
+                    return false;
+                }
+                Console.WriteLine("Segunda transaccao começa");
+
+                succeed = Manager.TxBegin();
+                if (!succeed)
+                    return false;
+
+                pad = Manager.AccessPadInt(2);
+                pad.Write(10);
+                Console.WriteLine("Deve dar 10 -> " + pad.Read());
+
+                succeed = Manager.TxCommit();
+
+                if (!succeed)
+                {
+                    Manager.TxAbort();
+                    return false;
+                }
+
+                //T3
+                succeed = Manager.TxBegin();
+                if (!succeed)
+                    return false;
+
+                pad = Manager.CreatePadInt(3);
+                pad.Write(30);
+                Console.WriteLine("Deve dar 30 -> " + pad.Read());
+
+                succeed = Manager.TxCommit();
+
+                if (!succeed)
+                {
+                    Manager.TxAbort();
+                    return false;
+                }
+
+                Console.ReadLine();
+
+            }
+            catch (TxException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return true;
+        }
+
     
     }
 

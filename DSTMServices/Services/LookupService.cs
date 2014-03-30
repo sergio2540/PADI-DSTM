@@ -61,7 +61,10 @@ namespace DSTMServices
         {
             if(uid == 1)
                 endpoints[1] = "tcp://localhost:8086/Server";
-            else endpoints[2] = "tcp://localhost:8086/Server";
+            else if(uid == 2)
+                endpoints[2] = "tcp://localhost:8086/Server";
+            else endpoints[3] = "tcp://localhost:8086/Server";
+
             return endpoints[uid];
         }
 
@@ -84,6 +87,16 @@ namespace DSTMServices
                 {
                     return null;
                 }
+
+                //este foreach so deve estar activo quando ainda não existirem endpoints por defeito.
+                //Console.WriteLine("Vamos verificar se já ligámos a este server");
+
+                foreach(KeyValuePair<int ,String> e in endpoints)
+                {
+                  if(e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key)))
+                    return server; 
+
+                }                
 
                 Console.WriteLine("About to begin transaction!");
 
