@@ -90,8 +90,10 @@ namespace DSTMServices
             List<IServer> participants = lookupService.GetParticipants();
 
             foreach (IServer participant in participants)
+            {
+                Console.WriteLine("There is one particiapant!!!!!!!!!!!");
                 decision &= participant.canCommit(currentTid);  //verificar se respondeu.usar metodo ping.isto funciona assumindo que respondem
-
+            }
             bool result = true;
 
             if (decision == true)
@@ -108,7 +110,7 @@ namespace DSTMServices
                 foreach (IServer participant in participants)
                     result &= participant.doAbort(currentTid);
             }
-            return decision;
+            return result;
         }
 
         public bool Abort()

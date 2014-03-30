@@ -75,11 +75,7 @@ namespace Client
                     Manager.TxAbort();
                     return false;
                 }
-
-               
-                
-               
-               
+   
                 Console.Read();
                 
 
@@ -105,11 +101,6 @@ namespace Client
 
             //clientApp.transaction1();
             clientApp.transaction2();
-
-            
-
-
-            
 
         }
 
@@ -202,7 +193,8 @@ namespace Client
             Console.WriteLine("Antes do write");
 
             pad.Write(10);
-            Console.WriteLine("Depois dow write");
+            
+            Console.WriteLine("Depois dow write" + pad.Read());
 
             
             succeed = Manager.TxCommit();

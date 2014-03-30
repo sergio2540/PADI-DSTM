@@ -19,7 +19,7 @@ namespace DSTMServices
         public LookupService()
         {
             //Chave uid
-            endpoints[1] = "tcp://localhost:8086/Server";
+            //endpoints[1] = "tcp://localhost:8086/Server";
             endpoints[2] = "tcp://localhost:8086/Server";
             
         }
@@ -48,7 +48,10 @@ namespace DSTMServices
                 if(servers.ContainsKey(entry.Value)) //Deve ser removido!!!!
                     participants.Add(servers[entry.Value]);
 
-            return participants;
+            return participants; //acontece que quando inverto as chaves passam a ser urls. os dubplicados são eliminados. 
+                                //õs urls nao podem ser estaticos. os urls so podem estar se tiverem sido usados. caso contrario temos o caso
+                                //em que temos o url e um id, mas esse id não identifica nenhuma referencia IRef porque nunca foi adicionada
+                                //no contexto desse uid.
         }
 
 
