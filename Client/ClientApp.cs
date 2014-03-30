@@ -103,7 +103,7 @@ namespace Client
             
             clientApp.Manager.Init();
 
-            //clientApp.transaction1();
+            clientApp.transaction1();
             clientApp.transaction2();
 
             
@@ -200,7 +200,7 @@ namespace Client
 
             PadInt pad = Manager.CreatePadInt(2);
             Console.WriteLine("Antes do write");
-
+            pad = Manager.AccessPadInt(2);
             pad.Write(10);
             Console.WriteLine("Depois dow write");
 
