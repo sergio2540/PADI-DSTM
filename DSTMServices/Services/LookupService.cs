@@ -19,8 +19,8 @@ namespace DSTMServices
         public LookupService()
         {
             //Chave uid
-            //endpoints[1] = "tcp://localhost:8086/Server";
-            endpoints[2] = "tcp://localhost:8086/Server";
+           // endpoints[1] = "tcp://localhost:8086/Server";
+           // endpoints[2] = "tcp://localhost:8086/Server";
             
         }
 
@@ -59,6 +59,9 @@ namespace DSTMServices
 
         private String GetServerEndpoint(int uid)
         {
+            if(uid == 1)
+                endpoints[1] = "tcp://localhost:8086/Server";
+            else endpoints[2] = "tcp://localhost:8086/Server";
             return endpoints[uid];
         }
 

@@ -99,7 +99,7 @@ namespace Client
             
             clientApp.Manager.Init();
 
-            //clientApp.transaction1();
+            clientApp.transaction1();
             clientApp.transaction2();
 
         }
@@ -166,7 +166,7 @@ namespace Client
 
 
 
-                Console.Read();
+                Console.ReadLine();
 
 
             }
