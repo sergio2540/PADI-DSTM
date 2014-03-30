@@ -53,3 +53,22 @@ No can commit, se houvessem, bloqueavam numa fila que bloqueia por identificador
 No do commit ou abort, libertávamos transacções pendentes por objecto.
 O reset deveria ser feito quando ha writes num dado objecto. Isto é semelhante ao read.
 
+
+
+
+
+
+Temos de peor o access como access e nao como read.
+Idealmente, as transaccoes commited e aborted deveriam sair da lista de modificados.
+Ter em atencao que o read, vai ver se os que lá estão estão commited. seria mais inteligente ele, quando tivesse permissão para avancar e se nao tivesse ninguém na lista
+de alterados ler logo o commited.
+
+
+
+
+
+Se escrever, trava commits porque as outras teem de esperar. Mas se um escreve e bloqueia depois nao pode fazer commit a sua transacaccao. deadlock.
+
+
+Se houver apenas um, desbloqueia-se entradas
+Se houverem varios, espera-se que uma faça commit ou abort para que as outras avancem. 

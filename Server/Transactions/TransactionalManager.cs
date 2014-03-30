@@ -244,14 +244,19 @@ namespace Server
 
         internal bool canCommit(ulong tid)//vai dar sempre canCommit???
         {
-            ServerApp.debug = "Can commit!";
+            
+            ServerApp.debug = "Can commit ON SERVERRRRRRRRRRRRRRRRRRRRRRR!";
 
             Transaction transaction = transactions[tid];//assume-se que existe!!!!!!!!!!!!!!!!
             bool decision = true;
+            SortedList<ulong, PadIntTentative> tentatives = null;
+
             foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
             {
-                while (objectsInServer[modifiedObjectId].getTentatives().Min(x => x.Value.WriteTimestamp) < tid)
-                {
+                tentatives = objectsInServer[modifiedObjectId].getTentatives();
+                while (tentatives.Min(x => x.Value.WriteTimestamp) < tid) //se houver apenas 1, é ele próprio e pode fazer commit.
+               // while ((tentatives.Count > 1) && (tentatives.Min(x => x.Value.WriteTimestamp) < tid)) //se houver apenas 1, é ele próprio e pode fazer commit.
+                {                                                                                     //o que acontece se não houverem objectos com um timestamp inferior?
                     pendingTransactions[modifiedObjectId].WaitOne();//se houver um objecto com um write time stamp inferior, temos de esperar por ele.
 
                 }

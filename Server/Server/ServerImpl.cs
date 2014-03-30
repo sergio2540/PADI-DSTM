@@ -37,6 +37,7 @@ namespace Server
         //Participante retorna voto true - commit false - abort
         public bool canCommit(ulong tid)
         {
+            ServerApp.debug = "canCommit called!";
             return transactionalManager.canCommit(tid);
         }
 
