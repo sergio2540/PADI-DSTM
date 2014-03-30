@@ -17,14 +17,13 @@ namespace PADI_DSTM
 
         private CoordinatorService coordinatorService;
         private TimestampService timestampService;
-        private DataService dataService;
         private DebugService debugService;
 
         public bool Init()
         {
             coordinatorService = new CoordinatorService();
             timestampService = new TimestampService();
-            dataService = new DataService();
+            
             debugService = new DebugService();
 
             return true;

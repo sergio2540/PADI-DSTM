@@ -47,6 +47,7 @@ namespace Server
 
             //wait handle não notificado e com manual reset pois deve ser o write a fechar a passagem às threads.
             objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
+            pendingTransactions[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
 
             return committed;
            
@@ -95,6 +96,7 @@ namespace Server
             //se ja foi escrita uma versao, entao le-se dessa versão.
             if (tentatives.ContainsKey(tid))
             {
+                ServerApp.debug = "estamos a ler e ha uma versao de tentativa.";
                 PadIntTentative ownTentative = tentatives[tid];
                 ownTentative.ReadTimestamp = tid;
                 return ownTentative.Value;
@@ -149,6 +151,7 @@ namespace Server
             
             PadIntTentative t;
             if(tentatives.Count == 0){
+                ServerApp.debug = "tentative added for 0 tentatives";
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
                 ServerApp.debug = "Written value: " + t.Read();
@@ -190,10 +193,12 @@ namespace Server
 
             }
 
-            else
+            else//primeira tentativa
             {
+                ServerApp.debug = "new tentative. not empty";
                 t = new PadIntTentative(uid, 0, tid);
                 t.Write(value);
+                obj.addTentative(tid,t);
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
                 objectWaitHandle[uid].Reset();///primeira tentativa de escrita. Reseta handle para bloquear threads.
                 pendingTransactions[uid].Reset(); // dado que escrevemos, as que forem fazer commit teem de esperar
@@ -204,6 +209,7 @@ namespace Server
 
         internal bool BeginTransaction(ulong tid, string coordinatorAddress)
         {
+            ServerApp.debug = "Transaction begun!";
             //TODO: Lançar excepção.
             if (transactions.ContainsKey(tid))
                 return false;
@@ -215,6 +221,8 @@ namespace Server
 
         internal bool canCommit(ulong tid)//vai dar sempre canCommit???
         {
+            ServerApp.debug = "Can commit!";
+
             Transaction transaction = transactions[tid];//assume-se que existe!!!!!!!!!!!!!!!!
             bool decision = true;
             foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
@@ -239,6 +247,8 @@ namespace Server
         //o doCommit deveria ser atomico. pode dar problema?
         internal bool doCommit(ulong tid)
         {
+            ServerApp.debug = "Do commit!";
+
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
             //desbloquear threads em espera no read com
@@ -256,6 +266,7 @@ namespace Server
                 objectTransaction.getCommitted().Value = tentative.Value;
                 tentative.SetCommited();
                 objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+                pendingTransactions[modifiedObject].Set();
             }
 
             return true; //sempre verdade?
@@ -264,6 +275,8 @@ namespace Server
 
         internal bool doAbort(ulong tid)
         {
+            ServerApp.debug = "Do abort!";
+
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
             //desbloquear threads em espera no read com

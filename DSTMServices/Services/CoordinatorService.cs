@@ -12,85 +12,13 @@ using Services;
 
 namespace DSTMServices
 {
-     
-
-    class Participant {
-         
-           private ulong tid;
-
-           private String endpoint;
-           private IServer server;
-          
-           private List<int> uids;
-
-           Participant(ulong tid, String endpoint)
-           {
-                this.tid = tid;
-                this.endpoint = endpoint;
-                //url = ....procura no master
-                //adicionar ao dicionario de strings e de referencias.
-                TcpChannel channel = new TcpChannel();
-                ChannelServices.RegisterChannel(channel, true);
-                IServer serverRef = (IServer)Activator.GetObject(typeof(IServer), endpoint);
-                this.server = serverRef;
-           }
-           
-           
-          
-     }
-
-
-
     public class CoordinatorService
     {
-        public IServer InteractWithServer(int uid)
-        {//nao sei se e supost chamar isto a cada interacçao. lease
-
-            String endpoint = lookupService.(uid);
-            IServer serverRef = null;
-
-            if (!uidServerRefAssociation.ContainsKey(uid)) //verifica se temos referencia para o servidor que guarda o uid.nao temos
-            {
-                dataService.getEndpoint(uid)
-                Participant partipant = new Participant()
-                uidServerAssociation[uid] = endpoint;
-                uidServerRefAssociation[uid] = serverRef;
-
-        
-                //temos de criar transaccao se o coordenador ainda não existir
-
-
-                if (serverRef == null)
-                {
-                    System.Console.WriteLine("Could not locate server");
-                    return null;
-                }
-
-
-                 foreach(String server in uidServerAssociation.Values)
-                {
-                    if(server.Equals(endpoint))
-                        return serverRef; 
-
-                }
-
-                bool canBegin = serverRef.BeginTransaction(currentTransactionId,"");
-                if (canBegin)
-                    return serverRef;
-                else return null;
-            }
-            else return uidServerRefAssociation[uid];
-           
-        }
-
         private ulong currentTransactionId = 0;
         
-        private Dictionary<int,Participant> participantes;
-
-        private LookupService lookupService;
-        
+        private DataService dataService;
         //saber quem tem int
-        //private Dictionary<int, String> ServersEndpoint;//vao haver colisões
+        private Dictionary<int, String> uidServerAssociation;//vao haver colisões
         private Dictionary<int, IServer> uidServerRefAssociation;
 
         /*
@@ -108,28 +36,27 @@ namespace DSTMServices
          
          */
 
+
+        public CoordinatorService() {
+
+            uidServerAssociation = new Dictionary<int, String>();
+            uidServerRefAssociation = new Dictionary<int, IServer>();
+        }
+
         //Transaccoes
         public bool Begin(ulong transactionId) {
-
-            //uidServerAssociation = new Dictionary<int, String>();
-            uidServerRefAssociation = new Dictionary<int, IServer>();
-            
-           
-
+            //uidServerAssociation = new Dictionary<int, String>();//-->idealmente isto deveria ser aqui, mas por agora fica no constructor para termos estado.
+            //uidServerRefAssociation = new Dictionary<int, IServer>();
+            uidServerAssociation[1] = "tcp://localhost:8086/Server";
+            uidServerAssociation[2] = "tcp://localhost:8086/Server";
             currentTransactionId = transactionId;
-
-            lookupService = new LookupService();
+            dataService = new DataService();
             return true;
         }
 
         public bool Commit()//metodo deve ser repensado. pessimo codigo!!!!!!!!!!!!!!!!!!!!!!!!!
         {
-
-
-            //Dictionary<String,int> getParticipantesEndpoints(uid);
-
             Dictionary<String, int> endpointUidAssociation = new Dictionary<String, int>();
-
             bool decision = true;
 
             foreach (KeyValuePair<int, String> entry in uidServerAssociation)
@@ -166,25 +93,19 @@ namespace DSTMServices
         }
 
         public IServer InteractWithServer(int uid)
-        {
-            
-            //nao sei se e supost chamar isto a cada interacçao. lease
-
-            //get endpoint
-            String endpoint = lookupService.getServerEndpoint(uid);
-            IServer server = lookupService.getServer(uid);
-
+        {//nao sei se e supost chamar isto a cada interacçao. lease
+            String endpoint = uidServerAssociation[uid];
             IServer serverRef = null;
 
             if (!uidServerRefAssociation.ContainsKey(uid)) //verifica se temos referencia para o servidor que guarda o uid.nao temos
             {
+                Console.WriteLine("We have no reference for the server. Looking for uid: " + uid);
                 //url = ....procura no master
                 //adicionar ao dicionario de strings e de referencias.
-                TcpChannel channel = new TcpChannel();
+                TcpChannel channel = new TcpChannel();      //convem deitar abaixo este canal no fim
                 ChannelServices.RegisterChannel(channel, true);
                 serverRef = (IServer)Activator.GetObject(typeof(IServer), endpoint);
-                uidServerAssociation[uid] = endpoint;
-                uidServerRefAssociation[uid] = serverRef;
+                
 
         
                 //temos de criar transaccao se o coordenador ainda não existir
@@ -197,14 +118,19 @@ namespace DSTMServices
                 }
 
 
-                foreach(String server in uidServerAssociation.Values)
-                {
-                    if(server.Equals(endpoint))
-                        return serverRef; 
+                //este foreach so deve estar activo quando ainda não existirem endpoints por defeito.
+                //Console.WriteLine("Vamos verificar se já ligámos a este server");
+                 //foreach(String server in uidServerAssociation.Values)
+                //{
+                  //  if(server.Equals(endpoint))
+                    //    return serverRef; 
 
-                }
+//                }
 
+                 Console.WriteLine("About to begin transaction!");
                 bool canBegin = serverRef.BeginTransaction(currentTransactionId,"");
+                uidServerAssociation[uid] = endpoint;
+                uidServerRefAssociation[uid] = serverRef;
                 if (canBegin)
                     return serverRef;
                 else return null;
@@ -223,8 +149,7 @@ namespace DSTMServices
                 //throw new NotImplementedException();
             //procura pelo servidor, adiciona ao mappeamento e busca. Adicionar evento, para detectar mudanças.
             //else serverUrl = intServerMapping[uid];
-            
-            getServer
+
             IServer serverRef = InteractWithServer(uid);
             if (serverRef == null){
                 System.Console.WriteLine("Coordinator failed to connect to server. Null reference returned.");//pode acontecer que nao seja possivel criar transaccao

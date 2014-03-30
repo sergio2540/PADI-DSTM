@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using PADI_DSTM;
 
 using CommonTypes;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Channels;
 
 namespace Client
 {
@@ -24,6 +26,7 @@ namespace Client
 
             try
             {
+                //T1
                 succeed = Manager.TxBegin();
                 
                 if (!succeed)
@@ -44,7 +47,16 @@ namespace Client
 
                 PadInt pad  = Manager.AccessPadInt(1);
                 Console.WriteLine(pad.Read());
-                Console.Read();
+                Manager.TxAbort();
+
+                //T2
+                succeed = Manager.TxBegin();
+
+                if (!succeed)
+                    return false;
+                PadInt pad2 = Manager.AccessPadInt(1);
+                Console.WriteLine("Reading again:" + pad2.Read());
+
 
                 /*
                 PadInt padInt2 = Manager.CreatePadInt(uid2);
@@ -52,8 +64,9 @@ namespace Client
                 {
                     Manager.TxAbort();
                 }
-                int b = padInt2.Read();
-                Console.WriteLine(b);
+                
+                padInt2.Write(7);
+               */
 
                 succeed = Manager.TxCommit();
 
@@ -62,7 +75,13 @@ namespace Client
                     Manager.TxAbort();
                     return false;
                 }
-                */
+
+               
+                
+               
+               
+                Console.Read();
+                
 
             }
             catch (TxException e)
@@ -75,16 +94,143 @@ namespace Client
         
         static void Main(string[] args)
         {
+            TcpChannel channel = new TcpChannel();
+            ChannelServices.RegisterChannel(channel, true);
+
             ClientApp clientApp = new ClientApp();
 
             clientApp.Manager = new DSTMManager();
             
             clientApp.Manager.Init();
 
-            clientApp.transaction_only_reads();
+            //clientApp.transaction1();
+            clientApp.transaction2();
 
             
 
+
+            
+
+        }
+
+        private bool transaction1()
+        {
+            bool succeed = false;
+            int uid1 = 1;
+            int uid2 = 2;
+
+            try
+            {
+                //T1
+                succeed = Manager.TxBegin();
+
+                if (!succeed)
+                    return false;
+
+                PadInt padInt1 = Manager.CreatePadInt(uid1);
+                if (padInt1 == null)
+                {
+                    Manager.TxAbort();
+                }
+
+                int a = padInt1.Read();
+                Console.WriteLine(a);
+
+
+                padInt1.Write(3);
+                Console.WriteLine(padInt1.Read());
+
+                PadInt pad = Manager.AccessPadInt(1);
+                Console.WriteLine(pad.Read());
+                Manager.TxAbort();
+
+                //T2
+                succeed = Manager.TxBegin();
+
+                if (!succeed)
+                    return false;
+                PadInt pad2 = Manager.AccessPadInt(1);
+                Console.WriteLine("Reading again:" + pad2.Read());
+
+
+                /*
+                PadInt padInt2 = Manager.CreatePadInt(uid2);
+                if (padInt2 == null)
+                {
+                    Manager.TxAbort();
+                }
+                
+                padInt2.Write(7);
+               */
+
+                succeed = Manager.TxCommit();
+
+                if (!succeed)
+                {
+                    Manager.TxAbort();
+                    return false;
+                }
+
+
+
+
+
+                Console.Read();
+
+
+            }
+            catch (TxException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return true;
+        }
+
+        private bool transaction2()
+        {
+            bool succeed;
+
+            try {
+
+            succeed = Manager.TxBegin();
+            if (!succeed)
+                return false;
+
+            PadInt pad = Manager.CreatePadInt(2);
+            pad.Write(10);
+
+            succeed = Manager.TxCommit();
+
+            if (!succeed)
+            {
+                Manager.TxAbort();
+                return false;
+            }
+
+            succeed = Manager.TxBegin();
+            if (!succeed)
+                return false;
+
+            pad = Manager.AccessPadInt(2);
+            Console.WriteLine(pad.Read());
+
+            succeed = Manager.TxCommit();
+
+            if (!succeed)
+            {
+                Manager.TxAbort();
+                return false;
+            }
+
+
+            }
+            catch (TxException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return true;
         }
     
     }
