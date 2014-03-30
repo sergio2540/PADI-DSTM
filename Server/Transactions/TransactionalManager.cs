@@ -251,6 +251,7 @@ namespace Server
 
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
+            PadIntCommitted commited = null;
             //desbloquear threads em espera no read com
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
@@ -263,7 +264,9 @@ namespace Server
                 transactions[tid].setCommited();
                 objectTransaction = objectsInServer[modifiedObject];
                 tentative = objectTransaction.getTentatives()[tid];
-                objectTransaction.getCommitted().Value = tentative.Value;
+                commited = objectTransaction.getCommitted();
+                commited.WriteTimestamp = tid;
+                commited.Value = tentative.Value;
                 tentative.SetCommited();
                 objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
                 pendingTransactions[modifiedObject].Set();

@@ -103,8 +103,8 @@ namespace Client
             
             clientApp.Manager.Init();
 
-            //clientApp.transaction1();
-            clientApp.transaction2();
+            clientApp.transaction1();
+            //clientApp.transaction2();
 
             
 
@@ -134,14 +134,14 @@ namespace Client
                 }
 
                 int a = padInt1.Read();
-                Console.WriteLine(a);
+                Console.WriteLine("First read: " + a);
 
 
                 padInt1.Write(3);
-                Console.WriteLine(padInt1.Read());
+                Console.WriteLine("Second read: " + padInt1.Read());
 
                 PadInt pad = Manager.AccessPadInt(1);
-                Console.WriteLine(pad.Read());
+                Console.WriteLine("Third read: " + pad.Read());
                 Manager.TxAbort();
 
                 //T2
@@ -193,12 +193,16 @@ namespace Client
 
             try {
 
+                Console.WriteLine("Primeira transaccao começa");
             succeed = Manager.TxBegin();
             if (!succeed)
                 return false;
 
             PadInt pad = Manager.CreatePadInt(2);
+            Console.WriteLine("Antes do write");
+
             pad.Write(10);
+            Console.WriteLine("Depois dow write");
 
             succeed = Manager.TxCommit();
 
@@ -207,13 +211,13 @@ namespace Client
                 Manager.TxAbort();
                 return false;
             }
-
+            Console.WriteLine("Segunda transaccao começa");
             succeed = Manager.TxBegin();
             if (!succeed)
                 return false;
 
             pad = Manager.AccessPadInt(2);
-            Console.WriteLine(pad.Read());
+            Console.WriteLine("LOL: " + pad.Read());
 
             succeed = Manager.TxCommit();
 
@@ -222,7 +226,7 @@ namespace Client
                 Manager.TxAbort();
                 return false;
             }
-
+            Console.ReadLine();
 
             }
             catch (TxException e)

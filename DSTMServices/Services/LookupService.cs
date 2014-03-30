@@ -20,7 +20,7 @@ namespace DSTMServices
         {
             //Chave uid
             endpoints[1] = "tcp://localhost:8086/Server";
-            endpoints[2] = "tcp://localhost:8086/Server";
+            //endpoints[2] = "tcp://localhost:8086/Server";
             
         }
 
