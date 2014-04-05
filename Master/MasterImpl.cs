@@ -13,7 +13,7 @@ namespace Master
     {
 
         private LookupTable lookupTable = new LookupTable();
-        
+
         private int getIndex()
         {
             int table_size = lookupTable.Size();
@@ -31,24 +31,32 @@ namespace Master
 
         public bool AddServer(string URL)
         {
-            
+
             int index = getIndex();
-            
-            MasterApp.debug = String.Format("CW: Index {0}\n", index);
-            Debug.WriteLine(String.Format("DW: Index {0}",index));
 
-            //Fazer Split
-            TableRow temp = lookupTable.GetRow(index);
-            UIDRange newUIDRange = temp.GetUIDRange().Split();
 
-            //TODO:Buscar replica
             String primary_url = URL;
             String replica_url = URL;
+            UIDRange newUIDRange = null;
+
+            if (lookupTable.Size() != 0)
+            {
+                TableRow temp = lookupTable.GetRow(index);
+                newUIDRange = temp.GetUIDRange().Split();
+            }
+            else
+            {
+                newUIDRange = lookupTable.DefaultUIDRange;
+            }
+
+            //TODO:Buscar replica
             ServerPair newServerPair = new ServerPair(primary_url, replica_url);
-            TableRow newTableRow = new TableRow(newServerPair,newUIDRange);
-            lookupTable.InsertRow(index,newTableRow);
-            
+            TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
+            lookupTable.InsertRow(index, newTableRow);
+
+            MasterApp.debug = lookupTable.ToString();
             return true;
+
         }
 
         public bool RemoveServer(string URL)

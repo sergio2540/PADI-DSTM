@@ -33,24 +33,23 @@ namespace Master
         }
         public UIDRange Split()
         {
-            int range_size = (int)(left_uid - right_uid);
-            int new_left_uid =  (int)left_uid  + (int)( range_size/ 2);
-            int new_right_uid = (int) right_uid  + (int) (range_size/2);
 
+            int range_size = (int)(right_uid - left_uid) + 1;
+            int new_left_uid = (int)left_uid;
+            int new_right_uid = left_uid + (int)(range_size / 2) - 1;
 
             //Update referencia
-            left_uid /= 2;
-            right_uid /= 2;
+            left_uid = left_uid + range_size / 2;
+            //right_uid = right_uid;
 
             return new UIDRange(new_left_uid, new_right_uid);
 
         }
 
-        public void PrintRange() 
+        public string ToString()
         {
-            Console.WriteLine("[ " + left_uid + " - " + right_uid + " ]");
+            return "[" + left_uid + " : " + right_uid + "]";
         }
-
 
     }
 }

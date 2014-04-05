@@ -11,21 +11,15 @@ namespace Master
     {
 
         private List<TableRow> lookupTable;
+        public UIDRange DefaultUIDRange {get; private set;}
 
         public LookupTable() 
         {
             lookupTable = new List<TableRow>();
-            
+            //mudar este range para Int32.Max
+            DefaultUIDRange = new UIDRange(0, 2048);
         }
 
-        /*
-        public List<TableRow> GetTableRows()
-        {
-            return lookupTable;
-        }*/
-
-
-       //ADD
        public int Size(){
            return lookupTable.Count;
        }
@@ -62,6 +56,19 @@ namespace Master
         public void RemoveRow(TableRow row)
         {
             lookupTable.Remove(row);
+        }
+
+        public string ToString()
+        {
+            string output = String.Empty;
+            foreach (TableRow row in lookupTable)
+            {
+                output += String.Format("{0} {1} {2} \n", row.GetUIDRange().ToString(), row.GetServerPair().GetPrimary(), row.GetServerPair().GetReplica());
+
+            }
+
+            return output;
+
         }
 
     }
