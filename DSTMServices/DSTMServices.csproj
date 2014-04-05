@@ -52,6 +52,10 @@
       <Project>{3b4aa21a-791e-43b9-89f4-451b0f605928}</Project>
       <Name>CommonTypes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Master\Master.csproj">
+      <Project>{c84877b8-5c68-49f5-a02b-249f76241abd}</Project>
+      <Name>Master</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

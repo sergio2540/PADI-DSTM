@@ -15,8 +15,9 @@ namespace Server
         public static String debug = null;
         public static void Main(String[] args) {
 
+            int port = int.Parse(args[0]);
 
-            TcpChannel channel = new TcpChannel(8086);
+            TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);

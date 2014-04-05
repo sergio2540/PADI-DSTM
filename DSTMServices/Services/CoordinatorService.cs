@@ -71,7 +71,9 @@ namespace DSTMServices
             //uidServerRefAssociation = new Dictionary<int, IServer>();
             //uidServerAssociation[1] = "tcp://localhost:8086/Server";
             //uidServerAssociation[2] = "tcp://localhost:8086/Server";
-            lookupService = new LookupService();
+
+            String master_endpoint = "tcp://localhost:8080/Master";
+            lookupService = new LookupService(master_endpoint);
             currentTid = transactionId;
 
 

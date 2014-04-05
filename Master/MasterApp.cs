@@ -14,12 +14,14 @@ namespace Master
     {
         static void Main(string[] args)
         {
-            TcpChannel channel = new TcpChannel(8086);
+            int port = 8080;
+            TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.SingleCall);
 
-            Console.WriteLine("Master App - Listening for requests.");
+           
+            Console.WriteLine(String.Format("Master App - Listening for requests in port {0}.",port));
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
         }
