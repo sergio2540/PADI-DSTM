@@ -1,4 +1,5 @@
-﻿using DSTMServices;
+﻿using CommonTypes;
+using DSTMServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,36 @@ namespace DSTMServices
             //master.Status()
             return false;  
         }
-        public bool Fail(String URL)
+        public bool Fail(String serverUrl)
+        {
+            try
+            {
+                getServerProxyFromUrl(serverUrl).Fail(); //ancar excepcao se ja fez fail
+            }
+            catch (FailStateException e)
+            {
+
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        public bool Freeze(String serverUrl)
         {
             return false;
         }
 
-        public bool Freeze(String URL)
+        public bool Recover(String serverUrl)
         {
+            getServerProxyFromUrl(serverUrl).Recover(); //ancar excepcao se ja fez fail
             return false;
         }
 
-        public bool Recover(String URL)
-        {
-            return false;
+        private IServer getServerProxyFromUrl(String urlString) {
+
+            return (IServer)Activator.GetObject(typeof(IServer), urlString); //recentemente comentado MasterService
+        
         }
 
     }

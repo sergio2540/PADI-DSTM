@@ -30,9 +30,11 @@ namespace Client
             clientApp.Manager = new DSTMManager();
             
             clientApp.Manager.Init();
-            clientApp.Manager.Fail();
-            clientApp.transaction1();
-            clientApp.transaction2();
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            Console.ReadLine();
+            //clientApp.transaction1();
+            //clientApp.transaction2();
 
         }
 

@@ -98,17 +98,17 @@ namespace Master
             throw new NotImplementedException();
         }
 
-        public bool Fail(string URL)
+        public bool Fail()
         {
             throw new NotImplementedException();
         }
 
-        public bool Freeze(string URL)
+        public bool Freeze()
         {
             throw new NotImplementedException();
         }
 
-        public bool Recover(string URL)
+        public bool Recover()
         {
             throw new NotImplementedException();
         }

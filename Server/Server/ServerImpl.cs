@@ -86,8 +86,7 @@ namespace Server
 
         public void WritePadInt(ulong tid, int uid, int value)
         {
-            if (ServerApp.inFailMode)
-                throw new FailStateException("WritePadInt");
+           
             transactionalManager.Write(tid,uid,value);
         }
 
@@ -97,18 +96,20 @@ namespace Server
             throw new NotImplementedException();
         }
 
-        public bool Fail(string URL )
+        public bool Fail()
         {
+            if (ServerApp.inFailMode)
+                throw new FailStateException("Fail");
             ServerApp.inFailMode = true;
             return true;
         }
 
-        public bool Freeze(string URL)
+        public bool Freeze()
         {
             throw new NotImplementedException();
         }
 
-        public bool Recover(string URL)
+        public bool Recover()
         {
             ServerApp.inFailMode = false;
             return true;

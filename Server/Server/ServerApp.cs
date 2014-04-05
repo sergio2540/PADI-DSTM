@@ -36,8 +36,8 @@ namespace Server
 
         public static void Main(String[] args) {
 
-            int port = int.Parse(args[0]);
-
+            //int port = int.Parse(args[0]);
+            int port = 8089;
             TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
@@ -45,7 +45,7 @@ namespace Server
 
             Console.WriteLine(String.Format("Server App - Listening for requests in port {0}.",port));
 
-            
+            Console.ReadLine();
             String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
                 try
