@@ -10,6 +10,22 @@ using System.Runtime.Remoting.Channels.Tcp;
 
 namespace Master
 {
+
+    /*
+    private static string GetIP()
+        {
+            string strHostName = "";
+            strHostName = System.Net.Dns.GetHostName();
+            Console.WriteLine(strHostName);
+
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+
+            string ipaddress = Convert.ToString(ipEntry.AddressList[2]);
+
+            return ipaddress.ToString();
+        }
+    */
+
     class MasterApp
     {
         public static String debug = null;
