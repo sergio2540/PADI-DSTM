@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace CommonTypes
 {
-    public abstract class TxException : SystemException
+    public abstract class TxException : Exception //na documentação aconselham a derivar desta antiga:SystemException
     {
         public TxException()
         {
 
         }
-        public TxException(String mensagem) : base(mensagem)
+        public TxException(String exceptionMessage) : base(exceptionMessage)
         {
             
         }

@@ -15,6 +15,7 @@ namespace Server
     class ServerApp
     {
         public static String debug = null;
+        public static bool inFailMode = false;
         public static void Main(String[] args) {
 
             int port = int.Parse(args[0]);
