@@ -5,25 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DSTMServices.Services
+namespace DSTMServices
 {
     public class MasterService
     {
-        public readonly IMaster Master { get; private set; }
+        private readonly IMaster master;
         private String masterEndPoint;
         public MasterService(String masterUrl) {
 
             masterEndPoint = masterUrl;
-            Master = (IMaster)Activator.GetObject(typeof(IMaster), masterEndPoint);
+            master = (IMaster)Activator.GetObject(typeof(IMaster), masterEndPoint);
         }
 
         public String GetPrimaryEndpoint(int uid) { 
 
-            return Master.GetPrimaryEndpoint(uid);
+            return master.GetPrimaryEndpoint(uid);
         
         }
 
-       
+       public IMaster Master{get{return master;}}
 
     }
 }

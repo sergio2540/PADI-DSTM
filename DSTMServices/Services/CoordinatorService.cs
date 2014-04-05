@@ -9,7 +9,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 
 using CommonTypes;
 using Services;
-using DSTMServices.Services;
+using DSTMServices;
 
 namespace DSTMServices
 {

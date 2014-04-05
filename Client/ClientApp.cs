@@ -31,7 +31,6 @@ namespace Client
             
             clientApp.Manager.Init();
             clientApp.Manager.Fail();
-
             clientApp.transaction1();
             clientApp.transaction2();
 
