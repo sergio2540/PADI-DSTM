@@ -17,6 +17,7 @@ namespace Master
         private int getIndex()
         {
             int table_size = lookupTable.Size();
+            MasterApp.debug = String.Format("CW: table_size {0}\n",table_size);
             //Arrendondar para a potencia de 2 mais acima do numero tabela_size
             int end = (int)Math.Pow(2, Math.Ceiling(Math.Log(table_size) / Math.Log(2)));
 
@@ -33,16 +34,20 @@ namespace Master
             
             int index = getIndex();
             
-            MasterApp.debug = String.Format("CW: Index {0}", index);
+            MasterApp.debug = String.Format("CW: Index {0}\n", index);
             Debug.WriteLine(String.Format("DW: Index {0}",index));
 
             //Fazer Split
-            //TableRow temp = lookupTable.GetRow(index);
-            //UIDRange newUIDRange = temp.GetUIDRange().Split();
-            //Buscar replica
-            //ServerPair newServerPair = new ServerPair(primary_url, replica_url);
-            //TableRow newTableRow = new TableRow(newServerPair,newUIDRange);
-            //lookupTable.InsertRow(index,newTableRow);
+            TableRow temp = lookupTable.GetRow(index);
+            UIDRange newUIDRange = temp.GetUIDRange().Split();
+
+            //TODO:Buscar replica
+            String primary_url = URL;
+            String replica_url = URL;
+            ServerPair newServerPair = new ServerPair(primary_url, replica_url);
+            TableRow newTableRow = new TableRow(newServerPair,newUIDRange);
+            lookupTable.InsertRow(index,newTableRow);
+            
             return true;
         }
 
