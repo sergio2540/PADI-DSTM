@@ -9,6 +9,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 
 using CommonTypes;
 using Services;
+using DSTMServices.Services;
 
 namespace DSTMServices
 {
@@ -50,15 +51,16 @@ namespace DSTMServices
         //private Dictionary<int,Participant> participantes;
 
         private LookupService lookupService;
+        private MasterService masterService;
 
         //saber quem tem int
         //private Dictionary<int, String> ServersEndpoint;//vao haver colisões
         //private Dictionary<int, IServer> uidServerRefAssociation;
         //private Dictionary<int, String>  uidServerAssociation = new Dictionary<int, String>();
 
-        public CoordinatorService()
+        public CoordinatorService(MasterService masterS)
         {
-
+            masterService = masterS;
             //uidServerAssociation = new Dictionary<int, String>();
             //uidServerRefAssociation = new Dictionary<int, IServer>();
 
@@ -72,8 +74,8 @@ namespace DSTMServices
             //uidServerAssociation[1] = "tcp://localhost:8086/Server";
             //uidServerAssociation[2] = "tcp://localhost:8086/Server";
 
-            String master_endpoint = "tcp://localhost:8080/Master";
-            lookupService = new LookupService(master_endpoint);
+            //String master_endpoint = "tcp://localhost:8080/Master";
+            lookupService = new LookupService(masterService);
             currentTid = transactionId;
 
 

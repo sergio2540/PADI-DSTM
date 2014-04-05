@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSTMServices.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,11 @@ namespace DSTMServices
 {
     public class DebugService
     {
+        private MasterService masterService;
+        public DebugService(MasterService masterS) {
+
+            masterService = masterS;
+        }
 
         public bool Status()
         {

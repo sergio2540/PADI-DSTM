@@ -9,22 +9,26 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 
 using Master;
+using DSTMServices.Services;
 
 namespace DSTMServices
 {
     public class LookupService
     {
         
+        //private IMaster master; recentemente comentado MasterService
         private IMaster master;
+        private MasterService masterService;
 
         private Dictionary<int, String> endpoints = new Dictionary<int, string>();
          
         private Dictionary<int, IServer> servers = new Dictionary<int, IServer>();
         
-        public LookupService(String endpoint)
+        public LookupService(MasterService masterEndpointService)
         {
-            
-            master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint);
+            masterService = masterEndpointService;
+            master = masterService.Master;
+            //master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint); //recentemente comentado MasterService
 
 
             //Chave uid

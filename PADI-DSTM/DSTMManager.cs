@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using DSTMServices;
 using CommonTypes;
+using DSTMServices.Services;
 
 namespace PADI_DSTM
 {
@@ -18,13 +19,14 @@ namespace PADI_DSTM
         private CoordinatorService coordinatorService;
         private TimestampService timestampService;
         private DebugService debugService;
+        private MasterService masterService; 
 
         public bool Init()
         {
-            coordinatorService = new CoordinatorService();
+            masterService = new MasterService("tcp://localhost:8080/Master");
+            coordinatorService = new CoordinatorService(masterService);
             timestampService = new TimestampService();
-            
-            debugService = new DebugService();
+            debugService = new DebugService(masterService);
 
             return true;
         }

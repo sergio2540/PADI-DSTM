@@ -30,6 +30,7 @@ namespace Client
             clientApp.Manager = new DSTMManager();
             
             clientApp.Manager.Init();
+            clientApp.Manager.Fail();
 
             clientApp.transaction1();
             clientApp.transaction2();
