@@ -97,7 +97,7 @@ namespace Server
             throw new NotImplementedException();
         }
 
-        public bool Fail()
+        public bool Fail(string URL )
         {
             ServerApp.inFailMode = true;
             return true;

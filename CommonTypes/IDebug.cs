@@ -9,8 +9,8 @@ namespace CommonTypes
     public interface IDebug
     {
         bool Status();
-        bool Fail();
+        bool Fail(String URL);
         bool Freeze(String URL);
-        bool Recover();
+        bool Recover(String URL);
     }
 }
