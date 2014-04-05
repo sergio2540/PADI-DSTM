@@ -33,7 +33,8 @@ namespace Master
             
             int index = getIndex();
             
-            Debug.WriteLine(String.Format("Index {0}",index));
+            MasterApp.debug = String.Format("CW: Index {0}", index);
+            Debug.WriteLine(String.Format("DW: Index {0}",index));
 
             //Fazer Split
             //TableRow temp = lookupTable.GetRow(index);
