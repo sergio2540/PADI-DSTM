@@ -14,8 +14,10 @@ namespace Master
     {
         static void Main(string[] args)
         {
+            //como escolher o ip onde se liga? o tcpchannel?
             int port = 8080;
             TcpChannel channel = new TcpChannel(port);
+            
             ChannelServices.RegisterChannel(channel, true);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.SingleCall);

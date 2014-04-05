@@ -23,8 +23,8 @@ namespace DSTMServices
         
         public LookupService(String endpoint)
         {
-            master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint);
             
+            master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint);
 
 
             //Chave uid
