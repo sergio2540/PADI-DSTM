@@ -32,6 +32,13 @@ namespace Client
             clientApp.Manager.Init();
             clientApp.Manager.Fail("tcp://localhost:8089/Server");
             clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            Console.WriteLine("About to recover");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+
+
             Console.ReadLine();
             //clientApp.transaction1();
             //clientApp.transaction2();

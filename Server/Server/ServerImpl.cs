@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommonTypes;
+using Server;
 
 
 namespace Server
@@ -111,6 +112,8 @@ namespace Server
 
         public bool Recover()
         {
+            if(!ServerApp.inFailMode)
+                throw new NotFailedException();
             ServerApp.inFailMode = false;
             return true;
 

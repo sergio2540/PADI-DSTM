@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Cliente\IClient.cs" />
     <Compile Include="Exception\FailStateException.cs" />
+    <Compile Include="Exception\NotFailedException.cs" />
     <Compile Include="IDebug.cs" />
     <Compile Include="Master\IMaster.cs" />
     <Compile Include="Servidor\IServer.cs" />
