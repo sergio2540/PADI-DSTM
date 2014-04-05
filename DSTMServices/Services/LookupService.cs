@@ -8,16 +8,25 @@ using CommonTypes;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 
+using Master;
+
 namespace DSTMServices
 {
     public class LookupService
     {
-        Dictionary<int, String> endpoints = new Dictionary<int, string>();
-         
-        Dictionary<int, IServer> servers = new Dictionary<int, IServer>();
         
-        public LookupService()
+        private IMaster master;
+
+        private Dictionary<int, String> endpoints = new Dictionary<int, string>();
+         
+        private Dictionary<int, IServer> servers = new Dictionary<int, IServer>();
+        
+        public LookupService(String endpoint)
         {
+            
+            master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint);
+
+
             //Chave uid
            // endpoints[1] = "tcp://localhost:8086/Server";
            // endpoints[2] = "tcp://localhost:8086/Server";
@@ -59,12 +68,22 @@ namespace DSTMServices
 
         private String GetServerEndpoint(int uid)
         {
+
+            String endpoint = master.GetPrimaryEndpoint(uid);
+            
+            //master.GetReplicaEndpoint(uid);
+
+            //Cache
+            endpoints[uid] = endpoint;
+            
+            /*
             if(uid == 1)
                 endpoints[1] = "tcp://localhost:8086/Server";
             else if(uid == 2)
                 endpoints[2] = "tcp://localhost:8086/Server";
             else endpoints[3] = "tcp://localhost:8086/Server";
-
+            */
+            
             return endpoints[uid];
         }
 

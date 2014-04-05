@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CommonTypes;
+using System.Diagnostics;
 
 namespace Master
 {
-    class MasterImpl : MarshalByRefObject, IMaster
+    public class MasterImpl : MarshalByRefObject, IMaster
     {
 
         private LookupTable lookupTable = new LookupTable();
@@ -29,7 +30,12 @@ namespace Master
 
         public bool AddServer(string URL)
         {
+            
             int index = getIndex();
+            
+            MasterApp.debug = String.Format("CW: Index {0}", index);
+            Debug.WriteLine(String.Format("DW: Index {0}",index));
+
             //Fazer Split
             //TableRow temp = lookupTable.GetRow(index);
             //UIDRange newUIDRange = temp.GetUIDRange().Split();
@@ -62,7 +68,7 @@ namespace Master
 
             ServerPair pair = lookupTable.GetServerPair(uid);
 
-            return pair == null ? null : pair.GetPrimary();
+            return pair == null ? null : pair.GetReplica();
                 
 
         

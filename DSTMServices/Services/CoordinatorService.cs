@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Net.Sockets;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 
@@ -71,7 +71,9 @@ namespace DSTMServices
             //uidServerRefAssociation = new Dictionary<int, IServer>();
             //uidServerAssociation[1] = "tcp://localhost:8086/Server";
             //uidServerAssociation[2] = "tcp://localhost:8086/Server";
-            lookupService = new LookupService();
+
+            String master_endpoint = "tcp://localhost:8080/Master";
+            lookupService = new LookupService(master_endpoint);
             currentTid = transactionId;
 
 
@@ -89,26 +91,46 @@ namespace DSTMServices
 
             List<IServer> participants = lookupService.GetParticipants();
 
-            foreach (IServer participant in participants)
+            //Se ligaçao falha, aborta-se a transacção.
+            try
             {
-                Console.WriteLine("There is one particiapant!!!!!!!!!!!");
-                decision &= participant.canCommit(currentTid);  //verificar se respondeu.usar metodo ping.isto funciona assumindo que respondem
+                foreach (IServer participant in participants)
+                {
+                    Console.WriteLine("There is one particiapant!!!!!!!!!!!");
+                    decision &= participant.canCommit(currentTid);  //verificar se respondeu.usar metodo ping.isto funciona assumindo que respondem
+                }
             }
+            catch (SocketException e) {
+                Console.WriteLine("Failded to do canCommit!. Aborting now...with message: " + e.Message);
+                decision = false;
+            
+            }
+
             bool result = true;
 
             if (decision == true)
             {
                 Console.WriteLine("CAN COMMIT!!!!!");
                 foreach (IServer participant in participants)
-                    result &= participant.doCommit(currentTid);
+                    try
+                    {
+                        result &= participant.doCommit(currentTid);
+                    }
+                    catch (SocketException e) {
+                        continue;
+                    }
             }
-
             else
             {
-
                 Console.WriteLine("Is going to abort!!!!!");
                 foreach (IServer participant in participants)
-                    result &= participant.doAbort(currentTid);
+                    try
+                    {
+                        result &= participant.doAbort(currentTid);
+                    }
+                    catch (SocketException e) {
+                        continue;
+                    }
             }
             return result;
         }
@@ -118,8 +140,13 @@ namespace DSTMServices
             bool result = true;
             List<IServer> participants = lookupService.GetParticipants();
             foreach (IServer participant in participants)
-                result &= participant.doAbort(currentTid);
-
+                try
+                {
+                    result &= participant.doAbort(currentTid);
+                }
+                catch (SocketException e) {
+                    continue;
+                }
             return result;
 
         }

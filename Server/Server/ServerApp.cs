@@ -8,6 +8,8 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 
+using CommonTypes;
+
 namespace Server
 {
     class ServerApp
@@ -15,13 +17,21 @@ namespace Server
         public static String debug = null;
         public static void Main(String[] args) {
 
+            int port = int.Parse(args[0]);
 
-            TcpChannel channel = new TcpChannel(8086);
+            TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
 
-            Console.WriteLine("Server App - Listening for requests.");
+            Console.WriteLine(String.Format("Server App - Listening for requests in port {0}.",port));
+
+            
+            String master_endpoint = "tcp://localhost:8080/Master";
+            IMaster master = (IMaster)Activator.GetObject(typeof(IMaster), master_endpoint);
+
+            master.AddServer(String.Format("tcp://localhost:{0}/Server",port));
+
             Console.WriteLine("Press enter to exit...");
 
             while (true)
