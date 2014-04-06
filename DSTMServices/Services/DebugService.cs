@@ -44,7 +44,17 @@ namespace DSTMServices
 
         public bool Recover(String serverUrl)
         {
-            getServerProxyFromUrl(serverUrl).Recover(); //ancar excepcao se ja fez fail
+            try
+            {
+                getServerProxyFromUrl(serverUrl).Recover(); //ancar excepcao se ja fez fail
+            }
+            catch (NotFailedException e)
+            {
+
+                Console.WriteLine(e.Message);
+                return false;
+            }
+           
             return false;
         }
 

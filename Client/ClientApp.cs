@@ -30,11 +30,18 @@ namespace Client
             clientApp.Manager = new DSTMManager();
             
             clientApp.Manager.Init();
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            //Console.ReadLine();
-            clientApp.transaction1();
-            clientApp.transaction2();
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            Console.WriteLine("About to recover");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+
+
+            Console.ReadLine();
+            //clientApp.transaction1();
+            //clientApp.transaction2();
 
         }
 
@@ -172,7 +179,7 @@ namespace Client
             if (!succeed)
                 return false;
 
-            pad = Manager.CreatePadInt(2048 - 10);
+            pad = Manager.CreatePadInt(3);
             pad.Write(30);
             Console.WriteLine("Deve dar 30 -> " + pad.Read());
 
