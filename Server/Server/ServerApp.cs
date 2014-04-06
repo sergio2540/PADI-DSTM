@@ -9,6 +9,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 
 using CommonTypes;
+using System.Threading;
 
 namespace Server
 {   
@@ -33,6 +34,8 @@ namespace Server
     {
         public static String debug = null;
         public static bool inFailMode = false;
+        public static bool inFreezeMode = false;
+        public static EventWaitHandle frozenCalls =  new EventWaitHandle(true, EventResetMode.ManualReset);
 
         public static void Main(String[] args) {
 

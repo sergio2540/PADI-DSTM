@@ -54,7 +54,7 @@ namespace Server
             objectsInServer[uid] = obj;
 
             //wait handle não notificado e com manual reset pois deve ser o write a fechar a passagem às threads.
-            objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
+            objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);//esta errado? se for criado, todas as threads devem puder passar por handle certo?
             pendingTransactions[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
 
             return committed;

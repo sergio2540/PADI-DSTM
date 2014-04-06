@@ -23,6 +23,8 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("BeginTransaction");
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
 
             return transactionalManager.BeginTransaction(tid, coordinatorAddress);
             //Transaction newTransaction = new Transaction(tid,coordinatorAddress);
@@ -43,6 +45,10 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("canCommit");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             ServerApp.debug = "canCommit called!";
             return transactionalManager.canCommit(tid);
         }
@@ -52,6 +58,10 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("doCommit");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             return transactionalManager.doCommit(tid);
         }
 
@@ -59,6 +69,10 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("doAbort");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             return transactionalManager.doAbort(tid);
         }
 
@@ -68,6 +82,10 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("CreatePadInt");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             return transactionalManager.CreatePadInt(uid);
         }
 
@@ -75,6 +93,10 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("AccessPadInt");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             return transactionalManager.AccessPadInt(uid);
         }
 
@@ -82,11 +104,20 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("ReadPadInt");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             return transactionalManager.Read(tid, uid);
         }
 
         public void WritePadInt(ulong tid, int uid, int value)
         {
+            if (ServerApp.inFailMode)
+                throw new FailStateException("WritePadInt");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
            
             transactionalManager.Write(tid,uid,value);
         }
@@ -101,20 +132,32 @@ namespace Server
         {
             if (ServerApp.inFailMode)
                 throw new FailStateException("Fail");
+
+            if (ServerApp.inFreezeMode)
+                ServerApp.frozenCalls.WaitOne();
+
             ServerApp.inFailMode = true;
             return true;
         }
 
         public bool Freeze()
         {
-            throw new NotImplementedException();
+            ServerApp.inFreezeMode = true;
+            ServerApp.frozenCalls.Reset();
+            //throw new NotImplementedException();
+            return true;
         }
 
         public bool Recover()
         {
             if(!ServerApp.inFailMode)
                 throw new NotFailedException();
+            if (!ServerApp.inFreezeMode)
+                throw new NotFrozenException();
+
             ServerApp.inFailMode = false;
+            ServerApp.inFreezeMode = false;
+            ServerApp.frozenCalls.Set();
             return true;
 
 
