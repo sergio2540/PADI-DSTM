@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
+using System.Threading;
 
 namespace Master
 {
@@ -38,8 +39,7 @@ namespace Master
             
             ChannelServices.RegisterChannel(channel, true);
 
-            RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.SingleCall);
-
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.Singleton);
            
             Console.WriteLine(String.Format("Master App - Listening for requests in port {0}.",port));
             Console.WriteLine("Press enter to exit...");
@@ -47,10 +47,15 @@ namespace Master
 
             while (true)
             {
+
+
+
                 if (debug != null)
                 {
+                    Thread.Sleep(1000);
                     Console.WriteLine(debug);
                     debug = null;
+
                 }
             }
 
