@@ -42,8 +42,7 @@ namespace Server
             //int port = int.Parse(args[0]);
             //int port = 8089;
             Random r = new Random();
-            //int port = r.Next(8081, 9000);
-            int port = 8089;
+            int port = r.Next(8081, 9000);
             TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
@@ -60,7 +59,6 @@ namespace Server
                 }
             }
 
-            Console.ReadLine();
             String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
                 try
