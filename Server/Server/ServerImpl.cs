@@ -130,18 +130,21 @@ namespace Server
 
         public bool Fail()
         {
-            if (ServerApp.inFailMode)
+            if(ServerApp.inFailMode)
                 throw new FailStateException("Fail");
 
             if (ServerApp.inFreezeMode)
+            {
                 ServerApp.frozenCalls.WaitOne();
-
+            }
             ServerApp.inFailMode = true;
             return true;
         }
 
         public bool Freeze()
         {
+            if (ServerApp.inFreezeMode)
+                throw new AlreadyFrozenException();
             ServerApp.inFreezeMode = true;
             ServerApp.frozenCalls.Reset();
             //throw new NotImplementedException();
@@ -150,11 +153,10 @@ namespace Server
 
         public bool Recover()
         {
-            if(!ServerApp.inFailMode)
-                throw new NotFailedException();
-            if (!ServerApp.inFreezeMode)
-                throw new NotFrozenException();
+            if ((!ServerApp.inFailMode) && (!ServerApp.inFreezeMode))
+                throw new NotFailedOrFrozenException();
 
+            
             ServerApp.inFailMode = false;
             ServerApp.inFreezeMode = false;
             ServerApp.frozenCalls.Set();

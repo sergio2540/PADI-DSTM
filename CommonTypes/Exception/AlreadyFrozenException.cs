@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 namespace CommonTypes
 {
     [Serializable]
-    public class NotFrozenException : TxException
+    public class AlreadyFrozenException : TxException
     {
-         public NotFrozenException() : base("Can't freeze server because server is already frozen.")
+        public AlreadyFrozenException() :base("Server is already frozen.")
         {
 
         }
+      
 
-         protected NotFrozenException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected AlreadyFrozenException(SerializationInfo info, StreamingContext context) : base (info, context)
         {
  
         }

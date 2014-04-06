@@ -39,7 +39,17 @@ namespace DSTMServices
 
         public bool Freeze(String serverUrl)
         {
-            return false;
+            try
+            {
+                getServerProxyFromUrl(serverUrl).Freeze(); //ancar excepcao se ja fez fail
+            }
+            catch (AlreadyFrozenException e)
+            {
+
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
         }
 
         public bool Recover(String serverUrl)
@@ -48,7 +58,7 @@ namespace DSTMServices
             {
                 getServerProxyFromUrl(serverUrl).Recover(); //ancar excepcao se ja fez fail
             }
-            catch (NotFailedException e)
+            catch (NotFailedOrFrozenException e)
             {
 
                 Console.WriteLine(e.Message);

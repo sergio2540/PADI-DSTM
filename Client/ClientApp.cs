@@ -9,6 +9,7 @@ using PADI_DSTM;
 using CommonTypes;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
+using System.Threading;
 
 namespace Client
 {
@@ -30,13 +31,19 @@ namespace Client
             clientApp.Manager = new DSTMManager();
             
             clientApp.Manager.Init();
+            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //Console.WriteLine("About to recover");
+            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            clientApp.Manager.Freeze("tcp://localhost:8089/Server");
+            clientApp.Manager.Freeze("tcp://localhost:8089/Server");
             clientApp.Manager.Fail("tcp://localhost:8089/Server");
             clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            Console.WriteLine("About to recover");
-            clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            Console.WriteLine("After fail");
 
 
             Console.ReadLine();
@@ -44,6 +51,8 @@ namespace Client
             //clientApp.transaction2();
 
         }
+
+       
 
         //Criado 1 e 2
         //1-> 3
