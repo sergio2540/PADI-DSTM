@@ -28,13 +28,6 @@ namespace DSTMServices
         {
             masterService = masterEndpointService;
             master = masterService.Master;
-            //master = (IMaster)Activator.GetObject(typeof(IMaster), endpoint); //recentemente comentado MasterService
-
-
-            //Chave uid
-           // endpoints[1] = "tcp://localhost:8086/Server";
-           // endpoints[2] = "tcp://localhost:8086/Server";
-            
         }
 
         public Dictionary<int, String> GetEndpoints()
@@ -79,14 +72,6 @@ namespace DSTMServices
 
             //Cache
             endpoints[uid] = endpoint;
-            
-            /*
-            if(uid == 1)
-                endpoints[1] = "tcp://localhost:8086/Server";
-            else if(uid == 2)
-                endpoints[2] = "tcp://localhost:8086/Server";
-            else endpoints[3] = "tcp://localhost:8086/Server";
-            */
             
             return endpoints[uid];
         }

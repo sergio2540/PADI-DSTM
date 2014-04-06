@@ -48,9 +48,7 @@ namespace Master
 
        public void InsertRow(int index, TableRow row) 
        {
-            MasterApp.debug = "inseriu\n";
             lookupTable.Insert(index,row);
-
        }
 
         public void RemoveRow(TableRow row)

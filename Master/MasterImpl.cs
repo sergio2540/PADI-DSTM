@@ -17,7 +17,6 @@ namespace Master
         private int getIndex()
         {
             int table_size = lookupTable.Size();
-            MasterApp.debug = String.Format("CW: table_size {0}\n",table_size);
             //Arrendondar para a potencia de 2 mais acima do numero tabela_size
             int end = (int)Math.Pow(2, Math.Ceiling(Math.Log(table_size) / Math.Log(2)));
 
@@ -43,10 +42,12 @@ namespace Master
             {
                 TableRow temp = lookupTable.GetRow(index);
                 newUIDRange = temp.GetUIDRange().Split();
+                MasterApp.debug += "" + newUIDRange.ToString();
             }
             else
             {
                 newUIDRange = lookupTable.DefaultUIDRange;
+                MasterApp.debug += "else";
             }
 
             //TODO:Buscar replica
@@ -54,7 +55,7 @@ namespace Master
             TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
             lookupTable.InsertRow(index, newTableRow);
 
-            MasterApp.debug = lookupTable.ToString();
+            MasterApp.debug += lookupTable.ToString();
             return true;
 
         }
