@@ -42,12 +42,10 @@ namespace Master
             {
                 TableRow temp = lookupTable.GetRow(index);
                 newUIDRange = temp.GetUIDRange().Split();
-                MasterApp.debug += "" + newUIDRange.ToString();
             }
             else
             {
                 newUIDRange = lookupTable.DefaultUIDRange;
-                MasterApp.debug += "else";
             }
 
             //TODO:Buscar replica
@@ -55,7 +53,6 @@ namespace Master
             TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
             lookupTable.InsertRow(index, newTableRow);
 
-            MasterApp.debug += lookupTable.ToString();
             return true;
 
         }

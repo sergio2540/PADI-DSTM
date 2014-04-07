@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommonTypes;
 using Server;
+using System.Diagnostics;
 
 
 namespace Server
@@ -49,7 +50,6 @@ namespace Server
             if (ServerApp.inFreezeMode)
                 ServerApp.frozenCalls.WaitOne();
 
-            ServerApp.debug = "canCommit called!";
             return transactionalManager.canCommit(tid);
         }
 
@@ -153,6 +153,7 @@ namespace Server
 
         public bool Recover()
         {
+
             if ((!ServerApp.inFailMode) && (!ServerApp.inFreezeMode))
                 throw new NotFailedOrFrozenException();
 

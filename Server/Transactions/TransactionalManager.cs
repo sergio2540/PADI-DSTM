@@ -113,7 +113,6 @@ namespace Server
             //se ja foi escrita uma versao, entao le-se dessa versão.
             if (tentatives.ContainsKey(tid))
             {
-                ServerApp.debug = "estamos a ler e ha uma versao tentativa.";
                 PadIntTentative ownTentative = tentatives[tid];
                 ownTentative.ReadTimestamp = tid;
                 return ownTentative.Value;
@@ -136,9 +135,7 @@ namespace Server
             }
             else //espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
             {
-                ServerApp.debug = "About to get stuck on read!!";
                 objectWaitHandle[uid].WaitOne(); //bloqueia e quando fôr desbloqueada, volta a tentar.
-                ServerApp.debug = "Free bitches!!!!!";
                 return Read(tid,uid);
             }           
         }
@@ -170,10 +167,8 @@ namespace Server
 
             //Não existem transações a mexer no objecto com identificador uid
             if(tentatives.Count == 0){
-                ServerApp.debug = "tentative added for 0 tentatives";
                 t = new PadIntTentative(uid, tid, value);
                
-                ServerApp.debug = "Written value: " + t.Read();
                 obj.addTentative(tid,t);
 
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
@@ -217,7 +212,6 @@ namespace Server
 
             else//primeira tentativa da transacçao tid
             {
-                ServerApp.debug = "new tentative. not empty";
                 
                 t = new PadIntTentative(uid, tid, value);
                 obj.addTentative(tid,t);
@@ -232,7 +226,6 @@ namespace Server
 
         internal bool BeginTransaction(ulong tid, string coordinatorAddress)
         {
-            ServerApp.debug = "Transaction begun!";
             //TODO: Lançar excepção.
             if (transactions.ContainsKey(tid))
                 return false;
@@ -245,7 +238,6 @@ namespace Server
         internal bool canCommit(ulong tid)//vai dar sempre canCommit???
         {
             
-            ServerApp.debug = "Can commit ON SERVERRRRRRRRRRRRRRRRRRRRRRR!";
 
             Transaction transaction = transactions[tid];//assume-se que existe!!!!!!!!!!!!!!!!
             bool decision = true;
@@ -275,7 +267,6 @@ namespace Server
         //o doCommit deveria ser atomico. pode dar problema?
         internal bool doCommit(ulong tid)
         {
-            ServerApp.debug = "Do commit!";
 
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
@@ -316,7 +307,6 @@ namespace Server
 
         internal bool doAbort(ulong tid)
         {
-            ServerApp.debug = "Do abort!";
 
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;

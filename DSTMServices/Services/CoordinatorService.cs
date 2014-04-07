@@ -201,7 +201,7 @@ namespace DSTMServices
 
             IServer serverRef = lookupService.GetServer(currentTid, uid);
 
-            if (serverRef == null)
+            if (serverRef == null)/////////////////////////////////////////////////////////////////////////////////////////<TER EM ATENCAO QUE PODE FALHAR!!!!!!!!!!!!!!!!!!!!!!!!!!>
             {
                 System.Console.WriteLine("Coordinator failed to connect to server. Null reference returned.");
                 return;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.

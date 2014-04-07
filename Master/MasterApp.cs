@@ -29,7 +29,6 @@ namespace Master
 
     class MasterApp
     {
-        public static String debug = null;
 
         static void Main(string[] args)
         {
@@ -43,21 +42,6 @@ namespace Master
            
             Console.WriteLine(String.Format("Master App - Listening for requests in port {0}.",port));
             Console.WriteLine("Press enter to exit...");
-
-
-            while (true)
-            {
-
-
-
-                if (debug != null)
-                {
-                    Thread.Sleep(1000);
-                    Console.WriteLine(debug);
-                    debug = null;
-
-                }
-            }
 
             Console.ReadLine();
 
