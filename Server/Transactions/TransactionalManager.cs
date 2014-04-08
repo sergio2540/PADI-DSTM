@@ -39,6 +39,10 @@ namespace Server
             pendingTransactions = new Dictionary<int, EventWaitHandle>();
         }
 
+        internal ICollection<PadIntTransaction> GetPadIntsTransaction() {
+            return objectsInServer.Values;
+        }
+
         internal PadIntCommitted CreatePadInt(int uid)
         {
 

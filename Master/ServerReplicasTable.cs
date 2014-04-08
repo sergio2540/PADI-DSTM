@@ -27,6 +27,16 @@ namespace Master
 
         }
 
+        public void addPrimary(string server) {
+            if (!serverReplicas.ContainsKey(server)) {
+                serverReplicas.Add(server, new List<string>());
+            }
+        }
+
+        public void changePrimary(string server1, string server2) {
+            
+        }
+
         public void removeReplicaFromServer(string server, string replica) {
 
             if (serverReplicas.ContainsKey(server))
@@ -46,6 +56,10 @@ namespace Master
 
         }
 
+        public ICollection<string> getServers() {
+            return serverReplicas.Keys;
+        } 
+
         public void removeServerAndReplicas(string server) {
 
             if (serverReplicas.ContainsKey(server)) {
@@ -61,6 +75,22 @@ namespace Master
                 serverReplicas[server].Clear();
             } 
 
+        }
+
+        public string ToString() { 
+
+            string table = String.Empty;
+            table += "Server\t\t\t\t\tReplica\n";
+            foreach(KeyValuePair<string, List<string>> keyValue in serverReplicas) {
+                foreach(string replica in keyValue.Value) {
+                    table += keyValue.Key;
+                    table += "\t";
+                    table += replica;                
+                }
+            }
+            
+            return table;
+        
         }
 
     }

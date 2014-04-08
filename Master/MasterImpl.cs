@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using CommonTypes;
 using System.Diagnostics;
+using System.Runtime.Remoting;
 
 namespace Master
 {
@@ -13,7 +14,9 @@ namespace Master
     {
 
         private LookupTable lookupTable = new LookupTable();
+        private ServerReplicasTable serverReplicasTable = new ServerReplicasTable();
 
+        //TODO passar funcao para LookupTable
         private int getIndex()
         {
             int table_size = lookupTable.Size();
@@ -52,6 +55,11 @@ namespace Master
             ServerPair newServerPair = new ServerPair(primary_url, replica_url);
             TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
             lookupTable.InsertRow(index, newTableRow);
+
+
+            serverReplicasTable.addPrimary(primary_url);
+            serverReplicasTable.addReplicaToServer(primary_url, replica_url);
+
 
             return true;
 
@@ -101,7 +109,41 @@ namespace Master
 
         public bool Status()
         {
-            throw new NotImplementedException();
+
+            bool result = true;
+
+            foreach(string primaryServer in serverReplicasTable.getServers()) {
+                try
+                {
+                    IServer server = (IServer)Activator.GetObject(typeof(IServer), primaryServer);
+                    Console.WriteLine(primaryServer);
+                    result = server.Status();
+                }
+                catch (ArgumentNullException e)
+                {
+                    result = false;
+                    throw;
+                }
+                catch (RemotingException e)
+                {
+                    result = false;
+                    throw;
+                }
+                catch (MemberAccessException e)
+                {
+                    result = false;
+                    throw;
+                }
+
+            }
+
+            //numero de replicas 
+            //numero de servers activos
+            Console.WriteLine(lookupTable.ToString());
+            Console.WriteLine(serverReplicasTable.ToString());
+
+            return result;
+
         }
 
         public bool Fail()

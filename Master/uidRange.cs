@@ -48,7 +48,7 @@ namespace Master
 
         public string ToString()
         {
-            return "[" + left_uid + " : " + right_uid + "]";
+            return "[ " + left_uid + " , " + right_uid + " ]";
         }
 
     }

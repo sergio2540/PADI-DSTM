@@ -18,10 +18,11 @@ namespace DSTMServices
 
         public bool Status()
         {
-            //get master
-            //master.Status()
-            return false;  
+            IMaster master = masterService.Master;
+            bool result = master.Status();
+            return result;
         }
+
         public bool Fail(String serverUrl)
         {
             try
