@@ -12,16 +12,18 @@ using DSTMServices;
 
 namespace PADI_DSTM
 {
-    public class DSTMManager
+    public class PadiDstm
     {
         //private ulong currentTransactionId = 0;
 
-        private CoordinatorService coordinatorService;
+        private static CoordinatorService coordinatorService;
         //private TimestampService timestampService;
-        private DebugService debugService;
-        private MasterService masterService; 
+        private static DebugService debugService;
+        private static MasterService masterService;
 
-        public bool Init()
+
+        private PadiDstm() { }
+        public static bool Init()
         {
             masterService = new MasterService("tcp://localhost:8080/Master");
             coordinatorService = new CoordinatorService(masterService);
@@ -31,7 +33,7 @@ namespace PADI_DSTM
             return true;
         }
 
-        public bool TxBegin()
+        public static bool TxBegin()
         {
             //var timestamp = timestampService.getTimestamp();
             
@@ -43,44 +45,44 @@ namespace PADI_DSTM
            
         }
 
-        public bool TxCommit()
+        public static bool TxCommit()
         {
             return coordinatorService.Commit();
         }
 
-        public bool TxAbort()
+        public static bool TxAbort()
         {
             return coordinatorService.Abort();
         }
 
-        public bool Status()
+        public static bool Status()
         {
             return debugService.Status();
         }
 
-        public bool Fail(String URL)
+        public static bool Fail(String URL)
         {
             return debugService.Fail(URL);
         }
 
-        public bool Freeze(String URL)
+        public static bool Freeze(String URL)
         {
             return debugService.Freeze(URL);
         }
 
-        public bool Recover(String URL)
+        public static bool Recover(String URL)
         {
             return debugService.Recover(URL);
         }
 
-        public PadInt CreatePadInt(int uid)
+        public static PadInt CreatePadInt(int uid)
         {
             return coordinatorService.CreatePadInt(uid);
            
         }
         
 
-        public PadInt AccessPadInt(int uid)
+        public static PadInt AccessPadInt(int uid)
         {
             return coordinatorService.AccessPadInt(uid);
         }

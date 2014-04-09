@@ -135,6 +135,11 @@ namespace Server
 
 
             Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("COMMITTED:");
+            Console.ForegroundColor = ConsoleColor.White;
+
             Console.WriteLine("UID\t\t\tVALUE\t\t\tTIMESTAMP");
 
             foreach(PadIntTransaction padInt in padIntTransaction) {
@@ -146,20 +151,23 @@ namespace Server
             }
             
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("TENTATIVE:");
+            Console.ForegroundColor = ConsoleColor.White;
 
-            Console.WriteLine("TID\tUID\tVALUE\tWRITETIMESTAMP\tREADTIMESTAMP");
+            Console.WriteLine("TID\t\t\tUID\t\t\tVALUE\t\t\tWRITETIMESTAMP\t\t\tREADTIMESTAMP");
 
             foreach (PadIntTransaction padInt in padIntTransaction) {
 
                 foreach(KeyValuePair<ulong, PadIntTentative> padIntTentatives in padInt.getTentatives()) {
                     Console.Write(padIntTentatives.Key);
-                    Console.Write("\t");
+                    Console.Write("\t\t\t");
                     Console.Write(padIntTentatives.Value.uid);
-                    Console.Write("\t");
+                    Console.Write("\t\t\t");
                     Console.Write(padIntTentatives.Value.Value);
-                    Console.Write("\t");
+                    Console.Write("\t\t\t");
                     Console.Write(padIntTentatives.Value.WriteTimestamp);
-                    Console.Write("\t");
+                    Console.Write("\t\t\t");
                     Console.Write(padIntTentatives.Value.ReadTimestamp);
                 }
                 Console.WriteLine();

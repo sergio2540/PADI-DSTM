@@ -17,7 +17,7 @@ namespace Client
     class ClientApp
     {
         
-        public DSTMManager Manager { get; set; }
+      
 
       
         
@@ -28,26 +28,25 @@ namespace Client
 
             ClientApp clientApp = new ClientApp();
 
-            clientApp.Manager = new DSTMManager();
             
-            clientApp.Manager.Init();
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            PadiDstm.Init();
+            //clientApp.PadiDstm.Fail("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Fail("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Recover("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Fail("tcp://localhost:8089/Server");
             //Console.WriteLine("About to recover");
-            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Recover("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Recover("tcp://localhost:8089/Server");
 
 
-            //clientApp.Manager.Status();
+            //clientApp.PadiDstm.Status();
 
 
-            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            //clientApp.Manager.Freeze("tcp://localhost:8089/Server");
-            //clientApp.Manager.Freeze("tcp://localhost:8089/Server");
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Recover("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Freeze("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Freeze("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Fail("tcp://localhost:8089/Server");
+            //clientApp.PadiDstm.Fail("tcp://localhost:8089/Server");
             //Console.WriteLine("After fail");
 
 
@@ -56,7 +55,7 @@ namespace Client
             clientApp.transaction2();
 
             Console.ReadLine();
-            clientApp.Manager.Status();
+            PadiDstm.Status();
             Console.ReadLine();
    
 
@@ -75,59 +74,59 @@ namespace Client
             try {
 
             Console.WriteLine("Primeira transaccao começa");
-            succeed = Manager.TxBegin();
+            succeed = PadiDstm.TxBegin();
             if (!succeed)
                 return false;
 
-            PadInt pad = Manager.CreatePadInt(2);
+            PadInt pad = PadiDstm.CreatePadInt(2);
             Console.WriteLine("Antes do write");
-            pad = Manager.AccessPadInt(2);
+            pad = PadiDstm.AccessPadInt(2);
             pad.Write(10);
             pad.Write(20);
             
             Console.WriteLine("Deve ler 20 ->" + pad.Read());
 
             
-            succeed = Manager.TxCommit();
+            succeed = PadiDstm.TxCommit();
             
 
             if (!succeed)
             {
-                Manager.TxAbort();
+                PadiDstm.TxAbort();
                 return false;
             }
             Console.WriteLine("Segunda transaccao começa");
 
-            succeed = Manager.TxBegin();
+            succeed = PadiDstm.TxBegin();
             if (!succeed)
                 return false;
 
-            pad = Manager.AccessPadInt(2);
+            pad = PadiDstm.AccessPadInt(2);
             pad.Write(10);
             Console.WriteLine("Deve dar 10 -> " + pad.Read());
 
-            succeed = Manager.TxCommit();
+            succeed = PadiDstm.TxCommit();
 
             if (!succeed)
             {
-                Manager.TxAbort();
+                PadiDstm.TxAbort();
                 return false;
             }
 
             //T3
-            succeed = Manager.TxBegin();
+            succeed = PadiDstm.TxBegin();
             if (!succeed)
                 return false;
 
-            pad = Manager.CreatePadInt(3);
+            pad = PadiDstm.CreatePadInt(3);
             pad.Write(30);
             Console.WriteLine("Deve dar 30 -> " + pad.Read());
 
-            succeed = Manager.TxCommit();
+            succeed = PadiDstm.TxCommit();
 
             if (!succeed)
             {
-                Manager.TxAbort();
+                PadiDstm.TxAbort();
                 return false;
             }
 
@@ -155,59 +154,59 @@ namespace Client
             {
 
                 Console.WriteLine("Primeira transaccao começa");
-                succeed = Manager.TxBegin();
+                succeed = PadiDstm.TxBegin();
                 if (!succeed)
                     return false;
 
-                //PadInt pad = Manager.CreatePadInt(2);
+                //PadInt pad = PadiDstm.CreatePadInt(2);
                 Console.WriteLine("Antes do write");
-                PadInt pad = Manager.AccessPadInt(2);
+                PadInt pad = PadiDstm.AccessPadInt(2);
                 pad.Write(10);
                 pad.Write(20);
 
                 Console.WriteLine("Deve ler 20 ->" + pad.Read());
 
 
-                succeed = Manager.TxCommit();
+                succeed = PadiDstm.TxCommit();
 
 
                 if (!succeed)
                 {
-                    Manager.TxAbort();
+                    PadiDstm.TxAbort();
                     return false;
                 }
                 Console.WriteLine("Segunda transaccao começa");
 
-                succeed = Manager.TxBegin();
+                succeed = PadiDstm.TxBegin();
                 if (!succeed)
                     return false;
 
-                pad = Manager.AccessPadInt(2);
+                pad = PadiDstm.AccessPadInt(2);
                 pad.Write(10);
                 Console.WriteLine("Deve dar 10 -> " + pad.Read());
 
-                succeed = Manager.TxCommit();
+                succeed = PadiDstm.TxCommit();
 
                 if (!succeed)
                 {
-                    Manager.TxAbort();
+                    PadiDstm.TxAbort();
                     return false;
                 }
 
                 //T3
-                succeed = Manager.TxBegin();
+                succeed = PadiDstm.TxBegin();
                 if (!succeed)
                     return false;
 
-                pad = Manager.CreatePadInt(3);
+                pad = PadiDstm.CreatePadInt(3);
                 pad.Write(30);
                 Console.WriteLine("Deve dar 30 -> " + pad.Read());
 
-                succeed = Manager.TxCommit();
+                succeed = PadiDstm.TxCommit();
 
                 if (!succeed)
                 {
-                    Manager.TxAbort();
+                    PadiDstm.TxAbort();
                     return false;
                 }
 

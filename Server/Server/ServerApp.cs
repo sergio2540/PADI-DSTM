@@ -43,8 +43,27 @@ namespace Server
             Random r = new Random();
             int port = r.Next(8081, 9000);
             //int port = 8089;
-            TcpChannel channel = new TcpChannel(port);
+            TcpChannel channel = null;
+
+            while (true) {
+                port = r.Next(8081,9000);
+
+                try
+                {
+                    channel = new TcpChannel(port);
+                    break;
+
+                }catch(Exception e){
+                   
+                
+                }
+
+
+            
+            }
             ChannelServices.RegisterChannel(channel, true);
+
+            
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
 
