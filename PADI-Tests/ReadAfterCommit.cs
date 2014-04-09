@@ -47,8 +47,9 @@ namespace PADI_Tests
             const int DEFAULT_PADINT_VALUE = 0;
             const int WRITE_VALUE = 5;
             DSTMManager manager = new DSTMManager();
-            manager.Init();
+            bool result = manager.Init();
 
+            Assert.IsTrue(result, "Failed to load library.");
 
             //T1
             beginSuccess = manager.TxBegin();
@@ -75,8 +76,10 @@ namespace PADI_Tests
 
             Assert.IsTrue(didCommit, "Failed to commit transaction.");
             didCommit = manager.TxCommit();
-            manager.Status();
-            
+            Assert.IsTrue(didCommit, "Failed to commit transaction.");
+            bool status = manager.Status();
+
+            Assert.IsTrue(status, "Status operation not done.");
 
 
         }

@@ -122,17 +122,14 @@ namespace Master
                 catch (ArgumentNullException e)
                 {
                     result = false;
-                    throw;
                 }
                 catch (RemotingException e)
                 {
                     result = false;
-                    throw;
                 }
                 catch (MemberAccessException e)
                 {
                     result = false;
-                    throw;
                 }
 
             }
