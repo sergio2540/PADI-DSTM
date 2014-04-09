@@ -30,7 +30,7 @@ namespace Server
      
      */
 
-    class ServerApp
+   public class ServerApp
     {
         public static bool inFailMode = false;
         public static bool inFreezeMode = false;
@@ -41,8 +41,7 @@ namespace Server
             //int port = int.Parse(args[0]);
             //int port = 8089;
             Random r = new Random();
-            //int port = r.Next(8081, 9000);
-            int port = 8089;
+            int port = r.Next(8081, 9000);
             TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
@@ -51,7 +50,6 @@ namespace Server
             Console.WriteLine(String.Format("Server App - Listening for requests in port {0}.",port));
 
            
-            Console.ReadLine();
             String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
                 try

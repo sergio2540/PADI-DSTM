@@ -27,10 +27,10 @@ namespace Master
         }
     */
 
-    class MasterApp
+    public class MasterApp
     {
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             //como escolher o ip onde se liga? o tcpchannel?
             int port = 8080;
