@@ -38,17 +38,27 @@ namespace Client
             //Console.WriteLine("About to recover");
             //clientApp.Manager.Recover("tcp://localhost:8089/Server");
             //clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            clientApp.Manager.Recover("tcp://localhost:8089/Server");
-            clientApp.Manager.Freeze("tcp://localhost:8089/Server");
-            clientApp.Manager.Freeze("tcp://localhost:8089/Server");
-            clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            clientApp.Manager.Fail("tcp://localhost:8089/Server");
-            Console.WriteLine("After fail");
 
+
+            //clientApp.Manager.Status();
+
+
+            //clientApp.Manager.Recover("tcp://localhost:8089/Server");
+            //clientApp.Manager.Freeze("tcp://localhost:8089/Server");
+            //clientApp.Manager.Freeze("tcp://localhost:8089/Server");
+            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //clientApp.Manager.Fail("tcp://localhost:8089/Server");
+            //Console.WriteLine("After fail");
+
+
+            //Console.ReadLine();
+            clientApp.transaction1();
+            //clientApp.transaction2();
 
             Console.ReadLine();
-            //clientApp.transaction1();
-            //clientApp.transaction2();
+            clientApp.Manager.Status();
+            Console.ReadLine();
+   
 
         }
 

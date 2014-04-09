@@ -30,7 +30,7 @@ namespace Server
      
      */
 
-   public class ServerApp
+    class ServerApp
     {
         public static bool inFailMode = false;
         public static bool inFreezeMode = false;
@@ -42,6 +42,7 @@ namespace Server
             //int port = 8089;
             Random r = new Random();
             int port = r.Next(8081, 9000);
+            //int port = 8089;
             TcpChannel channel = new TcpChannel(port);
             ChannelServices.RegisterChannel(channel, true);
 
@@ -49,7 +50,9 @@ namespace Server
 
             Console.WriteLine(String.Format("Server App - Listening for requests in port {0}.",port));
 
-           
+            Console.WriteLine("Press enter to exit...");
+            //Console.ReadLine();
+            
             String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
                 try
@@ -59,8 +62,9 @@ namespace Server
                     
                     master.AddServer(String.Format("tcp://localhost:{0}/Server", port));
 
-                    Console.WriteLine("Press enter to exit...");
-
+                   while(true) {
+                   
+                   }
                     
                 }
                 catch (Exception e)

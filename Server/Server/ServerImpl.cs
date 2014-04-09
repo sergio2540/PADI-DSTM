@@ -125,7 +125,45 @@ namespace Server
 
         public bool Status()
         {
-            throw new NotImplementedException();
+            //TODO
+
+            ICollection<PadIntTransaction> padIntTransaction = transactionalManager.GetPadIntsTransaction();
+
+
+            Console.WriteLine();
+            Console.WriteLine("UID\t\t\tVALUE\t\t\tTIMESTAMP");
+
+            foreach(PadIntTransaction padInt in padIntTransaction) {
+                Console.Write(padInt.getCommitted().uid);
+                Console.Write("\t\t\t");
+                Console.Write(padInt.getCommitted().Value);
+                Console.Write("\t\t\t");
+                Console.WriteLine(padInt.getCommitted().WriteTimestamp);
+            }
+            
+            Console.WriteLine();
+
+            Console.WriteLine("TID\tUID\tVALUE\tWRITETIMESTAMP\tREADTIMESTAMP");
+
+            foreach (PadIntTransaction padInt in padIntTransaction) {
+
+                foreach(KeyValuePair<ulong, PadIntTentative> padIntTentatives in padInt.getTentatives()) {
+                    Console.Write(padIntTentatives.Key);
+                    Console.Write("\t");
+                    Console.Write(padIntTentatives.Value.uid);
+                    Console.Write("\t");
+                    Console.Write(padIntTentatives.Value.Value);
+                    Console.Write("\t");
+                    Console.Write(padIntTentatives.Value.WriteTimestamp);
+                    Console.Write("\t");
+                    Console.Write(padIntTentatives.Value.ReadTimestamp);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+
+            
+            return true;
         }
 
         public bool Fail()

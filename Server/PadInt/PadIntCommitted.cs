@@ -32,5 +32,11 @@ namespace Server
         {
             this.Value = value;
         }
+
+        public string ToString() 
+        {
+            return this.uid + "" + this.Value;
+        }
+
     }
 }

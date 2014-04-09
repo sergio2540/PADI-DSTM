@@ -45,7 +45,5 @@ namespace Server
             this.committed = committed;
         }
 
-
-
     }
 }

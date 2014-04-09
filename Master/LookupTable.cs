@@ -61,8 +61,7 @@ namespace Master
             string output = String.Empty;
             foreach (TableRow row in lookupTable)
             {
-                output += String.Format("{0} {1} {2} \n", row.GetUIDRange().ToString(), row.GetServerPair().GetPrimary(), row.GetServerPair().GetReplica());
-
+                output += String.Format("{0} {1}\n", row.GetUIDRange().ToString(), row.GetServerPair().ToString());
             }
 
             return output;

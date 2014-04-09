@@ -26,8 +26,8 @@ namespace Master
             return URLReplica;
         }
 
-        public void PrintServerPair() {
-            Console.WriteLine("[ Primary: " + URLPrimary + " - " + "Secondary: " + URLReplica + "]");
+        public string ToString() {
+            return "[P: " + URLPrimary + " " + "R: " + URLReplica + "]";
         }
 
     }
