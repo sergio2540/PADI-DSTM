@@ -17,7 +17,7 @@ namespace PADI_DSTM
         //private ulong currentTransactionId = 0;
 
         private CoordinatorService coordinatorService;
-        private TimestampService timestampService;
+        //private TimestampService timestampService;
         private DebugService debugService;
         private MasterService masterService; 
 
@@ -25,7 +25,7 @@ namespace PADI_DSTM
         {
             masterService = new MasterService("tcp://localhost:8080/Master");
             coordinatorService = new CoordinatorService(masterService);
-            timestampService = new TimestampService();
+            //timestampService = new TimestampService();
             debugService = new DebugService(masterService);
 
             return true;
@@ -33,10 +33,12 @@ namespace PADI_DSTM
 
         public bool TxBegin()
         {
-            var timestamp = timestampService.getTimestamp();
+            //var timestamp = timestampService.getTimestamp();
             
             //quando retornar falso?quando se tenta criar uma transaccao com outra a decorrer?
-            return coordinatorService.Begin(timestamp);
+            //return coordinatorService.Begin(timestamp);
+            return coordinatorService.Begin();
+
 
            
         }

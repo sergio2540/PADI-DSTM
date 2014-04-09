@@ -29,5 +29,7 @@ namespace CommonTypes
       int ReadPadInt(ulong transactionId, int padintUid);
       void WritePadInt(ulong transactionId, int padintUid, int newValue);
 
+
+      ulong GetTid();
     }
 }

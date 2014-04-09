@@ -20,6 +20,7 @@ namespace DSTMServices
 
         private ulong tid;
 
+
         private String endpoint;
         private IServer server;
 
@@ -67,7 +68,8 @@ namespace DSTMServices
         }
 
         //Transaccoes
-        public bool Begin(ulong transactionId)
+        //public bool Begin(ulong transactionId)
+        public bool Begin()
         {
             //uidServerAssociation = new Dictionary<int, String>();//-->idealmente isto deveria ser aqui, mas por agora fica no constructor para termos estado.
             //uidServerRefAssociation = new Dictionary<int, IServer>();
@@ -76,7 +78,7 @@ namespace DSTMServices
 
             //String master_endpoint = "tcp://localhost:8080/Master";
             lookupService = new LookupService(masterService);
-            currentTid = transactionId;
+            //currentTid = transactionId;
 
 
             return true;
@@ -134,6 +136,8 @@ namespace DSTMServices
                         continue;
                     }
             }
+
+            currentTid = 0;
             return result;
         }
 
@@ -149,6 +153,8 @@ namespace DSTMServices
                 catch (SocketException e) {
                     continue;
                 }
+
+            currentTid = 0;
             return result;
 
         }
@@ -166,9 +172,21 @@ namespace DSTMServices
             //throw new NotImplementedException();
             //procura pelo servidor, adiciona ao mappeamento e busca. Adicionar evento, para detectar mudanças.
             //else serverUrl = intServerMapping[uid];
+            //canBegin = serverRef.BeginTransaction(currentTid, ""); // verificar se lança excepcao.
 
+            IServer serverRef = lookupService.GetServer(uid);
 
-            IServer serverRef = lookupService.GetServer(currentTid, uid);
+            if (currentTid == 0)
+            {
+                currentTid = serverRef.GetTid();
+            }
+
+            //bool canBegin = false; //= server.BeginTransaction(tid, "");
+            
+            //canBegin = serverRef.BeginTransaction(currentTid, ""); // verificar se lança excepcao.
+            
+            //se a transaccao tem tid 0, acabou de começar. 
+       
 
             if (serverRef == null)
             {
@@ -176,9 +194,10 @@ namespace DSTMServices
                 return -1;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.
             }
 
+            
 
             int answerValue = serverRef.ReadPadInt(currentTid, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
-
+            lookupService.AddParticipant(currentTid, uid);
 
             return answerValue;
 
@@ -199,7 +218,12 @@ namespace DSTMServices
             //else //faz chamada.                 //remoting para server. verificar se existe valor
             //serverUrl = intServerMapping[uid];    
 
-            IServer serverRef = lookupService.GetServer(currentTid, uid);
+            IServer serverRef = lookupService.GetServer(uid);
+
+            if (currentTid == 0)
+            {
+                currentTid = serverRef.GetTid();
+            }
 
             if (serverRef == null)/////////////////////////////////////////////////////////////////////////////////////////<TER EM ATENCAO QUE PODE FALHAR!!!!!!!!!!!!!!!!!!!!!!!!!!>
             {
@@ -207,7 +231,12 @@ namespace DSTMServices
                 return;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.
                 //o master tem de ser consultado
             }
+
+           
+
             serverRef.WritePadInt(currentTid, uid, value);
+            lookupService.AddParticipant(currentTid, uid);
+
 
         }
 
@@ -215,7 +244,7 @@ namespace DSTMServices
         {
             Console.WriteLine("CreatePadint called with: " + uid);
 
-            IServer server = lookupService.GetServer(currentTid, uid);
+            IServer server = lookupService.GetServer(uid);
             PadInt padInt = server.CreatePadInt(currentTid, uid);
 
             if (padInt == null)
@@ -238,7 +267,7 @@ namespace DSTMServices
         public PadInt AccessPadInt(int uid)
         {
 
-            IServer server = lookupService.GetServer(currentTid, uid);
+            IServer server = lookupService.GetServer(uid);
             PadInt remote = server.AccessPadInt(currentTid, uid);
             
             if (remote == null)

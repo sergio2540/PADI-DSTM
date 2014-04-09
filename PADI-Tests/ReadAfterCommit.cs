@@ -76,6 +76,7 @@ namespace PADI_Tests
             Assert.IsTrue(didCommit, "Failed to commit transaction.");
             didCommit = manager.TxCommit();
             manager.Status();
+            
 
 
         }

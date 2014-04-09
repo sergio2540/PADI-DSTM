@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Exceptions\PadIntReadTooLate.cs" />
     <Compile Include="Exceptions\PadIntWriteTooLate.cs" />
+    <Compile Include="Transactions\TimestampService.cs" />
     <Compile Include="Transactions\Transaction.cs" />
     <Compile Include="Transactions\TransactionalManager.cs" />
   </ItemGroup>

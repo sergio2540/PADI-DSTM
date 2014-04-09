@@ -46,7 +46,6 @@
     <Compile Include="Services\LookupService.cs" />
     <Compile Include="Services\MasterService.cs" />
     <Compile Include="Services\PadIntLocal.cs" />
-    <Compile Include="Services\TimestampService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">

@@ -21,8 +21,12 @@ namespace DSTMServices
         private MasterService masterService;
 
         private Dictionary<int, String> endpoints = new Dictionary<int, string>();
-         
+        
         private Dictionary<int, IServer> servers = new Dictionary<int, IServer>();
+
+        private HashSet<String> participants = new HashSet<String>();
+
+    
         
         public LookupService(MasterService masterEndpointService)
         {
@@ -42,6 +46,8 @@ namespace DSTMServices
 
         public List<IServer> GetParticipants()
         {
+
+            /*
             Dictionary<String, int> serversEndpoints = new Dictionary<String, int>();
             
             List<IServer> participants = new List<IServer>();
@@ -53,8 +59,24 @@ namespace DSTMServices
             foreach (KeyValuePair<String, int> entry in serversEndpoints)
                 if(servers.ContainsKey(entry.Value)) //Deve ser removido!!!!
                     participants.Add(servers[entry.Value]);
+            */
 
-            return participants; //acontece que quando inverto as chaves passam a ser urls. os dubplicados são eliminados. 
+            
+            HashSet<int> uids = new HashSet<int>();
+            
+            //List<IServer> participants = new List<IServer>();
+            foreach (KeyValuePair<int, String> endpoint in endpoints)
+                if (participants.Contains(endpoint.Value))
+                    uids.Add(endpoint.Key);
+
+            List<IServer> particip = new List<IServer>();
+
+            foreach (int uid in uids)
+                particip.Add(servers[uid]);
+           
+
+
+            return particip; //acontece que quando inverto as chaves passam a ser urls. os dubplicados são eliminados. 
                                 //õs urls nao podem ser estaticos. os urls so podem estar se tiverem sido usados. caso contrario temos o caso
                                 //em que temos o url e um id, mas esse id não identifica nenhuma referencia IRef porque nunca foi adicionada
                                 //no contexto desse uid.
@@ -76,7 +98,7 @@ namespace DSTMServices
             return endpoints[uid];
         }
 
-        public IServer GetServer(ulong tid, int uid)
+        public IServer GetServer(int uid)
         {
             
             if (!servers.ContainsKey(uid))
@@ -101,21 +123,19 @@ namespace DSTMServices
 
                 foreach(KeyValuePair<int ,String> e in endpoints)
                 {
-                  if(e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key)))
+                  if(e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key))) //ja existe url e ja existe referencia.
                     return server; 
 
                 }                
 
                 Console.WriteLine("About to begin transaction!");
 
-                bool canBegin = server.BeginTransaction(tid, "");
+                //e se tivermos dois objectos diferentes mas que estao no mesmo server begin de novo?
+                //bool canBegin = server.BeginTransaction(tid, "");
 
                 //adiciona a cache
                 servers[uid] = server;
-
-                if (canBegin)
-                    return server;
-                else return null;
+                return server;
 
             }
             //Ja existe na cache
@@ -125,7 +145,16 @@ namespace DSTMServices
 
         }
 
-        
+        //begin se for a primeira vez que vai ao server x.
 
+        public void AddParticipant(ulong currentTid, int uid) {
+            IServer server = servers[uid];
+            String url = endpoints[uid];
+            if (!participants.Contains(url)) { 
+                server.BeginTransaction(currentTid, "");
+                participants.Add(url);
+            }
+        
+        }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace DSTMServices
+namespace Server
 {
     public class TimestampService
     {

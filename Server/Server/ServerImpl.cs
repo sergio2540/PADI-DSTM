@@ -8,15 +8,19 @@ using Server;
 using System.Diagnostics;
 
 
+
 namespace Server
 {
     class ServerImpl : MarshalByRefObject, IServer
     {
         TransactionalManager transactionalManager;
+        TimestampService timestampService;
+
 
         public ServerImpl()
         {
             transactionalManager = new TransactionalManager();
+            timestampService = new TimestampService();
         }
 
 
@@ -202,6 +206,10 @@ namespace Server
             return true;
 
 
+        }
+
+        public ulong GetTid(){
+            return timestampService.getTimestamp(); 
         }
     }
 }
