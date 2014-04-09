@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Server.Transactions;
 using System.Diagnostics;
 using System.Threading;
 
@@ -104,7 +103,7 @@ namespace Server
             ulong tc = committed.WriteTimestamp;
             //ServerApp.debug = "Object commited with value: " + committed.Value;
 
-
+            Console.WriteLine(String.Format("on read:Tid:{0} Tc:{1}",tid,tc));
             if (tid <= tc)
                 throw new PadIntReadTooLate(tid, uid);
 

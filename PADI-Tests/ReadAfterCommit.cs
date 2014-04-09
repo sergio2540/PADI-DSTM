@@ -5,6 +5,10 @@ using CommonTypes;
 using Master;
 using System.Threading;
 using Server;
+using System.Diagnostics;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Channels;
+using System.IO;
 
 namespace PADI_Tests
 {
@@ -15,20 +19,27 @@ namespace PADI_Tests
     [TestClass]
     public class ReadAfterCommit
     {
+        static Process master;
+        static Process server;
 
-        [TestInitialize]
-        public void TestInitialize()
+    
+
+        [ClassInitialize]
+        public static void TestInitialize(TestContext c)
         {
-            MasterApp.Main(null);
+            TcpChannel channel = new TcpChannel();
+            ChannelServices.RegisterChannel(channel, true);
+            master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(1000);
-            ServerApp.Main(null);
+            server = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
+            Thread.Sleep(1000);
+
 
         }
          
         [TestMethod]
         public void TestMethod1()
         {
-
 
             bool beginSuccess = false;
             int uid2 = 2; //object 1 uid
@@ -49,22 +60,31 @@ namespace PADI_Tests
 
 
             int firstRead = padInt1.Read();
-            Console.WriteLine("First read: " + firstRead);
             Assert.AreEqual(firstRead, DEFAULT_PADINT_VALUE, String.Format("Read:{0} Expected:{1}", firstRead, DEFAULT_PADINT_VALUE));
 
-            padInt1.Write(3);
+            padInt1.Write(WRITE_VALUE);
             int secondRead = padInt1.Read();
-            Console.WriteLine("Second read: " + secondRead);
             Assert.AreEqual(secondRead, WRITE_VALUE, String.Format("Read:{0} Expected:{1}", secondRead, WRITE_VALUE));
-
+            
             bool didCommit = manager.TxCommit();
 
+            beginSuccess = manager.TxBegin();
             PadInt pad = manager.AccessPadInt(uid2);
+            
             int thirdRead = pad.Read();
-            Console.WriteLine("Third read: " + thirdRead);
+
             Assert.IsTrue(didCommit, "Failed to commit transaction.");
+            didCommit = manager.TxCommit();
+            manager.Status();
 
 
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanUp() {
+            server.Kill();
+            master.Kill();
+        
         }
     }
 }

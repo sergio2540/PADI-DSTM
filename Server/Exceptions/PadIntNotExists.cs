@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 
 using CommonTypes;
+using System.Runtime.Serialization;
 
 namespace Server
 {
-    //Ver remoting exceptions
+    [Serializable]
     class PadIntNotExists : TxException
     {
 
@@ -15,6 +16,9 @@ namespace Server
                  
         }
 
-       
+        protected PadIntNotExists(SerializationInfo info, StreamingContext context): base(info, context)
+        {
+ 
+        }
     }
 }

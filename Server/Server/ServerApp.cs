@@ -30,7 +30,7 @@ namespace Server
      
      */
 
-    class ServerApp
+    public class ServerApp
     {
         public static bool inFailMode = false;
         public static bool inFreezeMode = false;

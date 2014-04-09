@@ -16,7 +16,8 @@ namespace PADI_Tests
     [TestClass]
     public class BasicReadWrite
     {
-        [TestInitialize]
+
+        [ClassInitialize]
         public void TestInitialize()
         {
             MasterApp.Main(null);
@@ -66,9 +67,10 @@ namespace PADI_Tests
 
                
         }
-    
-    
-     
+
+
+        [ClassCleanup]
+        public void TestCleanUp() { }
 
     }
 }

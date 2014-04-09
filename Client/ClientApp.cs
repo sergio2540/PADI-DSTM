@@ -52,8 +52,8 @@ namespace Client
 
 
             //Console.ReadLine();
-            clientApp.transaction1();
-            //clientApp.transaction2();
+            //clientApp.transaction1();
+            clientApp.transaction2();
 
             Console.ReadLine();
             clientApp.Manager.Status();
@@ -79,9 +79,9 @@ namespace Client
             if (!succeed)
                 return false;
 
-            //PadInt pad = Manager.CreatePadInt(2);
+            PadInt pad = Manager.CreatePadInt(2);
             Console.WriteLine("Antes do write");
-            PadInt pad = Manager.AccessPadInt(2);
+            pad = Manager.AccessPadInt(2);
             pad.Write(10);
             pad.Write(20);
             
