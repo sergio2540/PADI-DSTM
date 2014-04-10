@@ -36,13 +36,13 @@ namespace Master
             int port = 8080;
             TcpChannel channel = new TcpChannel(port);
             
-            ChannelServices.RegisterChannel(channel, true);
+            ChannelServices.RegisterChannel(channel, false);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.Singleton);
            
             Console.WriteLine(String.Format("Master App - Listening for requests in port {0}.",port));
             Console.WriteLine("Press enter to exit...");
-
+            Console.WriteLine(channel.GetUrlsForUri("Master")[0]);
             Console.ReadLine();
 
         }

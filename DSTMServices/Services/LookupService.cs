@@ -93,9 +93,10 @@ namespace DSTMServices
             //master.GetReplicaEndpoint(uid);
 
             //Cache
+
             endpoints[uid] = endpoint;
             
-            return endpoints[uid];
+            return endpoint;
         }
 
         public IServer GetServer(int uid)
@@ -123,9 +124,11 @@ namespace DSTMServices
 
                 foreach(KeyValuePair<int ,String> e in endpoints)
                 {
-                  if(e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key))) //ja existe url e ja existe referencia.
-                    return server; 
-
+                    if (e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key))) //ja existe url e ja existe referencia.
+                    {
+                        Console.WriteLine("The server is already registred here with endpoint:" + endpoint + "Uid:" + e.Key);
+                        return server;
+                    }
                 }                
 
                 Console.WriteLine("About to begin transaction!");
@@ -148,8 +151,10 @@ namespace DSTMServices
         //begin se for a primeira vez que vai ao server x.
 
         public void AddParticipant(ulong currentTid, int uid) {
+            Console.WriteLine("Tid: " + currentTid + endpoints);
             IServer server = servers[uid];
             String url = endpoints[uid];
+
             if (!participants.Contains(url)) { 
                 server.BeginTransaction(currentTid, "");
                 participants.Add(url);

@@ -24,7 +24,7 @@ namespace Client
         static void Main(string[] args)
         {
             TcpChannel channel = new TcpChannel();
-            ChannelServices.RegisterChannel(channel, true);
+            ChannelServices.RegisterChannel(channel, false);
 
             ClientApp clientApp = new ClientApp();
 
@@ -52,7 +52,7 @@ namespace Client
 
             //Console.ReadLine();
             //clientApp.transaction1();
-            clientApp.transaction2();
+            //clientApp.transaction2();
 
             Console.ReadLine();
             PadiDstm.Status();
