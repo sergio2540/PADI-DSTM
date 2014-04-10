@@ -13,9 +13,9 @@ namespace Server
 {
     class ServerImpl : MarshalByRefObject, IServer
     {
+
         TransactionalManager transactionalManager;
         TimestampService timestampService;
-
 
         public ServerImpl()
         {
@@ -111,8 +111,16 @@ namespace Server
 
             if (ServerApp.inFreezeMode)
                 ServerApp.frozenCalls.WaitOne();
+            int temp = 0;
 
-            return transactionalManager.Read(tid, uid);
+            try{
+                temp = transactionalManager.Read(tid, uid);
+             }
+            catch (Exception e) {
+                Console.WriteLine(e);
+            }
+
+            return temp;
         }
 
         public void WritePadInt(ulong tid, int uid, int value)
@@ -122,8 +130,14 @@ namespace Server
 
             if (ServerApp.inFreezeMode)
                 ServerApp.frozenCalls.WaitOne();
-           
-            transactionalManager.Write(tid,uid,value);
+
+            try
+            {
+                transactionalManager.Write(tid, uid, value);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
+            }
         }
 
 
@@ -219,5 +233,26 @@ namespace Server
         public ulong GetTid(){
             return timestampService.getTimestamp(); 
         }
+
+        public ulong GetMaxTID() {
+
+            return transactionalManager.GetMaxTID();
+
+        }
+
+        public void SetMaxTID(ulong tid) {
+            transactionalManager.SetMaxTID(tid);
+        }
+
+        public void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange) {
+            transactionalManager.AddTIDToPendingTable(url, tid, startRange, endRange);
+        }
+
+        public void SendPadInt(List<PadIntRemote> padInts) {
+            transactionalManager.AddPadInts(padInts);
+        }
+
+        
+
     }
 }

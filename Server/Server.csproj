@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="PadInt\PadIntCommitted.cs" />
     <Compile Include="Exceptions\PadIntNotExists.cs" />
-    <Compile Include="PadInt\PadIntRemote.cs" />
     <Compile Include="PadInt\PadIntTentative.cs" />
     <Compile Include="PadInt\PadIntTransaction.cs" />
     <Compile Include="Server\ServerApp.cs" />

@@ -31,6 +31,10 @@ namespace Master
         
         //Entradas/Saidas dos servidores de dados
 
+        public bool UIDRangeTransferCompleted(string urlServerToConfirm) {
+            return false;
+        }
+
         public bool AddServer(string URL)
         {
 
@@ -44,7 +48,23 @@ namespace Master
             if (lookupTable.Size() != 0)
             {
                 TableRow temp = lookupTable.GetRow(index);
+                string oldPrimaryUrl = temp.GetServerPair().GetPrimary();
                 newUIDRange = temp.GetUIDRange().Split();
+                
+                IServer oldPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), oldPrimaryUrl);
+                ulong oldPrimaryTid = oldPrimaryServer.GetMaxTID();
+                oldPrimaryServer.AddTIDToPendingTable(primary_url, oldPrimaryTid, newUIDRange.GetRangeStart(), newUIDRange.GetRangeEnd());
+                IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), primary_url);
+                newPrimaryServer.SetMaxTID(oldPrimaryTid);
+
+
+                
+                //atribui replica
+                //da server para pedir os uids 
+
+                
+                
+
             }
             else
             {
@@ -55,7 +75,6 @@ namespace Master
             ServerPair newServerPair = new ServerPair(primary_url, replica_url);
             TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
             lookupTable.InsertRow(index, newTableRow);
-
 
             serverReplicasTable.addPrimary(primary_url);
             serverReplicasTable.addReplicaToServer(primary_url, replica_url);

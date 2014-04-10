@@ -29,7 +29,15 @@ namespace CommonTypes
       int ReadPadInt(ulong transactionId, int padintUid);
       void WritePadInt(ulong transactionId, int padintUid, int newValue);
 
+      ulong GetMaxTID();
+      void SetMaxTID(ulong tid);
 
       ulong GetTid();
+
+      void SendPadInt(List<PadIntRemote> padInts);
+
+      void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange);
+
     }
+
 }

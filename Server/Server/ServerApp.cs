@@ -53,7 +53,7 @@ namespace Server
                     channel = new TcpChannel(port);
                     break;
 
-                }catch(Exception e){
+                } catch(Exception e){
                    
                 
                 }
@@ -74,8 +74,7 @@ namespace Server
             
             String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
-                try
-                {
+               
 
                     IMaster master = (IMaster)Activator.GetObject(typeof(IMaster), master_endpoint);
                     
@@ -85,12 +84,7 @@ namespace Server
                    
                    }
                     
-                }
-                catch (Exception e)
-                {
-                    //Tenta ligar novamente
-                    Console.WriteLine("A tentar ligar");
-                }
+           
             }
             /*
             ServerImpl receiver = new ServerImpl();

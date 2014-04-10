@@ -100,12 +100,16 @@ namespace DSTMServices
 
         public IServer GetServer(int uid)
         {
-            
+
+           
             if (!servers.ContainsKey(uid))
             {
                 //Nao existe servidor
 
-                String endpoint = GetServerEndpoint(uid);
+                String endpoint = master.GetPrimaryEndpoint(uid);
+                endpoints[uid] = endpoint;
+
+                Console.WriteLine(endpoint);
                 
                 //url = ....procura no master
                 //adicionar ao dicionario de strings e de referencias.
@@ -140,7 +144,14 @@ namespace DSTMServices
             }
             //Ja existe na cache
             else {
-                return servers[uid];
+
+                 String endpoint = master.GetPrimaryEndpoint(uid);
+                 endpoints[uid] = endpoint;
+            IServer server = (IServer)Activator.GetObject(typeof(IServer), endpoint);
+            servers[uid] = server;
+            return server;
+
+                //return servers[uid];
             }
 
         }

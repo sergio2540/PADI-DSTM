@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
 
+using CommonTypes;
 
 //PadIntRemote
 
@@ -30,16 +31,38 @@ namespace Server
         // EventWaitHandle -> thread
         private Dictionary<int, EventWaitHandle> pendingTransactions;
 
+        private EventWaitHandle waitForPadIntTransfer;
+
+        //novo
+        private ulong maxTID = ulong.MaxValue;
+
+        //velho
+        private List<Tuple<string, ulong, int, int>> pendingTransactionSplitted;
+
         internal TransactionalManager(){
 
             objectsInServer = new Dictionary<int,PadIntTransaction>();
             transactions = new Dictionary<ulong, Transaction>();
             objectWaitHandle = new Dictionary<int,EventWaitHandle>();
             pendingTransactions = new Dictionary<int, EventWaitHandle>();
+            waitForPadIntTransfer = new EventWaitHandle(false, EventResetMode.ManualReset);
+            pendingTransactionSplitted = new List<Tuple<string, ulong, int, int>>();
+
         }
 
         internal ICollection<PadIntTransaction> GetPadIntsTransaction() {
             return objectsInServer.Values;
+        }
+
+        internal ulong GetMaxTID() {
+            if (transactions.Count != 0) {
+                return transactions.Keys.Max<ulong>();
+            }
+            return ulong.MinValue;           
+        }
+
+        internal void SetMaxTID(ulong tid) {
+            this.maxTID = tid;
         }
 
         internal PadIntCommitted CreatePadInt(int uid)
@@ -88,6 +111,14 @@ namespace Server
         {
 
             //ServerApp.debug = "Read called!";
+
+            //fica a espera que sejam transferidos dados de um servidor que sofreu divisao do seeu range pela entrada deste novo server
+            if (tid > maxTID) 
+            {
+            Console.WriteLine("read: tid>mazxTID");
+
+                waitForPadIntTransfer.Reset();
+            }
           
            
             if (!objectsInServer.ContainsKey(uid))
@@ -148,6 +179,13 @@ namespace Server
             //addicionar objecto modificado
 
             //ServerApp.debug = "Write called!";
+
+            //fica a espera que sejam transferidos dados de um servidor que sofreu divisao do seeu range pela entrada deste novo server
+            if (tid > maxTID)
+            {
+            Console.WriteLine("write: tid>mazxTID");
+               waitForPadIntTransfer.Reset();
+            }
 
             if (!objectsInServer.ContainsKey(uid))
             {
@@ -304,8 +342,48 @@ namespace Server
             //Transacção efectuda e agora removida
             transactions.Remove(tid);
 
+
+            checkTableOfPendingTransactions(tid);
+
             return true; //sempre verdade?
 
+        }
+
+        private void checkTableOfPendingTransactions(ulong tid)
+        {
+
+        Console.WriteLine(pendingTransactionSplitted.Count);
+
+        bool transferDone = false;
+
+            foreach (Tuple<string, ulong, int, int> tuple in pendingTransactionSplitted)
+            {
+                if (tid >= tuple.Item2)
+                {
+                    IServer server = (IServer)Activator.GetObject(typeof(IServer), tuple.Item1);
+
+
+
+                    List<PadIntRemote> padIntsToSend = new List<PadIntRemote>();
+                    foreach (var padInt in objectsInServer)
+                    {
+
+
+                        if (padInt.Key >= tuple.Item3 && padInt.Key <= tuple.Item4)
+                        {
+                            padIntsToSend.Add(padInt.Value.getCommitted());
+                        }
+
+                    } 
+ 
+                    //TODO ter em conta que pode falhar
+                    server.SendPadInt(padIntsToSend);
+                    foreach(var padInt in padIntsToSend) {
+                        objectsInServer.Remove(padInt.uid);    
+                    }
+
+                }
+            }
         }
 
         internal bool doAbort(ulong tid)
@@ -340,8 +418,35 @@ namespace Server
             //Transacção efectuda e agora removida
             transactions.Remove(tid);
 
-
             return true; //sempre verdade?
+
         }
+
+        public void AddPadInts(List<PadIntRemote> padInts) {
+        
+            foreach(PadIntCommitted pad in padInts) {
+                PadIntTransaction padTransaction = new PadIntTransaction(pad.uid);
+                padTransaction.setCommited(pad);
+                objectsInServer.Add(pad.uid, padTransaction);
+            }
+
+            //transferencia concluida
+            Console.WriteLine("transferenciua concluida");
+          waitForPadIntTransfer.Set();
+                
+        }
+
+        public void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange) {
+        Console.WriteLine("url: " + url + " tid: " + tid);
+
+            
+            pendingTransactionSplitted.Add(Tuple.Create(url, tid, startRange, endRange));
+
+            if (transactions.Count == 0) {
+                checkTableOfPendingTransactions(tid + 1);
+            }
+
+        }
+
     }
 }

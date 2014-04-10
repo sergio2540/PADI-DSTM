@@ -22,18 +22,18 @@ namespace PADI_Tests
         static Process master;
         static Process server;
 
-    
-
         [ClassInitialize]
         public static void TestInitialize(TestContext c)
         {
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, true);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
-            Thread.Sleep(1000);
-            for (int i = 0; i < 20; i++)
+            Thread.Sleep(3000);
+            for (int i = 0; i < 2; i++)
+                {
                 server = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
-            Thread.Sleep(1000);
+                Thread.Sleep(2000);
+                }
 
 
         }
@@ -42,6 +42,7 @@ namespace PADI_Tests
         public void TestMethod1()
         {
 
+        Thread.Sleep(2000);
             bool beginSuccess = false;
             int uid2 = 2; //object 1 uid
             // int uid2 = 2; //object 2 uid

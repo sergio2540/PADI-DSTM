@@ -45,6 +45,7 @@
     <Compile Include="Exception\NotFailedOrFrozenException.cs" />
     <Compile Include="IDebug.cs" />
     <Compile Include="Master\IMaster.cs" />
+    <Compile Include="PadInt\PadIntRemote.cs" />
     <Compile Include="Servidor\IServer.cs" />
     <Compile Include="PadInt\PadInt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

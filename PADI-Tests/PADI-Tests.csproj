@@ -55,6 +55,7 @@
     <Compile Include="MultipleWrites.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadAfterCommit.cs" />
+    <Compile Include="Teste.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">

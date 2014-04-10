@@ -31,6 +31,15 @@ namespace Master
             }
         
         }
+
+        public int GetRangeStart() {
+            return this.left_uid;
+        }
+
+        public int GetRangeEnd() {
+            return this.right_uid;
+        }
+
         public UIDRange Split()
         {
 
