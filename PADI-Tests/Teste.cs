@@ -32,7 +32,7 @@ namespace PADI_Tests
         public static void TestInitialize(TestContext c)
         {
             TcpChannel channel = new TcpChannel();
-            ChannelServices.RegisterChannel(channel, true);
+            ChannelServices.RegisterChannel(channel, false);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(3000);
             server1 = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");

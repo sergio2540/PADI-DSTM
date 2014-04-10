@@ -52,7 +52,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicReadWrite.cs" />
-    <Compile Include="FailOnRead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadAfterCommit.cs" />
     <Compile Include="Teste.cs" />

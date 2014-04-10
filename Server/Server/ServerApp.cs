@@ -77,14 +77,14 @@ namespace Server
             Console.WriteLine("Press enter to exit...");
             //Console.ReadLine();
 
-            String[] ipFile = File.ReadAllLines(@"C:\Users\Bruno Braga\Source\Repos\PADI-DSTM\Server\bin\Debug\IpConf.txt");
+            String[] ipFile = File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), @"IpConf.txt"));
             String ip = ipFile[0].Replace(System.Environment.NewLine, String.Empty);
            
             String master_endpoint = "tcp://" + ip + ":" + "8080/Master";
             String server_endpoint = String.Format("tcp://{0}:{1}/Server", GetIp(), port);
             Console.WriteLine("Server endpoint:" + server_endpoint);
             
-            while(true){
+            while(true) {
                 try
                 {
 
