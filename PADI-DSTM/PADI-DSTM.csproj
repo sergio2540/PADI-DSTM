@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstanceProxy.cs" />
     <Compile Include="PadiDstm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

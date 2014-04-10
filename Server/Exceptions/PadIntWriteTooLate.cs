@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace Server
 {
     [Serializable]
-    class PadIntWriteTooLate : TxException
+    public class PadIntWriteTooLate : TxException
     {
          public PadIntWriteTooLate(ulong tid, int uid) 
              : base(String.Format("In transaction {0}: The padInt with uid: {1} tried to write a later commited version",tid,uid)){

@@ -10,12 +10,23 @@ using System.Runtime.Remoting.Channels.Tcp;
 
 using CommonTypes;
 using System.Threading;
+using System.IO;
+using System.Net;
 
 namespace Server
 {   
     
-    /*
-        private static string GetIP()
+    
+      
+
+    public class ServerApp
+    {
+        public static bool inFailMode = false;
+        public static bool inFreezeMode = false;
+        public static EventWaitHandle frozenCalls =  new EventWaitHandle(true, EventResetMode.ManualReset);
+
+
+        private static string GetIp()
         {
             string strHostName = "";
             strHostName = System.Net.Dns.GetHostName();
@@ -28,13 +39,7 @@ namespace Server
             return ipaddress.ToString();
         }
      
-     */
-
-    public class ServerApp
-    {
-        public static bool inFailMode = false;
-        public static bool inFreezeMode = false;
-        public static EventWaitHandle frozenCalls =  new EventWaitHandle(true, EventResetMode.ManualReset);
+     
 
         public static void Main(String[] args) {
 
@@ -53,7 +58,7 @@ namespace Server
                     channel = new TcpChannel(port);
                     break;
 
-                } catch(Exception e){
+                }catch(Exception e){
                    
                 
                 }
@@ -61,7 +66,7 @@ namespace Server
 
             
             }
-            ChannelServices.RegisterChannel(channel, true);
+            ChannelServices.RegisterChannel(channel, false);
 
             
 
@@ -71,20 +76,32 @@ namespace Server
 
             Console.WriteLine("Press enter to exit...");
             //Console.ReadLine();
+
+            String[] ipFile = File.ReadAllLines(@"C:\Users\Bruno Braga\Source\Repos\PADI-DSTM\Server\bin\Debug\IpConf.txt");
+            String ip = ipFile[0].Replace(System.Environment.NewLine, String.Empty);
+           
+            String master_endpoint = "tcp://" + ip + ":" + "8080/Master";
+            String server_endpoint = String.Format("tcp://{0}:{1}/Server", GetIp(), port);
+            Console.WriteLine("Server endpoint:" + server_endpoint);
             
-            String master_endpoint = "tcp://localhost:8080/Master";
             while(true){
-               
+                try
+                {
 
                     IMaster master = (IMaster)Activator.GetObject(typeof(IMaster), master_endpoint);
                     
-                    master.AddServer(String.Format("tcp://localhost:{0}/Server", port));
-
+                    master.AddServer(server_endpoint);
+                    Console.WriteLine("Connection to Master at: " + master_endpoint);
                    while(true) {
-                   
                    }
                     
-           
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception message:" + e.Message);
+                    //Tenta ligar novamente
+                  // Console.WriteLine("A tentar liga);
+                }
             }
             /*
             ServerImpl receiver = new ServerImpl();

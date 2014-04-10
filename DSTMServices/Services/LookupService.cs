@@ -159,6 +159,7 @@ namespace DSTMServices
         //begin se for a primeira vez que vai ao server x.
 
         public void AddParticipant(ulong currentTid, int uid) {
+            Console.WriteLine("Tid: " + currentTid + endpoints);
             IServer server = servers[uid];
             String url = endpoints[uid];
             if (!participants.Contains(url)) { 

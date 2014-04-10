@@ -37,7 +37,7 @@ namespace Master
 
         public bool AddServer(string URL)
         {
-
+            Console.WriteLine("AddServer called");
             int index = getIndex();
 
 

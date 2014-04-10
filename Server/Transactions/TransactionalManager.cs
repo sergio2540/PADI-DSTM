@@ -8,12 +8,6 @@ using System.Threading;
 
 using CommonTypes;
 
-//PadIntRemote
-
-//PadIntTentative : PadIntRemote
-
-//PadIntCommited : PadIntRemote
-
 namespace Server
 {
     public class TransactionalManager
@@ -142,11 +136,22 @@ namespace Server
            
             //se não existirem versões tentativa, ele não/ninguém escreveu. pode ler do commited.
             if(tentatives.Count == 0)
+{
+                Console.WriteLine("Nao ha tentativas");
+                objectsInServer[uid].addTentative(tid,new PadIntTentative(uid, tid, committed.Value));//////////////////////////////////////////////////////////////////////
+
+                transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+
+                pendingTransactions[uid].Reset(); // dado que temos uma tentativa, as que forem fazer commit teem de esperar
+                
                 return committed.Value;
+            }
+               
 
             //se ja foi escrita uma versao, entao le-se dessa versão.
             if (tentatives.ContainsKey(tid))
             {
+Console.WriteLine("Ha tentativas desta transaccao");
                 PadIntTentative ownTentative = tentatives[tid];
                 ownTentative.ReadTimestamp = tid;
                 return ownTentative.Value;
@@ -157,18 +162,30 @@ namespace Server
 
             //se nao existe nenhum que tenha escrito e que tenha timestamp inferior, significa que a transaccao actual pode ler o valor do commited.
             if (mostUpdated == null)
+ {
+                Console.WriteLine("Most updsted = null");
+
+                objectsInServer[uid].addTentative(tid, new PadIntTentative(uid, tid, committed.Value));//////////////////////////////////////////////////////////////////////
+
+                transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
+
+                pendingTransactions[uid].Reset(); // dado que temos uma tentativa, as que forem fazer commit teem de esperar
                 return committed.Value;
+            }
+               
 
             ulong tMax =  mostUpdated.WriteTimestamp;// este e o valor do maior timestamp de escrita menor que o da transaccao
 
             //verificar se a versao commited tem um timestamp igual ao de tmax. se tiver, significa que o tmax está commited. pode então ler
             if (tc == tMax)//pode ler 
             {
+Console.WriteLine("O maximo esta commited");
                 mostUpdated.ReadTimestamp = tid;
                 return mostUpdated.Value;
             }
             else //espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
             {
+ Console.WriteLine("About tyo blovck");
                 objectWaitHandle[uid].WaitOne(); //bloqueia e quando fôr desbloqueada, volta a tentar.
                 return Read(tid,uid);
             }           
@@ -291,7 +308,8 @@ namespace Server
                // while ((tentatives.Count > 1) && (tentatives.Min(x => x.Value.WriteTimestamp) < tid)) //se houver apenas 1, é ele próprio e pode fazer commit.
                 {                                                                                     //o que acontece se não houverem objectos com um timestamp inferior?
                     pendingTransactions[modifiedObjectId].WaitOne();//se houver um objecto com um write time stamp inferior, temos de esperar por ele.
-
+//o que acontece se depois de dar decisao de commit, aparece outra transaccao com um tid menor que os que la estavam
+                    //
                 }
                 decision &= true;
             }

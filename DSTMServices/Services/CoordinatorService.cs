@@ -194,10 +194,9 @@ namespace DSTMServices
                 return -1;//era inteligente lançar uma excepção caso nao de para ligar e outra caso nao exista.
             }
 
-            
 
-            int answerValue = serverRef.ReadPadInt(currentTid, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
             lookupService.AddParticipant(currentTid, uid);
+            int answerValue = serverRef.ReadPadInt(currentTid, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
 
             return answerValue;
 
@@ -232,10 +231,9 @@ namespace DSTMServices
                 //o master tem de ser consultado
             }
 
-           
 
-            serverRef.WritePadInt(currentTid, uid, value);
             lookupService.AddParticipant(currentTid, uid);
+            serverRef.WritePadInt(currentTid, uid, value);
 
 
         }
