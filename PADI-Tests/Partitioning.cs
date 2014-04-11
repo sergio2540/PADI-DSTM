@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PADI_Tests
     {
@@ -22,12 +24,17 @@ namespace PADI_Tests
         static Process master;
         static Process server1;
         static Process server2;
+        
+        static String master_ip = GetIp();
+        static String master_port = "8080";
 
-        public static void run()
+        private static string GetIp()
         {
-            Thread.Sleep(3000);
-            server1 = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
-            
+            string strHostName = System.Net.Dns.GetHostName();
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Addresses.ToString();
+
         }
 
         [ClassInitialize]
@@ -37,14 +44,20 @@ namespace PADI_Tests
             ChannelServices.RegisterChannel(channel, false);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(3000);
-            server1 = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
+            startInfo.Arguments = String.Format("{0} {1}", master_ip, master_port);
+            server1 = Process.Start(startInfo);
 
             //new Thread(new ThreadStart(run)).Start();
             
         }
 
         public static void StartServer() {
-            server2 = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe"); 
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
+            startInfo.Arguments = String.Format("{0} {1}", master_ip, master_port);
+            server2 = Process.Start(startInfo);
         }
          
         [TestMethod]

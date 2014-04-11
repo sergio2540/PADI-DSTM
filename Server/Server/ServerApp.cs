@@ -14,9 +14,28 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
+using CommandLine;
+using CommandLine.Text; 
+
 namespace Server
 {   
     
+    class Options
+    {
+    
+
+    [Option('i', "master-ip", HelpText = "O IP do master.")]
+    public string Master_IP { get; set; }
+
+    [Option('p', "master-port", HelpText = "A porta do master.")]
+    public int Master_Port { get; set; }
+    /*
+    [Option("sp", "server-port", HelpText = "A porta do servidor.")]
+    public int Server_Port { get; set; }
+    */
+
+  
+    }
     
       
 
@@ -40,19 +59,32 @@ namespace Server
 
         public static void Main(String[] args) {
 
-            //int port = int.Parse(args[0]);
-            //int port = 8089;
+             String master_ip = String.Empty;
+             int master_port = 0;
+
+          
+            if(args.Length == 2){
+              
+                master_ip = args[0];
+                master_port = int.Parse(args[1]);
+
+            }
+            else
+            {
+                Console.WriteLine("Argumentos Invalidos.");
+            }
+
+       
             Random r = new Random();
-            int port = r.Next(8081, 9000);
-            //int port = 8089;
+            int server_port = 0;
             TcpChannel channel = null;
 
             while (true) {
-                port = r.Next(8081,9000);
+                server_port = r.Next(8081,9000);
 
                 try
                 {
-                    channel = new TcpChannel(port);
+                    channel = new TcpChannel(server_port);
                     break;
 
                 }catch(Exception e){
@@ -63,47 +95,63 @@ namespace Server
 
             
             }
+
+            
+         
             ChannelServices.RegisterChannel(channel, false);
 
             
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
 
-            Console.WriteLine(String.Format("Server App - Listening for requests in port {0}.",port));
+        
+          
 
-            Console.WriteLine("Press enter to exit...");
-            //Console.ReadLine();
-
-            String[] ipFile = File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), @"IpConf.txt"));
-            String ip = ipFile[0].Replace(System.Environment.NewLine, String.Empty);
+            //String[] ipFile = File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), @"IpConf.txt"));
+            //String ip = ipFile[0].Replace(System.Environment.NewLine, String.Empty);
            
-            String master_endpoint = "tcp://" + ip + ":" + "8080/Master";
-            String server_endpoint = String.Format("tcp://{0}:{1}/Server", GetIp(), port);
-            Console.WriteLine("Server endpoint:" + server_endpoint);
+
+
+            String master_endpoint = String.Format("tcp://{0}:{1}/Master",master_ip,master_port);
+            string server_ip = GetIp();
+            String server_endpoint = String.Format("tcp://{0}:{1}/Server",server_ip, server_port);
+
+
             
             while(true) {
+
+
                 try
                 {
 
                     IMaster master = (IMaster)Activator.GetObject(typeof(IMaster), master_endpoint);
                     
                     master.AddServer(server_endpoint);
-                    Console.WriteLine("Connection to Master at: " + master_endpoint);
-                   while(true) {
-                   }
+
+                    
+                    Console.WriteLine("Master App - url: " + master_endpoint);
+                    Console.WriteLine("Success connection to Master.");
+
+                    Console.WriteLine("Server App - url: " + server_endpoint);
+                    Console.WriteLine("Server is up.");
+                    Console.WriteLine("Press enter to exit...");
+                    Console.ReadKey();
                     
                 }
                 catch (Exception e)
                 {
+
+                    
                     Console.WriteLine("Exception message:" + e.Message);
                     //Tenta ligar novamente
-                  // Console.WriteLine("A tentar liga);
+                    Console.WriteLine("Press enter to retry connection");
+                    Console.ReadKey();
+
                 }
+
+
             }
-            /*
-            ServerImpl receiver = new ServerImpl();
-            RemotingServices.Marshal((MarshalByRefObject) receiver, "Server", typeof(ServerImpl)); 
-             */
+           
         
         }
 

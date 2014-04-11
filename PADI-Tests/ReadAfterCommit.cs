@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PADI_Tests
 {
@@ -22,17 +24,33 @@ namespace PADI_Tests
         static Process master;
         static Process server;
 
-    
+        
+        private static string GetIp()
+        {
+            string strHostName = System.Net.Dns.GetHostName();
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Addresses.ToString();
 
+        }
+       
         [ClassInitialize]
         public static void TestInitialize(TestContext c)
         {
+
+            String master_ip =   GetIp();
+            String master_port = "8080";
+
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(2000);
             //for (int i = 0; i < 20; i++)
-                server = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
+            startInfo.Arguments = String.Format("{0} {1}",master_ip,master_port);
+            server = Process.Start(startInfo);
+            
             Thread.Sleep(2000);
 
 

@@ -8,27 +8,24 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Master
 {
 
-    /*
-    private static string GetIP()
-        {
-            string strHostName = "";
-            strHostName = System.Net.Dns.GetHostName();
-            Console.WriteLine(strHostName);
-
-            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
-
-            string ipaddress = Convert.ToString(ipEntry.AddressList[2]);
-
-            return ipaddress.ToString();
-        }
-    */
+   
 
     public class MasterApp
     {
+        private static string GetIp()
+        {
+            string strHostName = System.Net.Dns.GetHostName();
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Addresses.ToString();
+
+        }
 
         public static void Main(string[] args)
         {
@@ -39,11 +36,10 @@ namespace Master
             ChannelServices.RegisterChannel(channel, false);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(MasterImpl), "Master", WellKnownObjectMode.Singleton);
-           
-            Console.WriteLine(String.Format("Master App - Listening for requests in port {0}.",port));
+
+            Console.WriteLine("Master App - url: " + GetIp());
             Console.WriteLine("Press enter to exit...");
-            Console.WriteLine(channel.GetUrlsForUri("Master")[0]);
-            Console.ReadLine();
+            Console.ReadKey();
 
         }
 

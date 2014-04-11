@@ -10,6 +10,8 @@ using Services_DSTM;
 using CommonTypes;
 using Server;
 using PADI_DSTM;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PADI_Tests
 {
@@ -18,6 +20,14 @@ namespace PADI_Tests
     [TestClass]
     public class FailOnWrite
     {
+        private static string GetIp()
+        {
+            string strHostName = System.Net.Dns.GetHostName();
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Addresses.ToString();
+
+        }
 
 
         static Process master;
@@ -33,12 +43,21 @@ namespace PADI_Tests
         [ClassInitialize]
         public static void TestInitialize(TestContext c)
         {
+
+            String master_ip = GetIp();
+            String master_port = "8080";
+
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
             master = Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(1000);
             //for (int i = 0; i < 20; i++)
-            server = Process.Start(@"..\..\..\Server\bin\Debug\Server.exe");
+            
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
+            startInfo.Arguments = String.Format("{0} {1}", master_ip, master_port);
+            server = Process.Start(startInfo);
+
             Thread.Sleep(1000);
 
             proxy1 = new InstanceProxy();
