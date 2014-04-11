@@ -40,13 +40,14 @@ namespace PADI_Tests
         [ClassInitialize]
         public static void TestInitialize(TestContext c)
         {
+            String server_port = "8081";
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(3000);
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
-            startInfo.Arguments = String.Format("{0} {1}", master_ip, master_port);
+            startInfo.Arguments = String.Format("{0} {1} {2}", master_ip, master_port,server_port);
             server1 = Process.Start(startInfo);
 
             //new Thread(new ThreadStart(run)).Start();
@@ -54,9 +55,10 @@ namespace PADI_Tests
         }
 
         public static void StartServer() {
+            String server_port = "8082";
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
-            startInfo.Arguments = String.Format("{0} {1}", master_ip, master_port);
+            startInfo.Arguments = String.Format("{0} {1} {2}", master_ip, master_port,server_port);
             server2 = Process.Start(startInfo);
         }
          
