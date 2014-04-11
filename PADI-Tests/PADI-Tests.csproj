@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadAfterCommit.cs" />
     <Compile Include="Partitioning.cs" />
+    <Compile Include="CreatePadInt.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">

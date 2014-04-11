@@ -62,6 +62,9 @@ namespace DSTMServices
         public CoordinatorService(MasterService masterS)
         {
             masterService = masterS;
+            //???!!!
+            lookupService = new LookupService(masterService);
+
             //uidServerAssociation = new Dictionary<int, String>();
             //uidServerRefAssociation = new Dictionary<int, IServer>();
 
@@ -77,7 +80,14 @@ namespace DSTMServices
             //uidServerAssociation[2] = "tcp://localhost:8086/Server";
 
             //String master_endpoint = "tcp://localhost:8080/Master";
-            lookupService = new LookupService(masterService);
+
+
+
+            //?????????!!!!!!!!!!!
+            //lookupService = new LookupService(masterService);
+
+
+
             //currentTid = transactionId;
 
 
