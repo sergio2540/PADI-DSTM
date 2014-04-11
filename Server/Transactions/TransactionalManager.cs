@@ -299,6 +299,7 @@ namespace Server
 
             foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
             {
+                Console.WriteLine("Tid: " + tid + "modificou" + modifiedObjectId);
                 tentatives = objectsInServer[modifiedObjectId].getTentatives();
                 while (tentatives.Min(x => x.Value.WriteTimestamp) < tid) //se houver apenas 1, é ele próprio e pode fazer commit.
                 // while ((tentatives.Count > 1) && (tentatives.Min(x => x.Value.WriteTimestamp) < tid)) //se houver apenas 1, é ele próprio e pode fazer commit.
@@ -327,8 +328,12 @@ namespace Server
             PadIntTentative tentative = null;
             PadIntCommitted commited = null;
             //desbloquear threads em espera no read com
+            Console.WriteLine("Em do commit Tid: " + tid);
+
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
+                Console.WriteLine("Em do commit no for Tid: " + tid + "modificou" + modifiedObject);
+
                 //por commited
                 //remover objecto transaccao
                 //remover objecto tentativa

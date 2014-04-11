@@ -86,7 +86,7 @@ namespace PADI_Tests
             int secondRead = padInt1.Read();
             Assert.AreEqual(secondRead, WRITE_VALUE, String.Format("Read:{0} Expected:{1}", secondRead, WRITE_VALUE));
             bool status = PadiDstm.Status();
-            Thread.Sleep(10000);
+            Thread.Sleep(3000);
             bool didCommit = PadiDstm.TxCommit();
             
 
@@ -107,8 +107,8 @@ namespace PADI_Tests
 
         [ClassCleanup]
         public static void ClassCleanUp() {
-            //server.Kill();
-            //master.Kill();
+            server.Kill();
+            master.Kill();
         
         }
     }

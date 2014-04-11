@@ -49,7 +49,7 @@ namespace PADI_Tests
             master = Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(2000);
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 1; i++)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
@@ -84,12 +84,12 @@ namespace PADI_Tests
 
             int av = pi_a.Read();
             int bv = pi_b.Read();
-
-            Assert.AreEqual(av, 36);
+            
+            Assert.AreEqual(av,36);
             Assert.AreEqual(bv, 37);
 
 
-            PadiDstm.Status();
+            //PadiDstm.Status();
 
             // The following 3 lines assume we have 2 servers: one at port 2001 and another at port 2002
             //res = PadiDstm.Freeze(String.Format("tcp://localhost:{0}/Server", servers_port[0]));
@@ -105,8 +105,8 @@ namespace PADI_Tests
         [ClassCleanup]
         public static void ClassCleanUp()
         {
-            //server.Kill();
-            //master.Kill();
+            server.Kill();
+            master.Kill();
 
         }
     }

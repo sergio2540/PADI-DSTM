@@ -132,8 +132,9 @@ namespace PADI_Tests
 
         [ClassCleanup]
         public static void ClassCleanUp() {
-            //server.Kill();
-           // master.Kill();
+            server1.Kill();
+            server2.Kill();
+            master.Kill();
         
         }
 

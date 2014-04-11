@@ -63,11 +63,16 @@ namespace DSTMServices
 
             
             HashSet<int> uids = new HashSet<int>();
+
+            HashSet<string> endpointSet = new HashSet<string>();
             
             //List<IServer> participants = new List<IServer>();
             foreach (KeyValuePair<int, String> endpoint in endpoints)
-                if (participants.Contains(endpoint.Value))
+                if (!endpointSet.Contains(endpoint.Value) && participants.Contains(endpoint.Value) )
+                {
                     uids.Add(endpoint.Key);
+                    endpointSet.Add(endpoint.Value);
+                }
 
             List<IServer> particip = new List<IServer>();
 
@@ -172,6 +177,12 @@ namespace DSTMServices
                 participants.Add(url);
             }
         
+        }
+
+        public void ResetService() {
+            endpoints.Clear();
+            servers.Clear();
+            participants.Clear();
         }
     }
 }

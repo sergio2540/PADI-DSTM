@@ -65,6 +65,8 @@ namespace DSTMServices
             //???!!!
             lookupService = new LookupService(masterService);
 
+
+
             //uidServerAssociation = new Dictionary<int, String>();
             //uidServerRefAssociation = new Dictionary<int, IServer>();
 
@@ -86,7 +88,8 @@ namespace DSTMServices
             //?????????!!!!!!!!!!!
             //lookupService = new LookupService(masterService);
 
-
+            currentTid = 0;
+            lookupService.ResetService();
 
             //currentTid = transactionId;
 
@@ -150,6 +153,7 @@ namespace DSTMServices
             }
 
             currentTid = 0;
+            lookupService.ResetService();
             return result;
         }
 
@@ -169,6 +173,7 @@ namespace DSTMServices
                 }
 
             currentTid = 0;
+            lookupService.ResetService();
             return result;
 
         }
