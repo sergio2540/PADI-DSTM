@@ -38,14 +38,32 @@ namespace Server
             {
 
                 //get clock
-                uint clock = (uint)DateTime.Now.Millisecond;
+                
+                long beginTicks = new DateTime(2014, 1, 1).Ticks;
+                long endTicks = DateTime.UtcNow.Ticks;
+
+                long elapsedTicks = endTicks - beginTicks;
+
+                TimeSpan elapsed = new TimeSpan(elapsedTicks);
+
+                long t = (long)elapsed.TotalMilliseconds;
+
+
 
                 //get IP
+
+                //Provavelmente deve ser o master a emitir um id
+                
                 string localIp = getLocalIp();
+
                 uint ip = BitConverter.ToUInt32(IPAddress.Parse(localIp).GetAddressBytes(), 0);
 
+                
 
-                ulong timestamp = (ulong)clock << 32 | ip;
+
+                ulong timestamp = (ulong)t << 52 | ip;
+
+                Console.WriteLine("time {0}, server-id {1}, timestamp-service {2}", t, ip,timestamp);
 
                 return timestamp;
             }
