@@ -28,7 +28,7 @@ namespace PADI_Tests
         
         
         [TestMethod]
-        public void TestMethod1()
+        public void TestReadWrite()
         {
             bool beginSuccess = false;
             int uid1 = 1; //object 1 uid
