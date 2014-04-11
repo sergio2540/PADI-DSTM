@@ -16,6 +16,11 @@ namespace Master
         private LookupTable lookupTable = new LookupTable();
         private ServerReplicasTable serverReplicasTable = new ServerReplicasTable();
 
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         //TODO passar funcao para LookupTable
         private int getIndex()
         {
@@ -28,10 +33,11 @@ namespace Master
 
             return start == 0 ? 0 : 2 * (table_size % start);
         }
-        
+
         //Entradas/Saidas dos servidores de dados
 
-        public bool UIDRangeTransferCompleted(string urlServerToConfirm) {
+        public bool UIDRangeTransferCompleted(string urlServerToConfirm)
+        {
             return false;
         }
 
@@ -50,20 +56,15 @@ namespace Master
                 TableRow temp = lookupTable.GetRow(index);
                 string oldPrimaryUrl = temp.GetServerPair().GetPrimary();
                 newUIDRange = temp.GetUIDRange().Split();
-                
+
                 IServer oldPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), oldPrimaryUrl);
                 ulong oldPrimaryTid = oldPrimaryServer.GetMaxTID();
                 oldPrimaryServer.AddTIDToPendingTable(primary_url, oldPrimaryTid, newUIDRange.GetRangeStart(), newUIDRange.GetRangeEnd());
                 IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), primary_url);
                 newPrimaryServer.SetMaxTID(oldPrimaryTid);
 
-
-                
                 //atribui replica
                 //da server para pedir os uids 
-
-                
-                
 
             }
             else
@@ -79,7 +80,6 @@ namespace Master
             serverReplicasTable.addPrimary(primary_url);
             serverReplicasTable.addReplicaToServer(primary_url, replica_url);
 
-
             return true;
 
         }
@@ -88,7 +88,6 @@ namespace Master
         {
             throw new NotImplementedException();
         }
-
 
         //Get endpoints
         public string GetPrimaryEndpoint(int uid)
@@ -107,9 +106,6 @@ namespace Master
             ServerPair pair = lookupTable.GetServerPair(uid);
 
             return pair == null ? null : pair.GetReplica();
-                
-
-        
 
         }
 
@@ -124,14 +120,13 @@ namespace Master
             throw new NotImplementedException();
         }
 
-
-
         public bool Status()
         {
 
             bool result = true;
 
-            foreach(string primaryServer in serverReplicasTable.getServers()) {
+            foreach (string primaryServer in serverReplicasTable.getServers())
+            {
                 try
                 {
                     IServer server = (IServer)Activator.GetObject(typeof(IServer), primaryServer);

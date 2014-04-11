@@ -22,26 +22,41 @@ namespace PADI_DSTM
 
 
         private PadiDstm() { }
+
         public static bool Init()
         {
-            masterService = new MasterService("tcp://localhost:8080/Master");
-            coordinatorService = new CoordinatorService(masterService);
-            //timestampService = new TimestampService();
-            debugService = new DebugService(masterService);
-
+            try
+            {
+                masterService = new MasterService("tcp://localhost:8080/Master");
+                coordinatorService = new CoordinatorService(masterService);
+                //timestampService = new TimestampService();
+                debugService = new DebugService(masterService);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
             return true;
         }
 
         public static bool TxBegin()
         {
             //var timestamp = timestampService.getTimestamp();
-            
+
             //quando retornar falso?quando se tenta criar uma transaccao com outra a decorrer?
             //return coordinatorService.Begin(timestamp);
-            return coordinatorService.Begin();
 
+            try
+            {
+                return coordinatorService.Begin();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
 
-           
         }
 
         public static bool TxCommit()
@@ -77,15 +92,12 @@ namespace PADI_DSTM
         public static PadInt CreatePadInt(int uid)
         {
             return coordinatorService.CreatePadInt(uid);
-           
         }
-        
 
         public static PadInt AccessPadInt(int uid)
         {
             return coordinatorService.AccessPadInt(uid);
         }
 
-       
     }
 }

@@ -15,6 +15,7 @@ namespace DSTMServices
 
             masterEndPoint = masterUrl;
             master = (IMaster)Activator.GetObject(typeof(IMaster), masterEndPoint);
+
         }
 
         public String GetPrimaryEndpoint(int uid) { 

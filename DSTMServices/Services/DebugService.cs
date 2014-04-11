@@ -11,7 +11,8 @@ namespace DSTMServices
     public class DebugService
     {
         private MasterService masterService;
-        public DebugService(MasterService masterS) {
+        public DebugService(MasterService masterS)
+        {
 
             masterService = masterS;
         }
@@ -19,8 +20,16 @@ namespace DSTMServices
         public bool Status()
         {
             IMaster master = masterService.Master;
-            bool result = master.Status();
-            return result;
+            try
+            {
+                bool result = master.Status();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
         }
 
         public bool Fail(String serverUrl)
@@ -29,9 +38,8 @@ namespace DSTMServices
             {
                 getServerProxyFromUrl(serverUrl).Fail(); //ancar excepcao se ja fez fail
             }
-            catch (FailStateException e)
+            catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
                 return false;
             }
@@ -44,9 +52,8 @@ namespace DSTMServices
             {
                 getServerProxyFromUrl(serverUrl).Freeze(); //ancar excepcao se ja fez fail
             }
-            catch (AlreadyFrozenException e)
+            catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
                 return false;
             }
@@ -59,20 +66,19 @@ namespace DSTMServices
             {
                 getServerProxyFromUrl(serverUrl).Recover(); //ancar excepcao se ja fez fail
             }
-            catch (NotFailedOrFrozenException e)
+            catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
                 return false;
             }
-           
-            return false;
+            return true;
         }
 
-        private IServer getServerProxyFromUrl(String urlString) {
+        private IServer getServerProxyFromUrl(String urlString)
+        {
 
             return (IServer)Activator.GetObject(typeof(IServer), urlString); //recentemente comentado MasterService
-        
+
         }
 
     }

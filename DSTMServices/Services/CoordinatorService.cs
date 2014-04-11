@@ -100,39 +100,41 @@ namespace DSTMServices
             {
                 foreach (IServer participant in participants)
                 {
-                    Console.WriteLine("There is one particiapant!!!!!!!!!!!");
                     decision &= participant.canCommit(currentTid);  //verificar se respondeu.usar metodo ping.isto funciona assumindo que respondem
                 }
             }
-            catch (SocketException e) {
-                Console.WriteLine("Failded to do canCommit!. Aborting now...with message: " + e.Message);
+            catch (SocketException e)
+            {
+                Console.WriteLine("Failed to do canCommit!. Aborting now...with message: " + e.Message);
                 decision = false;
-            
+
             }
 
             bool result = true;
 
             if (decision == true)
             {
-                Console.WriteLine("CAN COMMIT!!!!!");
                 foreach (IServer participant in participants)
                     try
                     {
                         result &= participant.doCommit(currentTid);
                     }
-                    catch (SocketException e) {
+                    catch (SocketException e)
+                    {
+                        result = false;
                         continue;
                     }
             }
             else
             {
-                Console.WriteLine("Is going to abort!!!!!");
                 foreach (IServer participant in participants)
                     try
                     {
                         result &= participant.doAbort(currentTid);
                     }
-                    catch (SocketException e) {
+                    catch (SocketException e)
+                    {
+                        result = false;
                         continue;
                     }
             }
@@ -150,7 +152,9 @@ namespace DSTMServices
                 {
                     result &= participant.doAbort(currentTid);
                 }
-                catch (SocketException e) {
+                catch (SocketException e)
+                {
+                    result = false;
                     continue;
                 }
 
@@ -182,11 +186,11 @@ namespace DSTMServices
             }
 
             //bool canBegin = false; //= server.BeginTransaction(tid, "");
-            
+
             //canBegin = serverRef.BeginTransaction(currentTid, ""); // verificar se lança excepcao.
-            
+
             //se a transaccao tem tid 0, acabou de começar. 
-       
+
 
             if (serverRef == null)
             {
@@ -240,20 +244,19 @@ namespace DSTMServices
 
         public PadInt CreatePadInt(int uid)
         {
-            Console.WriteLine("CreatePadint called with: " + uid);
 
             IServer server = lookupService.GetServer(uid);
             PadInt padInt = server.CreatePadInt(currentTid, uid);
 
             if (padInt == null)
                 return null;
-           
+
 
             PadIntLocal local = new PadIntLocal(uid);
 
             if (local == null)
                 return null;
-            
+
 
             local.changeHandler += this.OnPadintChange;
             local.readHandler += this.OnPadintRead;
@@ -267,22 +270,19 @@ namespace DSTMServices
 
             IServer server = lookupService.GetServer(uid);
             PadInt remote = server.AccessPadInt(currentTid, uid);
-            
+
             if (remote == null)
-            {
                 return null;
-            }
-            
+
             int value = remote.Read();
 
-            PadIntLocal local = new PadIntLocal(uid,value);
-          
+            PadIntLocal local = new PadIntLocal(uid, value);
 
             local.changeHandler += this.OnPadintChange;
             local.readHandler += this.OnPadintRead;
-            
+
             return local;
-        
+
         }
 
         public void OnPadintChange(Object sender, EventArgs e)

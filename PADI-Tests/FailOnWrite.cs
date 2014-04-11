@@ -73,7 +73,7 @@ namespace PADI_Tests
         [ExpectedException(typeof(PadIntWriteTooLate))]
         public void TestFailOnWrite()
         {
-
+            
             bool canBegin1 = proxy1.TxBegin();
             bool canBegin2 = proxy2.TxBegin();
             Assert.IsTrue(canBegin1, "Could not begin transaction1");

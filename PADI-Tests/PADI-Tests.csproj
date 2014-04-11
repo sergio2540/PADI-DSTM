@@ -52,10 +52,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicReadWrite.cs" />
-    <Compile Include="FailOnRead.cs" />
+    <Compile Include="FailOnWrite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadAfterCommit.cs" />
-    <Compile Include="Teste.cs" />
+    <Compile Include="Partitioning.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">
