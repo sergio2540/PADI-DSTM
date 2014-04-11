@@ -34,10 +34,17 @@ namespace Server
                 return localIP;
             }
 
+            private static string GetIp()
+            {
+                string strHostName = System.Net.Dns.GetHostName();
+                IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+                IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+                return ipv4Addresses.ToString();
+
+            }
+
             public ulong getTimestamp()
             {
-
-                //get clock
                 
                 long beginTicks = new DateTime(2014, 1, 1).Ticks;
                 long endTicks = DateTime.UtcNow.Ticks;
@@ -46,26 +53,22 @@ namespace Server
 
                 TimeSpan elapsed = new TimeSpan(elapsedTicks);
 
-                long t = (long)elapsed.TotalMilliseconds;
+                ulong t = (ulong) elapsed.TotalMilliseconds;
 
+                string localIp = GetIp();
 
+                byte[] bytes = IPAddress.Parse(localIp).GetAddressBytes();
 
-                //get IP
+                Array.Reverse(bytes);
 
-                //Provavelmente deve ser o master a emitir um id
-                
-                string localIp = getLocalIp();
+                uint ip = BitConverter.ToUInt32(bytes, 0);
 
-                uint ip = BitConverter.ToUInt32(IPAddress.Parse(localIp).GetAddressBytes(), 0);
-
-                
-
-
-                ulong timestamp = (ulong)t << 52 | ip;
+                ulong timestamp = (ulong) t << 32 | ip;
 
                 Console.WriteLine("time {0}, server-id {1}, timestamp-service {2}", t, ip,timestamp);
 
                 return timestamp;
+
             }
         }
     

@@ -14,36 +14,14 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-using CommandLine;
-using CommandLine.Text; 
-
 namespace Server
-{   
-    
-    class Options
-    {
-    
-
-    [Option('i', "master-ip", HelpText = "O IP do master.")]
-    public string Master_IP { get; set; }
-
-    [Option('p', "master-port", HelpText = "A porta do master.")]
-    public int Master_Port { get; set; }
-    /*
-    [Option("sp", "server-port", HelpText = "A porta do servidor.")]
-    public int Server_Port { get; set; }
-    */
-
-  
-    }
-    
-      
+{
 
     public class ServerApp
     {
         public static bool inFailMode = false;
         public static bool inFreezeMode = false;
-        public static EventWaitHandle frozenCalls =  new EventWaitHandle(true, EventResetMode.ManualReset);
+        public static EventWaitHandle frozenCalls = new EventWaitHandle(true, EventResetMode.ManualReset);
 
 
         private static string GetIp()
@@ -54,17 +32,17 @@ namespace Server
             return ipv4Addresses.ToString();
 
         }
-     
-     
 
-        public static void Main(String[] args) {
+        public static void Main(String[] args)
+        {
 
-             String master_ip = String.Empty;
-             int master_port = 0;
+            String master_ip = String.Empty;
+            int master_port = 0;
 
-          
-            if(args.Length == 2){
-              
+
+            if (args.Length == 2)
+            {
+
                 master_ip = args[0];
                 master_port = int.Parse(args[1]);
 
@@ -74,61 +52,50 @@ namespace Server
                 Console.WriteLine("Argumentos Invalidos.");
             }
 
-       
+
             Random r = new Random();
             int server_port = 0;
             TcpChannel channel = null;
 
-            while (true) {
-                server_port = r.Next(8081,9000);
+            while (true)
+            {
+                server_port = r.Next(8081, 9000);
 
                 try
                 {
                     channel = new TcpChannel(server_port);
                     break;
 
-                }catch(Exception e){
-                   
-                
+                }
+                catch (Exception e)
+                {
+
+
                 }
 
-
-            
             }
 
-            
-         
             ChannelServices.RegisterChannel(channel, false);
-
-            
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
 
-        
-          
-
             //String[] ipFile = File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), @"IpConf.txt"));
             //String ip = ipFile[0].Replace(System.Environment.NewLine, String.Empty);
-           
 
-
-            String master_endpoint = String.Format("tcp://{0}:{1}/Master",master_ip,master_port);
+            String master_endpoint = String.Format("tcp://{0}:{1}/Master", master_ip, master_port);
             string server_ip = GetIp();
-            String server_endpoint = String.Format("tcp://{0}:{1}/Server",server_ip, server_port);
+            String server_endpoint = String.Format("tcp://{0}:{1}/Server", server_ip, server_port);
 
-
-            
-            while(true) {
-
+            while (true)
+            {
 
                 try
                 {
 
                     IMaster master = (IMaster)Activator.GetObject(typeof(IMaster), master_endpoint);
-                    
+
                     master.AddServer(server_endpoint);
 
-                    
                     Console.WriteLine("Master App - url: " + master_endpoint);
                     Console.WriteLine("Success connection to Master.");
 
@@ -136,12 +103,12 @@ namespace Server
                     Console.WriteLine("Server is up.");
                     Console.WriteLine("Press enter to exit...");
                     Console.ReadKey();
-                    
+
                 }
                 catch (Exception e)
                 {
 
-                    
+
                     Console.WriteLine("Exception message:" + e.Message);
                     //Tenta ligar novamente
                     Console.WriteLine("Press enter to retry connection");
@@ -151,8 +118,8 @@ namespace Server
 
 
             }
-           
-        
+
+
         }
 
     }
