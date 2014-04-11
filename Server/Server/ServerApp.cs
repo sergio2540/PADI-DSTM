@@ -12,6 +12,7 @@ using CommonTypes;
 using System.Threading;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Server
 {   
@@ -28,15 +29,11 @@ namespace Server
 
         private static string GetIp()
         {
-            string strHostName = "";
-            strHostName = System.Net.Dns.GetHostName();
-            Console.WriteLine(strHostName);
-
+            string strHostName = System.Net.Dns.GetHostName();
             IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress ipv4Addresses = Array.FindLast(ipEntry.AddressList, x => x.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Addresses.ToString();
 
-            string ipaddress = Convert.ToString(ipEntry.AddressList[2]);
-
-            return ipaddress.ToString();
         }
      
      

@@ -138,7 +138,7 @@ namespace Server
             if(tentatives.Count == 0)
 {
                 Console.WriteLine("Nao ha tentativas");
-                objectsInServer[uid].addTentative(tid,new PadIntTentative(uid, tid, committed.Value));//////////////////////////////////////////////////////////////////////
+                objectsInServer[uid].addTentative(tid,new PadIntTentative(uid, tid, tid, committed.Value));//////////////////////////////////////////////////////////////////////
 
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
 
@@ -165,7 +165,7 @@ Console.WriteLine("Ha tentativas desta transaccao");
  {
                 Console.WriteLine("Most updsted = null");
 
-                objectsInServer[uid].addTentative(tid, new PadIntTentative(uid, tid, committed.Value));//////////////////////////////////////////////////////////////////////
+                objectsInServer[uid].addTentative(tid, new PadIntTentative(uid, tid ,tid, committed.Value));//////////////////////////////////////////////////////////////////////
 
                 transactions[tid].addModifiedObjectId(uid); ////depois de modificar o object, adiciona-lo à transaccao para sabermos o que mudamos no fim.
 
@@ -247,7 +247,7 @@ Console.WriteLine("O maximo esta commited");
 
             ulong tMax = (ulong) tentatives.Max(x => x.Value.ReadTimestamp);
 
-            
+            Console.WriteLine("Tid: " + tid + "Tmax: " + tMax);
 
             //Verificacao 2: Ja existem leituras de transaccoes a serem processadas
             if (tid < tMax)

@@ -113,12 +113,9 @@ namespace Server
                 ServerApp.frozenCalls.WaitOne();
             int temp = 0;
 
-            try{
-                temp = transactionalManager.Read(tid, uid);
-             }
-            catch (Exception e) {
-                Console.WriteLine(e);
-            }
+         
+            temp = transactionalManager.Read(tid, uid);
+            
 
             return temp;
         }
@@ -131,13 +128,8 @@ namespace Server
             if (ServerApp.inFreezeMode)
                 ServerApp.frozenCalls.WaitOne();
 
-            try
-            {
-                transactionalManager.Write(tid, uid, value);
-            }
-            catch (Exception e) {
-                Console.WriteLine(e);
-            }
+            transactionalManager.Write(tid, uid, value);
+            
         }
 
 

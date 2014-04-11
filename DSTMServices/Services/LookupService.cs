@@ -93,75 +93,80 @@ namespace DSTMServices
             //master.GetReplicaEndpoint(uid);
 
             //Cache
+
             endpoints[uid] = endpoint;
             
-            return endpoints[uid];
+            return endpoint;
         }
 
         public IServer GetServer(int uid)
         {
 
-           
-            if (!servers.ContainsKey(uid))
-            {
-                //Nao existe servidor
 
-                String endpoint = master.GetPrimaryEndpoint(uid);
-                endpoints[uid] = endpoint;
 
-                Console.WriteLine(endpoint);
-                
-                //url = ....procura no master
-                //adicionar ao dicionario de strings e de referencias.
+                String endpoint = GetServerEndpoint(uid);
 
-              
                 IServer server = (IServer)Activator.GetObject(typeof(IServer), endpoint);
-                
-                if (server == null)
+                servers[uid] = server;
+                return server;
+
+                if (!servers.ContainsKey(uid))
                 {
-                    return null;
-                }
+                    //Nao existe servidor
+
+                    //String endpoint = GetServerEndpoint(uid);
+
+                    //url = ....procura no master
+                    //adicionar ao dicionario de strings e de referencias.
+                    if (server == null)
+                    {
+                     return null;
+                    }
 
                 //este foreach so deve estar activo quando ainda não existirem endpoints por defeito.
                 //Console.WriteLine("Vamos verificar se já ligámos a este server");
 
-                foreach(KeyValuePair<int ,String> e in endpoints)
-                {
-                  if(e.Value.Equals(endpoint) && (servers.ContainsKey(e.Key))) //ja existe url e ja existe referencia.
-                    return server; 
+                //foreach(KeyValuePair<int ,String> e in endpoints)
+                //{
+                    //if(servers.ContainsKey(uid))
+                    //if (e.Value.Equals(endpoint) && (servers.ContainsKey(uid))) //ja existe url e ja existe referencia.
+                    //{
+                   servers[uid] = server;
+                        //Console.WriteLine("The server is already registred here with endpoint:::::::::::::::" + endpoint + "Uid:" + );
+                        //return server;
+                    //}
+                //}                
 
-                }                
-
-                Console.WriteLine("About to begin transaction!");
+                //Console.WriteLine("About to begin transaction!");
 
                 //e se tivermos dois objectos diferentes mas que estao no mesmo server begin de novo?
                 //bool canBegin = server.BeginTransaction(tid, "");
 
                 //adiciona a cache
-                servers[uid] = server;
-                return server;
+ //               Console.WriteLine("Saving endpointref: " + uid);
+
+                //servers[uid] = server;
+               // return server;
 
             }
             //Ja existe na cache
-            else {
-
-                 String endpoint = master.GetPrimaryEndpoint(uid);
-                 endpoints[uid] = endpoint;
-            IServer server = (IServer)Activator.GetObject(typeof(IServer), endpoint);
-            servers[uid] = server;
-            return server;
-
+            //else {
+                //Console.WriteLine("Has already server: " + uid);
                 //return servers[uid];
-            }
+                return server;
+            //}
 
         }
 
         //begin se for a primeira vez que vai ao server x.
 
         public void AddParticipant(ulong currentTid, int uid) {
-            Console.WriteLine("Tid: " + currentTid + endpoints);
+            foreach(KeyValuePair<int ,String> st in endpoints)
+                Console.WriteLine("Tid: " + currentTid + "Value: " + st.Value + "Key:" + st.Key);
+
             IServer server = servers[uid];
             String url = endpoints[uid];
+
             if (!participants.Contains(url)) { 
                 server.BeginTransaction(currentTid, "");
                 participants.Add(url);
