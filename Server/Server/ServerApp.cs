@@ -38,43 +38,29 @@ namespace Server
 
             String master_ip = String.Empty;
             int master_port = 0;
+            int server_port = 0;
 
 
-            if (args.Length == 2)
+            if (args.Length == 3)
             {
 
                 master_ip = args[0];
                 master_port = int.Parse(args[1]);
+                server_port = int.Parse(args[2]);
 
             }
             else
             {
-                Console.WriteLine("Argumentos Invalidos.");
+                Console.WriteLine("Argumentos Invalidos!");
+                Console.WriteLine("Press enter to exit...");
+                Console.ReadKey();
+                return;
             }
 
 
-            Random r = new Random();
-            int server_port = 0;
-            TcpChannel channel = null;
-
-            while (true)
-            {
-                server_port = r.Next(8081, 9000);
-
-                try
-                {
-                    channel = new TcpChannel(server_port);
-                    break;
-
-                }
-                catch (Exception e)
-                {
 
 
-                }
-
-            }
-
+            TcpChannel channel = new TcpChannel(server_port);
             ChannelServices.RegisterChannel(channel, false);
 
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(ServerImpl), "Server", WellKnownObjectMode.Singleton);
