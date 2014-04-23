@@ -51,9 +51,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Cicle.cs" />
-    <Compile Include="CrossedLocks.cs" />
-    <Compile Include="SampleApp.cs" />
+    <Compile Include="Checkpoint\Cicle.cs" />
+    <Compile Include="Checkpoint\CrossedLocks.cs" />
+    <Compile Include="Checkpoint\SampleApp.cs" />
     <Compile Include="FailOnWrite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadAfterCommit.cs" />

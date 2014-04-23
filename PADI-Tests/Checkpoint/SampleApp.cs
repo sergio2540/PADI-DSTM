@@ -184,7 +184,7 @@ namespace PADI_Tests
                 Console.WriteLine("####################################################################");
                 Assert.IsTrue(res, "Failed to commit second transaction");
             }
-            catch (Exception e)                Assert.IsTrue(res, "Failed to commit third transaction.");
+            catch (Exception e)
 
             {
                 Console.WriteLine("Exception: " + e.Message);
