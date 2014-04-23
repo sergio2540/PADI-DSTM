@@ -16,15 +16,16 @@ using System.Net.Sockets;
 namespace PADI_Tests
 {
     /// <summary>
-    /// Summary description for SampleApp
+    /// Summary description for CrossedLocks
     /// </summary>
     [TestClass]
-    public class SampleApp
+    public class CrossedLocks
     {
         static Process master;
         static Process server;
         private const int PAD_ID1 = 20;
         private const int PAD_ID2 = 30;
+
 
         private static string GetIp()
         {
@@ -35,13 +36,15 @@ namespace PADI_Tests
 
         }
 
+
         [ClassInitialize]
         public static void TestInitialize(TestContext c)
         {
-
             String master_ip = GetIp();
             String master_port = "8080";
             String server_port = "8081";
+
+
 
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
@@ -54,11 +57,9 @@ namespace PADI_Tests
             server = Process.Start(startInfo);
 
 
-
-
         }
 
-        public SampleApp()
+        public CrossedLocks()
         {
             //
             // TODO: Add constructor logic here
@@ -106,112 +107,113 @@ namespace PADI_Tests
         #endregion
 
         [TestMethod]
-        public void TestSampleApp()
+        public void CrossedLocksTest()
         {
             bool res = false;
             PadInt pi_a, pi_b;
             PadiDstm.Init();
 
-            // Create 2 PadInts
-            //if ((args.Length > 0) && (args[0].Equals("C")))
-            //{
+           // if ((args.Length > 0) && (args[0].Equals("C")))
+           // {
                 try
                 {
                     res = PadiDstm.TxBegin();
-                    Assert.IsTrue(res,"Failed to begin first transaction.");
+                    Assert.IsTrue(res, "Failed to begin first transaction.");
                     pi_a = PadiDstm.CreatePadInt(1);
-                    Assert.IsNotNull(pi_a, "Failed to create padint a.");
+                    Assert.IsNotNull(pi_a,"Failed to create padint a.");
                     pi_b = PadiDstm.CreatePadInt(2000000000);
                     Assert.IsNotNull(pi_b, "Failed to create padint b.");
-
                     Console.WriteLine("####################################################################");
                     Console.WriteLine("BEFORE create commit. Press enter for commit.");
                     Console.WriteLine("####################################################################");
                     PadiDstm.Status();
                     res = PadiDstm.TxCommit();
-                    Console.WriteLine("####################################################################");
-                    Console.WriteLine("AFTER create commit returned " + res + " . Press enter for next transaction.");
-                    Console.WriteLine("####################################################################");
                     Assert.IsTrue(res, "Failed to commit first transaction.");
-
+                    Console.WriteLine("####################################################################");
+                    Console.WriteLine("AFTER create commit. commit = " + res + " . Press enter for next transaction.");
+                    Console.WriteLine("####################################################################");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Exception: " + e.Message);
                     Console.WriteLine("####################################################################");
-                    Console.WriteLine("AFTER create ABORT. Commit returned " + res + " . Press enter for next transaction.");
+                    Console.WriteLine("AFTER create ABORT. Commit returned " + res + " . Press enter for abort and next transaction.");
                     Console.WriteLine("####################################################################");
                     PadiDstm.TxAbort();
-                    Assert.Fail("Failed to commit first transaction.");
+                    Assert.Fail("Failed to finalize first transaction.");
                 }
-            //}
+
+           // }
 
             try
             {
                 res = PadiDstm.TxBegin();
                 Assert.IsTrue(res, "Failed to begin second transaction.");
-                pi_a = PadiDstm.AccessPadInt(1);
-                Assert.IsNotNull(pi_a, "Failed to access padint a.");
-                pi_b = PadiDstm.AccessPadInt(2000000000);
-                Assert.IsNotNull(pi_b, "Failed to access padint b.");
-                Console.WriteLine("####################################################################");
-                Console.WriteLine("Status after AccessPadint");
-                Console.WriteLine("####################################################################");
-                PadiDstm.Status();
-                //if ((args.Length > 0) && ((args[0].Equals("C")) || (args[0].Equals("A"))))
-                //{
-                    pi_a.Write(11);
-                    pi_b.Write(12);
+               // if ((args.Length > 0) && ((args[0].Equals("A")) || (args[0].Equals("C"))))
+               // {
+                    pi_b = PadiDstm.AccessPadInt(2000000000);
+                    Assert.IsNotNull(pi_b, "Failed to access padint 2000000000 on second transaction.");
+                    pi_b.Write(211);
+                    Console.WriteLine("####################################################################");
+                    Console.WriteLine("Status post first op: write. Press enter for second op.");
+                    Console.WriteLine("####################################################################");
+                    PadiDstm.Status();
+                    pi_a = PadiDstm.AccessPadInt(1);
+                    Assert.IsNotNull(pi_a, "Failed to access padint 1 on second transaction.");
+                    //pi_a.Write(212);
+                    Console.WriteLine("####################################################################");
+                    Console.WriteLine("Status post second op: read. uid(1)= " + pi_a.Read() + ". Press enter for commit.");
+                    Console.WriteLine("####################################################################");
+                    PadiDstm.Status();
+               // }
+               // else
+               // {
+                    pi_a = PadiDstm.AccessPadInt(1);
+                    Assert.IsNotNull(pi_a, "Failed to access padint 1 on second transaction.");
+                    pi_a.Write(221);
+                    Console.WriteLine("####################################################################");
+                    Console.WriteLine("Status post first op: write. Press enter for second op.");
+                    Console.WriteLine("####################################################################");
+                    PadiDstm.Status();
+                    pi_b = PadiDstm.AccessPadInt(2000000000);
+                    Assert.IsNotNull(pi_b, "Failed to access padint 2000000000  on second transaction.");
+                    //pi_b.Write(222);
+                    Console.WriteLine("####################################################################");
+                    Console.WriteLine("Status post second op: read. uid(1)= " + pi_b.Read() + ". Press enter for commit.");
+                    Console.WriteLine("####################################################################");
+                    PadiDstm.Status();
                 //}
-                //else
-                //{
-                    pi_a.Write(21);
-                    pi_b.Write(22);
-                //}
-                Console.WriteLine("####################################################################");
-                Console.WriteLine("Status after write. Press enter for read.");
-                Console.WriteLine("####################################################################");
-                PadiDstm.Status();
-                Console.WriteLine("1 = " + pi_a.Read());
-                Console.WriteLine("2000000000 = " + pi_b.Read());
-                Console.WriteLine("####################################################################");
-                Console.WriteLine("Status after read. Press enter for commit.");
-                Console.WriteLine("####################################################################");
-                PadiDstm.Status();
                 res = PadiDstm.TxCommit();
-                Console.WriteLine("####################################################################");
-                Console.WriteLine("Status after commit. commit = " + res + "Press enter for verification transaction.");
-                Console.WriteLine("####################################################################");
                 Assert.IsTrue(res, "Failed to commit second transaction");
+                Console.WriteLine("####################################################################");
+                Console.WriteLine("commit = " + res + " . Press enter for verification transaction.");
+                Console.WriteLine("####################################################################");
             }
-            catch (Exception e)                Assert.IsTrue(res, "Failed to commit third transaction.");
-
+            catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
                 Console.WriteLine("####################################################################");
                 Console.WriteLine("AFTER r/w ABORT. Commit returned " + res + " . Press enter for abort and next transaction.");
                 Console.WriteLine("####################################################################");
                 PadiDstm.TxAbort();
-                Assert.IsTrue(res, "Failed to commit second transaction");
-
             }
 
             try
             {
                 res = PadiDstm.TxBegin();
-                Assert.IsTrue(res, "Failed to begin third transaction");
                 PadInt pi_c = PadiDstm.AccessPadInt(1);
-                Assert.IsNotNull(pi_c, "Failed to access padint 1 on third transaction.");
                 PadInt pi_d = PadiDstm.AccessPadInt(2000000000);
-                Assert.IsNotNull(pi_d, "Failed to access padint 2000000000 on third transaction.");
-                Console.WriteLine("####################################################################");
-                Console.WriteLine("1 = " + pi_c.Read());
+                Console.WriteLine("0 = " + pi_c.Read());
                 Console.WriteLine("2000000000 = " + pi_d.Read());
-                Console.WriteLine("Status after verification read. Press enter for commit and exit.");
+                Console.WriteLine("####################################################################");
+                Console.WriteLine("Status after verification read. Press enter for verification commit.");
                 Console.WriteLine("####################################################################");
                 PadiDstm.Status();
                 res = PadiDstm.TxCommit();
                 Assert.IsTrue(res, "Failed to commit third transaction.");
+                Console.WriteLine("####################################################################");
+                Console.WriteLine("commit = " + res + " . Press enter for exit.");
+                Console.WriteLine("####################################################################");
             }
             catch (Exception e)
             {
@@ -220,9 +222,9 @@ namespace PADI_Tests
                 Console.WriteLine("AFTER verification ABORT. Commit returned " + res + " . Press enter for abort and exit.");
                 Console.WriteLine("####################################################################");
                 PadiDstm.TxAbort();
-                Assert.IsTrue(res, "Failed to commit third transaction.");
-
+                Assert.Fail("Exception block. Failed to commit.");
             }
+
         }
     }
 }
