@@ -56,7 +56,7 @@ namespace Master
         {
             lookupTable.Remove(row);
         }
-
+        
         public string ToString()
         {
             string output = String.Empty;
@@ -69,5 +69,69 @@ namespace Master
 
         }
 
+
+        //Check if given string correspond to replica(false) or main server(true)
+        public bool IsPrimary(String url) {
+
+            foreach (TableRow row in lookupTable)
+            {
+                ServerPair pair = row.GetServerPair();
+                if (url.Equals(pair.GetPrimary()))
+                    return true;
+                else if (url.Equals(pair.GetReplica()))
+                    return false;
+            }
+
+            //DEVERIA SER LANCADA UMA EXCEPCAO POR NAO EXISTIR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            return false;
+        
+        }
+
+        private TableRow GetRowGivenReplica(String replicaUrl)
+        {
+            foreach (TableRow row in lookupTable)
+            {
+
+                ServerPair pair = row.GetServerPair();
+
+                if (replicaUrl.Equals(pair.GetReplica()))
+                {
+                    return row; //DEVIAMOS LANCAR EXCEPCAO CASO NAO EXISTA O MAIN SERVER.
+                }
+            }
+            return null;
+        }
+
+        private TableRow GetRowGivenPrimary(String primaryUrl)
+        {
+            foreach (TableRow row in lookupTable)
+            {
+
+                ServerPair pair = row.GetServerPair();
+
+                if (primaryUrl.Equals(pair.GetPrimary()))
+                {
+                    return row; //DEVIAMOS LANCAR EXCEPCAO CASO NAO EXISTA O MAIN SERVER.
+                }
+            }
+            return null;
+        }
+         
+        public void SetNewReplica(String oldReplicaUrl, String newReplicaUrl) {
+
+            GetRowGivenReplica(oldReplicaUrl).GetServerPair().SetReplica(newReplicaUrl);
+        
+        }
+
+        //
+        public void SwapPrimaryReplica(String oldPrimaryUrl, String newReplicaUrl) {
+
+            ServerPair pair = GetRowGivenPrimary(oldPrimaryUrl).GetServerPair();
+            pair.SetPrimary(pair.GetReplica());
+            pair.SetReplica(newReplicaUrl);
+            
+        
+        }
+    
     }
 }

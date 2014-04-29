@@ -99,9 +99,35 @@ namespace Master
 
         }
 
-        public bool RemoveServer(string URL)
+        public bool RemoveServer(string url)
         {
-            throw new NotImplementedException();
+            bool isPrimary = lookupTable.IsPrimary(url);
+            String newReplica = serverReplicasTable.getReplica();
+
+
+            //if the failed server is a main server we request another replica.
+            if (isPrimary) {
+                lookupTable.SwapPrimaryReplica(url,newReplica);
+                return true;
+             //if the failed server is a replica we get a new replica.
+            } else {
+                   
+                lookupTable.SetNewReplica(url,newReplica);
+                //LANCAR EXCEPCAO CASO HAJA FALHA
+
+            }
+
+            List<String> replicatedServers = serverReplicasTable.getReplicasFromServer(url);
+            if(replicatedServers == null)
+                throw new NotImplementedException();//MELHORAR ISTO
+            else{
+                    foreach(String replicatedServer in replicatedServers){
+                           //NOTIFICAR DA ALTERACAP
+                    }
+            
+            }
+            return true;
+            //throw new NotImplementedException();
         }
 
         //Get endpoints

@@ -22,13 +22,22 @@ namespace Master
             return URLPrimary;
         }
 
+        internal void SetPrimary(String primaryUrl)
+        {
+            URLPrimary = primaryUrl;
+        }
+
         public string GetReplica() {
             return URLReplica;
+        }
+
+        public void SetReplica(String replicaUrl) {
+            URLReplica = replicaUrl;
+        
         }
 
         public string ToString() {
             return "[P: " + URLPrimary + " " + "R: " + URLReplica + "]";
         }
-
     }
 }

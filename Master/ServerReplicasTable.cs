@@ -20,16 +20,16 @@ namespace Master
         {
 
             List<string> candidates = new List<string>();
-            int c = 0;
+            int replicatedIntervalsNo = 0;
             int min = int.MaxValue;
             string replica = String.Empty;
 
-            foreach(var kv in serverReplicas) {
+            foreach(KeyValuePair<String,List<String>> kv in serverReplicas) {
 
-                c = kv.Value.Count;
+                replicatedIntervalsNo = kv.Value.Count;
 
                 if (kv.Value.Count < min) {
-                    min = c;
+                    min = replicatedIntervalsNo;
                     replica = kv.Key;
                 }
             }
@@ -132,6 +132,7 @@ namespace Master
             return table;
         
         }
+
 
     }
 }
