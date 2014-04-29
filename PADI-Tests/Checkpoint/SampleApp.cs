@@ -192,7 +192,7 @@ namespace PADI_Tests
                 Console.WriteLine("AFTER r/w ABORT. Commit returned " + res + " . Press enter for abort and next transaction.");
                 Console.WriteLine("####################################################################");
                 PadiDstm.TxAbort();
-                Assert.IsTrue(res, "Failed to commit second transaction");
+                Assert.Fail("Failed to commit second transaction");
 
             }
 
@@ -220,7 +220,7 @@ namespace PADI_Tests
                 Console.WriteLine("AFTER verification ABORT. Commit returned " + res + " . Press enter for abort and exit.");
                 Console.WriteLine("####################################################################");
                 PadiDstm.TxAbort();
-                Assert.IsTrue(res, "Failed to commit third transaction.");
+                Assert.Fail("Failed to commit third transaction.");
 
             }
         }

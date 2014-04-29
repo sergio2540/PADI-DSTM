@@ -114,7 +114,7 @@ namespace Server
             //fica a espera que sejam transferidos dados de um servidor que sofreu divisao do seeu range pela entrada deste novo server
             if (tid > maxTID)
             {
-                Console.WriteLine("read: tid>mazxTID");
+                //Console.WriteLine("read: tid>mazxTID");
 
                 waitForPadIntTransfer.Reset();
             }
@@ -133,7 +133,7 @@ namespace Server
             ulong tc = committed.WriteTimestamp;
             //ServerApp.debug = "Object commited with value: " + committed.Value;
 
-            Console.WriteLine(String.Format("on read:Tid:{0} Tc:{1}", tid, tc));
+            //Console.WriteLine(String.Format("on read:Tid:{0} Tc:{1}", tid, tc));
             if (tid <= tc)
                 throw new PadIntReadTooLate(tid, uid);
 
@@ -246,7 +246,7 @@ namespace Server
 
             ulong tMax = (ulong)tentatives.Max(x => x.Value.ReadTimestamp);
 
-            Console.WriteLine("Tid: " + tid + "Tmax: " + tMax);
+            //Console.WriteLine("Tid: " + tid + "Tmax: " + tMax);
 
             //Verificacao 2: Ja existem leituras de transaccoes a serem processadas
             if (tid < tMax)
@@ -299,7 +299,7 @@ namespace Server
 
             foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
             {
-                Console.WriteLine("Tid: " + tid + "modificou" + modifiedObjectId);
+                //Console.WriteLine("Tid: " + tid + "modificou" + modifiedObjectId);
                 tentatives = objectsInServer[modifiedObjectId].getTentatives();
                 while (tentatives.Min(x => x.Value.WriteTimestamp) < tid) //se houver apenas 1, é ele próprio e pode fazer commit.
                 // while ((tentatives.Count > 1) && (tentatives.Min(x => x.Value.WriteTimestamp) < tid)) //se houver apenas 1, é ele próprio e pode fazer commit.
@@ -328,11 +328,11 @@ namespace Server
             PadIntTentative tentative = null;
             PadIntCommitted commited = null;
             //desbloquear threads em espera no read com
-            Console.WriteLine("Em do commit Tid: " + tid);
+            //Console.WriteLine("Em do commit Tid: " + tid);
 
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
-                Console.WriteLine("Em do commit no for Tid: " + tid + "modificou" + modifiedObject);
+                //Console.WriteLine("Em do commit no for Tid: " + tid + "modificou" + modifiedObject);
 
                 //por commited
                 //remover objecto transaccao
@@ -371,7 +371,7 @@ namespace Server
         private void checkTableOfPendingTransactions(ulong tid)
         {
 
-            Console.WriteLine(pendingTransactionSplitted.Count);
+            //Console.WriteLine(pendingTransactionSplitted.Count);
 
             bool transferDone = false;
 
@@ -453,14 +453,14 @@ namespace Server
             }
 
             //transferencia concluida
-            Console.WriteLine("transferenciua concluida");
+            //Console.WriteLine("transferenciua concluida");
             waitForPadIntTransfer.Set();
 
         }
 
         public void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange)
         {
-            Console.WriteLine("url: " + url + " tid: " + tid);
+            //Console.WriteLine("url: " + url + " tid: " + tid);
 
 
             pendingTransactionSplitted.Add(Tuple.Create(url, tid, startRange, endRange));

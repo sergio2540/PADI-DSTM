@@ -40,7 +40,7 @@ namespace Services
         }
 
         public void Write(int value) {
-            Console.WriteLine("write called!");
+            //Console.WriteLine("write called!");
             this.value = value;//temos de verificar que a escrita teve sucesso. 
             if (changeHandler != null)
                 changeHandler(this, null);

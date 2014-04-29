@@ -166,8 +166,8 @@ namespace DSTMServices
         //begin se for a primeira vez que vai ao server x.
 
         public void AddParticipant(ulong currentTid, int uid) {
-            foreach(KeyValuePair<int ,String> st in endpoints)
-                Console.WriteLine("Tid: " + currentTid + "Value: " + st.Value + "Key:" + st.Key);
+            //foreach(KeyValuePair<int ,String> st in endpoints)
+              // Console.WriteLine("Tid: " + currentTid + "Value: " + st.Value + "Key:" + st.Key);
 
             IServer server = servers[uid];
             String url = endpoints[uid];

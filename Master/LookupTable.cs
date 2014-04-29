@@ -42,7 +42,7 @@ namespace Master
 
             }
 
-            Console.WriteLine("Servidor responsável por uid não encontrado");
+            //Console.WriteLine("Servidor responsável por uid não encontrado");
             return null;
         }
 
