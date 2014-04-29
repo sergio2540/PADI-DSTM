@@ -48,16 +48,15 @@ namespace Master
 
 
             String primary_url = URL;
-            //String replica_url = URL;
             UIDRange newUIDRange = null;
 
             if (lookupTable.Size() == 0)
             {
                 //Primeiro servidor
-                newUIDRange = lookupTable.DefaultUIDRange;   
+                newUIDRange = lookupTable.DefaultUIDRange;
 
             }
-            else 
+            else
             {
 
                 TableRow temp = lookupTable.GetRow(index);
@@ -71,18 +70,29 @@ namespace Master
                 IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), primary_url);
                 newPrimaryServer.SetMaxTID(oldPrimaryTid);
 
-                //atribui replica
-                //da server para pedir os uids 
 
-                //Nao existem replicas pois existe apenas 1 servidor no sistema
+                //A tabela so temos o servidor 1 e entrou um novo srvidor 
+                //como agora temos 2 servidores, o novo servidor pode 
+                //ser replica do servidor 1
+
                 if (lookupTable.Size() == 1)
                 {
-                    //temp.GetServerPair().addReplica(primary_url);
+                    //Como era o unico servidor no sistema nao tinha replica
+                    //adiciona-mos a replica agora que entrou um segundo
+                    //servidor, e este o que entrou (primary_url) e a replica
+                    //do anterior
+
+                    //outlink
+                    ServerPair sp = new ServerPair(temp.GetServerPair().GetPrimary(), primary_url);
+                    lookupTable.ReplaceRow(index, new TableRow(sp, temp.GetUIDRange()));
+
+                    //inlink
+                   
+                    serverReplicasTable.addReplicaToServer(primary_url, temp.GetServerPair().GetPrimary());
+
                 }
-            
+
             }
-            //1 2 3
-            //TODO:Buscar replica
             
             String replica_url = serverReplicasTable.getReplica();
 
@@ -92,8 +102,15 @@ namespace Master
             lookupTable.InsertRow(index, newTableRow);
 
             //inlinks
+            //primary_url e adicionado como candidato para 
+            //ser escolhido como replica de qualquer outro
+            //servidor
             serverReplicasTable.addPrimary(primary_url);
-            serverReplicasTable.addReplicaToServer(primary_url, replica_url);
+
+            //Se existir replica disponivel
+            //replica_url e responsavel por primary_url
+            if (!replica_url.Equals(String.Empty))
+                serverReplicasTable.addReplicaToServer(replica_url, primary_url);
 
             return true;
 
