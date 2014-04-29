@@ -52,6 +52,11 @@ namespace Master
             lookupTable.Insert(index,row);
        }
 
+       public void ReplaceRow(int index, TableRow row)
+       {
+           lookupTable[index] = row;
+       }
+
         public void RemoveRow(TableRow row)
         {
             lookupTable.Remove(row);
