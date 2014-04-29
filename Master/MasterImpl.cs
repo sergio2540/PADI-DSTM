@@ -48,11 +48,18 @@ namespace Master
 
 
             String primary_url = URL;
-            String replica_url = URL;
+            //String replica_url = URL;
             UIDRange newUIDRange = null;
 
-            if (lookupTable.Size() != 0)
+            if (lookupTable.Size() == 0)
             {
+                //Primeiro servidor
+                newUIDRange = lookupTable.DefaultUIDRange;   
+
+            }
+            else 
+            {
+
                 TableRow temp = lookupTable.GetRow(index);
                 string oldPrimaryUrl = temp.GetServerPair().GetPrimary();
                 newUIDRange = temp.GetUIDRange().Split();
@@ -60,23 +67,31 @@ namespace Master
                 IServer oldPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), oldPrimaryUrl);
                 ulong oldPrimaryTid = oldPrimaryServer.GetMaxTID();
                 oldPrimaryServer.AddTIDToPendingTable(primary_url, oldPrimaryTid, newUIDRange.GetRangeStart(), newUIDRange.GetRangeEnd());
+
                 IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), primary_url);
                 newPrimaryServer.SetMaxTID(oldPrimaryTid);
 
                 //atribui replica
                 //da server para pedir os uids 
 
+                //Nao existem replicas pois existe apenas 1 servidor no sistema
+                if (lookupTable.Size() == 1)
+                {
+                    //temp.GetServerPair().addReplica(primary_url);
+                }
+            
             }
-            else
-            {
-                newUIDRange = lookupTable.DefaultUIDRange;
-            }
-
+            //1 2 3
             //TODO:Buscar replica
+            
+            String replica_url = serverReplicasTable.getReplica();
+
+            //outlinks
             ServerPair newServerPair = new ServerPair(primary_url, replica_url);
             TableRow newTableRow = new TableRow(newServerPair, newUIDRange);
             lookupTable.InsertRow(index, newTableRow);
 
+            //inlinks
             serverReplicasTable.addPrimary(primary_url);
             serverReplicasTable.addReplicaToServer(primary_url, replica_url);
 

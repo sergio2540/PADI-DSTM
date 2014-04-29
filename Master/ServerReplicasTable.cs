@@ -8,11 +8,51 @@ namespace Master
 {
     class ServerReplicasTable
     {
+        private List<string> availableReplicas = new List<string>();
 
         private Dictionary<string, List<string>> serverReplicas = new Dictionary<string, List<string>>();
 
         public ServerReplicasTable() {}
 
+
+        
+        public string getReplica()
+        {
+
+            List<string> candidates = new List<string>();
+            int c = 0;
+            int min = int.MaxValue;
+            string replica = String.Empty;
+
+            foreach(var kv in serverReplicas) {
+
+                c = kv.Value.Count;
+
+                if (kv.Value.Count < min) {
+                    min = c;
+                    replica = kv.Key;
+                }
+            }
+        
+
+            return replica;
+        }
+        
+
+        /*
+        public string getReplica()
+        {
+            if (availableReplicas.Count == 0)
+            {
+                //Se ja foram todos os servidores usados como replicas 
+                //Escolhe novos
+                availableReplicas = serverReplicas.Keys.ToList();
+            }
+
+            return replica;
+        }
+        */
+        
         public void addReplicaToServer(string server, string replica) {
 
             if (serverReplicas.ContainsKey(server))
