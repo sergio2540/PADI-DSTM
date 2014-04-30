@@ -15,6 +15,7 @@ namespace Master
 
         private LookupTable lookupTable = new LookupTable();
         private ServerReplicasTable serverReplicasTable = new ServerReplicasTable();
+        private delegate void AddTIDToPendingTableAsyncDelegate(string url, ulong tid, int startRange, int endRange);
 
         public override object InitializeLifetimeService()
         {
@@ -120,29 +121,40 @@ namespace Master
         {
             bool isPrimary = lookupTable.IsPrimary(url);
             String newReplica = serverReplicasTable.getReplica();
+            String newPrimary = null;
 
 
-            //if the failed server is a main server we request another replica.
+            //if the failed server is a primary server we request another replica and set replica as primary
             if (isPrimary) {
                 lookupTable.SwapPrimaryReplica(url,newReplica);
-                return true;
-             //if the failed server is a replica we get a new replica.
+                newPrimary = lookupTable.GetRowGivenReplica(newReplica).GetServerPair().GetPrimary();
+             //if the failed server is a replica we get a new replica 
             } else {
-                   
                 lookupTable.SetNewReplica(url,newReplica);
+                newPrimary = lookupTable.GetRowGivenReplica(url).GetServerPair().GetPrimary();
+
                 //LANCAR EXCEPCAO CASO HAJA FALHA
 
             }
 
             List<String> replicatedServers = serverReplicasTable.getReplicasFromServer(url);
-            if(replicatedServers == null)
-                throw new NotImplementedException();//MELHORAR ISTO
-            else{
+           
+            if (replicatedServers.Count != 0){
+                //NOTIFICAR DA ALTERACAO
+
                     foreach(String replicatedServer in replicatedServers){
-                           //NOTIFICAR DA ALTERACAP
+                        IServer server = (IServer)Activator.GetObject(typeof(IServer), replicatedServer);
+                        //AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange)
+				        AddTIDToPendingTableAsyncDelegate remoteDel = new AddTIDToPendingTableAsyncDelegate(server.AddTIDToPendingTable);
+                        UIDRange primaryRange = lookupTable.GetRowGivenPrimary(replicatedServer).GetUIDRange();
+                        remoteDel.BeginInvoke(newReplica,server.GetMaxTID(),primaryRange.GetRangeStart(),primaryRange.GetRangeEnd(),null,null);
                     }
-            
             }
+            
+            IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), newPrimary);
+            AddTIDToPendingTableAsyncDelegate primaryServerDel = new AddTIDToPendingTableAsyncDelegate(newPrimaryServer.AddTIDToPendingTable);
+            UIDRange newPrimaryRange = lookupTable.GetRowGivenPrimary(newPrimary).GetUIDRange();
+            primaryServerDel.BeginInvoke(newReplica, newPrimaryServer.GetMaxTID(), newPrimaryRange.GetRangeStart(), newPrimaryRange.GetRangeEnd(), null, null);
             return true;
             //throw new NotImplementedException();
         }

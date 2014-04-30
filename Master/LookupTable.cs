@@ -92,7 +92,7 @@ namespace Master
         
         }
 
-        private TableRow GetRowGivenReplica(String replicaUrl)
+        public TableRow GetRowGivenReplica(String replicaUrl)
         {
             foreach (TableRow row in lookupTable)
             {
@@ -107,7 +107,7 @@ namespace Master
             return null;
         }
 
-        private TableRow GetRowGivenPrimary(String primaryUrl)
+        public TableRow GetRowGivenPrimary(String primaryUrl)
         {
             foreach (TableRow row in lookupTable)
             {
@@ -138,5 +138,6 @@ namespace Master
         
         }
     
+
     }
 }
