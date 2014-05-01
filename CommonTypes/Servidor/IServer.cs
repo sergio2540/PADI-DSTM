@@ -30,8 +30,11 @@ namespace CommonTypes
       void WritePadInt(ulong transactionId, int padintUid, int newValue);
 
       ulong GetMaxTID();
-      void SetMaxTID(ulong tid);
+      
+      void Init(ulong tid, string replica_url);
 
+      void SetReplica(string replica_url);
+      
       ulong GetTid();
 
       void SendPadInt(List<PadIntRemote> padInts);

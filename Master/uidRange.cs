@@ -43,13 +43,31 @@ namespace Master
         public UIDRange Split()
         {
 
-            int range_size = (int)(right_uid - left_uid) + 1;
-            int new_left_uid = (int)left_uid;
-            int new_right_uid = left_uid + (int)(range_size / 2) - 1;
+            //int range_size = (int)(right_uid - left_uid) + 1;
+            
+           
+
+            //int new_left_uid = (int)left_uid;
+            //int new_right_uid = left_uid + (int)(range_size / 2) - 1;
 
             //Update referencia
-            left_uid = left_uid + range_size / 2;
+            //left_uid = left_uid + range_size / 2;
             //right_uid = right_uid;
+
+
+            int new_left_uid = left_uid;
+
+            int half = (int)Math.Round(((Math.Abs(right_uid - 1) - Math.Abs(left_uid + 1)) / 2.0f));
+            //Console.WriteLine(half);
+
+
+
+            int new_right_uid = half;
+            
+            //Update referencia
+            this.left_uid =  half + 1;
+            //right_uid = right_uid;
+
 
             return new UIDRange(new_left_uid, new_right_uid);
 

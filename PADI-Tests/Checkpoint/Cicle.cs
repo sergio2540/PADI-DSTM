@@ -43,19 +43,21 @@ namespace PADI_Tests.CheckPoint
         {
             String master_ip = GetIp();
             String master_port = "8080";
-            String server_port = "8081";
+            String server_port = "808";
 
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
             master = Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
-            Thread.Sleep(2000);
-            //for (int i = 0; i < 20; i++)
+            Thread.Sleep(1000);
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
-            startInfo.Arguments = String.Format("{0} {1} {2}", master_ip, master_port, server_port);
-            server = Process.Start(startInfo);
-            Thread.Sleep(2000);
+            for (int i = 1; i < 5; i++)
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
+                startInfo.Arguments = String.Format("{0} {1} {2}", master_ip, master_port, server_port + i);
+                server = Process.Start(startInfo);
+                Thread.Sleep(1000);
+            }
 
 
 

@@ -45,10 +45,12 @@ namespace PADI_Tests
             ChannelServices.RegisterChannel(channel, false);
             master =  Process.Start(@"..\..\..\Master\bin\Debug\Master.exe");
             Thread.Sleep(3000);
+
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = @"..\..\..\Server\bin\Debug\Server.exe";
             startInfo.Arguments = String.Format("{0} {1} {2}", master_ip, master_port,server_port);
             server1 = Process.Start(startInfo);
+         
 
             //new Thread(new ThreadStart(run)).Start();
             
@@ -132,9 +134,9 @@ namespace PADI_Tests
 
         [ClassCleanup]
         public static void ClassCleanUp() {
-            server1.Kill();
-            server2.Kill();
-            master.Kill();
+            //server1.Kill();
+            //server2.Kill();
+            //master.Kill();
         
         }
 

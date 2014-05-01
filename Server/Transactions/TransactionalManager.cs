@@ -30,6 +30,8 @@ namespace Server
         //novo
         private ulong maxTID = ulong.MaxValue;
 
+        private IServer replica = null;
+
         //velho
         private List<Tuple<string, ulong, int, int>> pendingTransactionSplitted;
 
@@ -62,6 +64,12 @@ namespace Server
         internal void SetMaxTID(ulong tid)
         {
             this.maxTID = tid;
+        }
+
+        internal void SetReplica(string replica_url)
+        {
+            IServer replica = (IServer)Activator.GetObject(typeof(IServer), replica_url);
+            this.replica = replica;
         }
 
         internal PadIntCommitted CreatePadInt(int uid)
@@ -327,6 +335,9 @@ namespace Server
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
             PadIntCommitted commited = null;
+
+            List<PadIntRemote> toReplicate = new List<PadIntRemote>();
+
             //desbloquear threads em espera no read com
             //Console.WriteLine("Em do commit Tid: " + tid);
 
@@ -350,6 +361,8 @@ namespace Server
                 commited.WriteTimestamp = tid;
                 commited.Value = tentative.Value;
 
+                toReplicate.Add(commited);
+
                 tentative.SetCommited();
                 tentatives.Remove(tid);
 
@@ -361,6 +374,7 @@ namespace Server
             //Transacção efectuda e agora removida
             transactions.Remove(tid);
 
+            replica.SendPadInt(toReplicate);
 
             checkTableOfPendingTransactions(tid);
 
@@ -449,11 +463,18 @@ namespace Server
             {
                 PadIntTransaction padTransaction = new PadIntTransaction(pad.uid);
                 padTransaction.setCommited(pad);
-                objectsInServer.Add(pad.uid, padTransaction);
+
+                if (!objectsInServer.ContainsKey(pad.uid)){
+                    objectsInServer.Add(pad.uid, padTransaction);
+                }
+                else
+                {
+                    objectsInServer[pad.uid] = padTransaction;
+                }
             }
 
             //transferencia concluida
-            //Console.WriteLine("transferenciua concluida");
+            Console.WriteLine("transferenciua concluida");
             waitForPadIntTransfer.Set();
 
         }

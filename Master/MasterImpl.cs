@@ -49,6 +49,8 @@ namespace Master
 
 
             String primary_url = URL;
+            String replica_url = String.Empty;
+            
             UIDRange newUIDRange = null;
 
             if (lookupTable.Size() == 0)
@@ -64,12 +66,16 @@ namespace Master
                 string oldPrimaryUrl = temp.GetServerPair().GetPrimary();
                 newUIDRange = temp.GetUIDRange().Split();
 
+
+                replica_url = serverReplicasTable.getReplica();
+
                 IServer oldPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), oldPrimaryUrl);
                 ulong oldPrimaryTid = oldPrimaryServer.GetMaxTID();
+                
                 oldPrimaryServer.AddTIDToPendingTable(primary_url, oldPrimaryTid, newUIDRange.GetRangeStart(), newUIDRange.GetRangeEnd());
 
                 IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), primary_url);
-                newPrimaryServer.SetMaxTID(oldPrimaryTid);
+                newPrimaryServer.Init(oldPrimaryTid, replica_url);
 
 
                 //A tabela so temos o servidor 1 e entrou um novo srvidor 
@@ -88,14 +94,15 @@ namespace Master
                     lookupTable.ReplaceRow(index, new TableRow(sp, temp.GetUIDRange()));
 
                     //inlink
-                   
                     serverReplicasTable.addReplicaToServer(primary_url, temp.GetServerPair().GetPrimary());
+
+                    oldPrimaryServer.SetReplica(primary_url);
 
                 }
 
             }
             
-            String replica_url = serverReplicasTable.getReplica();
+     
 
             //outlinks
             ServerPair newServerPair = new ServerPair(primary_url, replica_url);

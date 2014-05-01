@@ -230,8 +230,14 @@ namespace Server
 
         }
 
-        public void SetMaxTID(ulong tid) {
+        public void Init(ulong tid, string url) {
             transactionalManager.SetMaxTID(tid);
+            transactionalManager.SetReplica(url);
+        }
+
+        public void SetReplica(string url)
+        {
+            transactionalManager.SetReplica(url);
         }
 
         public void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange) {

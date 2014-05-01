@@ -18,7 +18,7 @@ namespace Master
             lookupTable = new List<TableRow>();
             //mudar este range para Int32.Max
             //DefaultUIDRange = new UIDRange(0, 2048);
-            DefaultUIDRange = new UIDRange(0, Int32.MaxValue);
+            DefaultUIDRange = new UIDRange(int.MinValue, int.MaxValue);
         }
 
        public int Size(){
