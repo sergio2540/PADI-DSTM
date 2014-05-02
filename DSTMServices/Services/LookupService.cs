@@ -88,12 +88,37 @@ namespace DSTMServices
         }
 
 
+        //FNV-1a
+        public static int Hash(int value)
+        {
+            const uint FNV_PRIME = 16777619;
+            const uint FNV_OFFSET = 2166136261;
+
+            uint hash = FNV_OFFSET;
+
+            byte[] b = BitConverter.GetBytes(value);
+
+            for (var i = 0; i < b.Length; i++)
+            {
+
+                hash ^= (uint)b[i];
+                hash *= FNV_PRIME;
+            }
+
+            return (int)hash;
+        }
+
+
 
 
         private String GetServerEndpoint(int uid)
         {
 
-            String endpoint = master.GetPrimaryEndpoint(uid);
+            int hash = Hash(uid);
+            String endpoint = master.GetPrimaryEndpoint(hash);
+
+            Console.WriteLine("UID: " + uid);
+            Console.WriteLine("Hash: " +hash);
             
             //master.GetReplicaEndpoint(uid);
 
