@@ -215,7 +215,18 @@ namespace DSTMServices
 
 
             lookupService.AddParticipant(currentTid, uid);
-            int answerValue = serverRef.ReadPadInt(currentTid, uid);//quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
+            int answerValue = 0; //quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
+
+            try {
+
+                answerValue = serverRef.ReadPadInt(currentTid, uid);
+
+            }
+            catch (SocketException e)
+            {
+                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
+
 
             return answerValue;
 
@@ -250,9 +261,19 @@ namespace DSTMServices
                 //o master tem de ser consultado
             }
 
+            try
+            {
 
-            lookupService.AddParticipant(currentTid, uid);
-            serverRef.WritePadInt(currentTid, uid, value);
+                lookupService.AddParticipant(currentTid, uid);
+                serverRef.WritePadInt(currentTid, uid, value);
+
+            }
+            catch (SocketException e)
+            {
+                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
+
+            
 
 
         }
@@ -260,8 +281,20 @@ namespace DSTMServices
         public PadInt CreatePadInt(int uid)
         {
 
-            IServer server = lookupService.GetServer(uid);
-            PadInt padInt = server.CreatePadInt(currentTid, uid);
+            IServer server = null;
+            PadInt padInt = null;
+
+            try
+            {
+                server = lookupService.GetServer(uid);
+                padInt = server.CreatePadInt(currentTid, uid);
+
+            }
+            catch (SocketException e)
+            {
+                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
+
 
             if (padInt == null)
                 return null;
@@ -283,8 +316,21 @@ namespace DSTMServices
         public PadInt AccessPadInt(int uid)
         {
 
-            IServer server = lookupService.GetServer(uid);
-            PadInt remote = server.AccessPadInt(currentTid, uid);
+            IServer server = null;
+            PadInt remote = null;
+
+
+            try
+            {
+                server = lookupService.GetServer(uid);
+                remote = server.AccessPadInt(currentTid, uid);
+
+            }
+            catch (SocketException e)
+            {
+                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
+
 
             if (remote == null)
                 return null;
