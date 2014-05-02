@@ -59,6 +59,7 @@
     <Compile Include="ReadAfterCommit.cs" />
     <Compile Include="Partitioning.cs" />
     <Compile Include="CreatePadInt.cs" />
+    <Compile Include="CheckLoadBalancing.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">
