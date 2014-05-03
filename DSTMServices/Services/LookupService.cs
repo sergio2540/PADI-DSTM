@@ -111,7 +111,7 @@ namespace DSTMServices
 
 
 
-        private String GetServerEndpoint(int uid)
+        public String GetServerEndpoint(int uid)
         {
 
             int hash = Hash(uid);

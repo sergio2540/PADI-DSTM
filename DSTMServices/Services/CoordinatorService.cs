@@ -214,17 +214,26 @@ namespace DSTMServices
             }
 
 
-            lookupService.AddParticipant(currentTid, uid);
+            
             int answerValue = 0; //quantas instancias de coordenador deveriam haver?uma transaccao de cada vez.
 
             try {
 
+                lookupService.AddParticipant(currentTid, uid);
                 answerValue = serverRef.ReadPadInt(currentTid, uid);
 
             }
             catch (SocketException e)
             {
-                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //Recuperacao
+                masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
+
+                //Recuperacao concluida
+                //Tenta executar novamente
+                lookupService.AddParticipant(currentTid, uid);
+                answerValue = serverRef.ReadPadInt(currentTid, uid);
+
+                //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
 
 
@@ -270,7 +279,15 @@ namespace DSTMServices
             }
             catch (SocketException e)
             {
-                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //Recuperacao
+                masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
+
+                //Recuperacao concluida
+                //Tenta executar novamente
+                lookupService.AddParticipant(currentTid, uid);
+                serverRef.WritePadInt(currentTid, uid, value);
+
+                //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
 
             
@@ -292,7 +309,16 @@ namespace DSTMServices
             }
             catch (SocketException e)
             {
-                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                //Recuperacao
+                masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
+                
+                //Recuperacao concluida
+                server = lookupService.GetServer(uid);
+                padInt = server.CreatePadInt(currentTid, uid);
+
+                
+                //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
 
 
@@ -328,7 +354,16 @@ namespace DSTMServices
             }
             catch (SocketException e)
             {
-                throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                //Recuperacao
+                masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
+
+                //Recuperacao concluida
+                //Tenta executar novamente
+                lookupService.AddParticipant(currentTid, uid);
+                remote = server.AccessPadInt(currentTid, uid);
+
+                //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
 
 
