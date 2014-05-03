@@ -134,7 +134,7 @@ namespace Master
             //if the failed server is a primary server we request another replica and set replica as primary
             if (isPrimary) {
                 lookupTable.SwapPrimaryReplica(url,newReplica);
-                newPrimary = lookupTable.GetRowGivenReplica(newReplica).GetServerPair().GetPrimary();
+                newPrimary = lookupTable.GetRowGivenReplica(newReplica).GetServerPair().GetReplica();
              //if the failed server is a replica we get a new replica 
             } else {
                 lookupTable.SetNewReplica(url,newReplica);
