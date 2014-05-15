@@ -60,6 +60,10 @@
     <Compile Include="Partitioning.cs" />
     <Compile Include="CreatePadInt.cs" />
     <Compile Include="CheckLoadBalancing.cs" />
+    <Compile Include="TestFail.cs" />
+    <Compile Include="TestFailWhileInTransaction.cs" />
+    <Compile Include="TestCreate.cs" />
+    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTypes\CommonTypes.csproj">

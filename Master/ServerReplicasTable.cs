@@ -8,7 +8,7 @@ namespace Master
 {
     class ServerReplicasTable
     {
-        private List<string> availableReplicas = new List<string>();
+        //private List<string> availableReplicas = new List<string>();
 
         private Dictionary<string, List<string>> serverReplicas = new Dictionary<string, List<string>>();
 

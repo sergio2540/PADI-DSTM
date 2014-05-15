@@ -126,42 +126,75 @@ namespace Master
 
         public bool RemoveServer(string url)
         {
+            Console.WriteLine("RemoveServer");
+
             bool isPrimary = lookupTable.IsPrimary(url);
+
+            Console.WriteLine("isPrimary: " + isPrimary);
+
+
+            ////Falhou deve remover server e replica
+            //List<String> replicatedServers = serverReplicasTable.getReplicasFromServer(url);
+
+            //if (replicatedServers.Count != 0)
+            //{
+            //    //NOTIFICAR DA ALTERACAO
+
+            //    foreach (String replicatedServer in replicatedServers)
+            //    {
+            //        IServer server = (IServer)Activator.GetObject(typeof(IServer), replicatedServer);
+            //        //AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange)
+            //        AddTIDToPendingTableAsyncDelegate remoteDel = new AddTIDToPendingTableAsyncDelegate(server.AddTIDToPendingTable);
+            //        UIDRange primaryRange = lookupTable.GetRowGivenPrimary(replicatedServer).GetUIDRange();
+            //        remoteDel.BeginInvoke(newReplica, server.GetMaxTID(), primaryRange.GetRangeStart(), primaryRange.GetRangeEnd(), null, null);
+            //    }
+            //}
+
+            //IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), newPrimary);
+            //AddTIDToPendingTableAsyncDelegate primaryServerDel = new AddTIDToPendingTableAsyncDelegate(newPrimaryServer.AddTIDToPendingTable);
+            //UIDRange newPrimaryRange = lookupTable.GetRowGivenPrimary(newPrimary).GetUIDRange();
+            //primaryServerDel.BeginInvoke(newReplica, newPrimaryServer.GetMaxTID(), newPrimaryRange.GetRangeStart(), newPrimaryRange.GetRangeEnd(), null, null);
+        
+            //Console.WriteLine("Removeu! ");
+
+            serverReplicasTable.removeServerAndReplicas(url);
             String newReplica = serverReplicasTable.getReplica();
+           
+            Console.WriteLine("newReplica: " + newReplica);
+
             String newPrimary = null;
 
 
             //if the failed server is a primary server we request another replica and set replica as primary
             if (isPrimary) {
-                lookupTable.SwapPrimaryReplica(url,newReplica);
+                
+                lookupTable.SwapPrimaryReplica(url, newReplica);
+                Console.WriteLine("swap.");
+
                 newPrimary = lookupTable.GetRowGivenReplica(newReplica).GetServerPair().GetReplica();
+                
+                Console.WriteLine("newPrimary");
+
              //if the failed server is a replica we get a new replica 
             } else {
-                lookupTable.SetNewReplica(url,newReplica);
-                newPrimary = lookupTable.GetRowGivenReplica(url).GetServerPair().GetPrimary();
+                
+                lookupTable.SetNewReplica(url, newReplica);
+                //Console.WriteLine("setNewReplica.");
 
+                TableRow r = lookupTable.GetRowGivenReplica(newReplica);
+
+                Console.WriteLine(r.ToString());
+
+
+                ServerPair sp = r.GetServerPair();
+                newPrimary = sp.GetPrimary();
+
+                Console.WriteLine("newPrimary");
                 //LANCAR EXCEPCAO CASO HAJA FALHA
 
             }
 
-            List<String> replicatedServers = serverReplicasTable.getReplicasFromServer(url);
-           
-            if (replicatedServers.Count != 0){
-                //NOTIFICAR DA ALTERACAO
-
-                    foreach(String replicatedServer in replicatedServers){
-                        IServer server = (IServer)Activator.GetObject(typeof(IServer), replicatedServer);
-                        //AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange)
-				        AddTIDToPendingTableAsyncDelegate remoteDel = new AddTIDToPendingTableAsyncDelegate(server.AddTIDToPendingTable);
-                        UIDRange primaryRange = lookupTable.GetRowGivenPrimary(replicatedServer).GetUIDRange();
-                        remoteDel.BeginInvoke(newReplica,server.GetMaxTID(),primaryRange.GetRangeStart(),primaryRange.GetRangeEnd(),null,null);
-                    }
-            }
-            
-            IServer newPrimaryServer = (IServer)Activator.GetObject(typeof(IServer), newPrimary);
-            AddTIDToPendingTableAsyncDelegate primaryServerDel = new AddTIDToPendingTableAsyncDelegate(newPrimaryServer.AddTIDToPendingTable);
-            UIDRange newPrimaryRange = lookupTable.GetRowGivenPrimary(newPrimary).GetUIDRange();
-            primaryServerDel.BeginInvoke(newReplica, newPrimaryServer.GetMaxTID(), newPrimaryRange.GetRangeStart(), newPrimaryRange.GetRangeEnd(), null, null);
+          
             return true;
             //throw new NotImplementedException();
         }
@@ -210,19 +243,10 @@ namespace Master
                     Console.WriteLine(primaryServer);
                     result = server.Status();
                 }
-                catch (ArgumentNullException e)
+                catch (Exception e)
                 {
                     result = false;
                 }
-                catch (RemotingException e)
-                {
-                    result = false;
-                }
-                catch (MemberAccessException e)
-                {
-                    result = false;
-                }
-
             }
 
             //numero de replicas 

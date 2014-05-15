@@ -72,9 +72,11 @@ namespace Server
             this.replica = replica;
         }
 
-        internal PadIntCommitted CreatePadInt(int uid)
+        internal PadIntCommitted CreatePadInt(ulong tid, int uid, bool isReplicating)
         {
-
+            
+            Console.WriteLine("Create padInt " + uid);
+            
             if (objectsInServer.ContainsKey(uid))
                 return null;
 
@@ -90,6 +92,12 @@ namespace Server
             objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);//esta errado? se for criado, todas as threads devem puder passar por handle certo?
             pendingTransactions[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
 
+
+
+            if (!isReplicating)
+                Write(tid, uid, 0);
+
+            
             return committed;
 
 
@@ -102,7 +110,10 @@ namespace Server
             //Nao foi encontrado o PadInt procurado
             //Se calhar devia lançar excepção
             if (!objectsInServer.ContainsKey(uid))
+            {
+                Console.WriteLine("Nao foi encontrado " + uid);
                 return null;
+            }
 
             PadIntTransaction obj = objectsInServer[uid];
 
@@ -194,6 +205,7 @@ namespace Server
             else //espera que a transaccao faca commit e volta a repetir todos os passos até aqui.É criada uma thred para cada chamada a esta função.
             {
                 objectWaitHandle[uid].WaitOne(); //bloqueia e quando fôr desbloqueada, volta a tentar.
+
                 return Read(tid, uid);
             }
         }
@@ -264,7 +276,6 @@ namespace Server
 
 
             if (tentatives.ContainsKey(tid))
-            //if (transactionTentative != null)
             {
                 PadIntTentative transactionTentative = tentatives[tid];
                 // transactionTentative.Write(value);--> ja existe uma property
@@ -308,6 +319,7 @@ namespace Server
             foreach (int modifiedObjectId in transaction.getModifiedObjectIds())
             {
                 //Console.WriteLine("Tid: " + tid + "modificou" + modifiedObjectId);
+    
                 tentatives = objectsInServer[modifiedObjectId].getTentatives();
                 while (tentatives.Min(x => x.Value.WriteTimestamp) < tid) //se houver apenas 1, é ele próprio e pode fazer commit.
                 // while ((tentatives.Count > 1) && (tentatives.Min(x => x.Value.WriteTimestamp) < tid)) //se houver apenas 1, é ele próprio e pode fazer commit.
@@ -339,7 +351,7 @@ namespace Server
             List<PadIntRemote> toReplicate = new List<PadIntRemote>();
 
             //desbloquear threads em espera no read com
-            //Console.WriteLine("Em do commit Tid: " + tid);
+            Console.WriteLine("Em do commit Tid: " + tid);
 
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
@@ -374,8 +386,12 @@ namespace Server
             //Transacção efectuda e agora removida
             transactions.Remove(tid);
 
-            replica.SendPadInt(toReplicate);
-
+            if(replica != null)
+                replica.SendPadInt(toReplicate);
+            
+            foreach(var p in toReplicate)
+                Console.WriteLine("replicado = " + p.uid +" " + p.Value);
+            
             checkTableOfPendingTransactions(tid);
 
             return true; //sempre verdade?
@@ -385,12 +401,16 @@ namespace Server
         private void checkTableOfPendingTransactions(ulong tid)
         {
 
-            //Console.WriteLine(pendingTransactionSplitted.Count);
+            Console.WriteLine(pendingTransactionSplitted.Count);
+            Console.WriteLine("checkTableOfPendingTransactions: " + tid);
 
             bool transferDone = false;
 
             foreach (Tuple<string, ulong, int, int> tuple in pendingTransactionSplitted)
             {
+                
+                //(tuple.Item2 != 0) pq e a primeira vez
+
                 if (tid >= tuple.Item2)
                 {
                     IServer server = (IServer)Activator.GetObject(typeof(IServer), tuple.Item1);
@@ -411,10 +431,10 @@ namespace Server
 
                     //TODO ter em conta que pode falhar
                     server.SendPadInt(padIntsToSend);
-                    foreach (var padInt in padIntsToSend)
-                    {
-                        objectsInServer.Remove(padInt.uid);
-                    }
+                    //foreach (var padInt in padIntsToSend)
+                    //{
+                    //    objectsInServer.Remove(padInt.uid);
+                    //}
 
                 }
             }
@@ -423,11 +443,15 @@ namespace Server
         internal bool doAbort(ulong tid)
         {
 
+            Console.WriteLine("doAbort");
+
             PadIntTransaction objectTransaction = null;
             PadIntTentative tentative = null;
             //desbloquear threads em espera no read com
             foreach (int modifiedObject in transactions[tid].getModifiedObjectIds())
             {
+
+                Console.WriteLine("Abort: " + modifiedObject);
                 //por abort
                 //remover objecto transaccao check
                 //remover objecto tentativa check
@@ -437,6 +461,9 @@ namespace Server
 
                 objectTransaction = objectsInServer[modifiedObject];
 
+               
+
+
                 SortedList<ulong, PadIntTentative> tentatives = objectTransaction.getTentatives();
 
                 tentative = tentatives[tid];
@@ -444,8 +471,27 @@ namespace Server
 
                 tentatives.Remove(tid);
 
-                objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
-                pendingTransactions[modifiedObject].Set();
+                PadIntCommitted com = objectTransaction.getCommitted();
+
+                //Remove creates
+                if (com.WriteTimestamp == 0)
+                {
+                    objectsInServer.Remove(modifiedObject);
+
+                    objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+                    pendingTransactions[modifiedObject].Set();
+
+                    objectWaitHandle.Remove(modifiedObject);//fez commit.temos de notificar threads para avancarem.
+                    pendingTransactions.Remove(modifiedObject);
+                }
+                else
+                {
+
+                    objectWaitHandle[modifiedObject].Set();//fez commit.temos de notificar threads para avancarem.
+                    pendingTransactions[modifiedObject].Set();
+                }
+            
+            
             }
 
             transactions[tid].setAborted();
@@ -458,37 +504,65 @@ namespace Server
 
         public void AddPadInts(List<PadIntRemote> padInts)
         {
-
+            Console.WriteLine("recebeu dados");
             foreach (PadIntCommitted pad in padInts)
             {
-                PadIntTransaction padTransaction = new PadIntTransaction(pad.uid);
-                padTransaction.setCommited(pad);
 
-                if (!objectsInServer.ContainsKey(pad.uid)){
-                    objectsInServer.Add(pad.uid, padTransaction);
+               
+
+                Console.WriteLine("recebeu padint " + pad.uid);
+                Console.WriteLine("recebeu padint " + pad.Value);
+
+                PadIntCommitted p = CreatePadInt(pad.WriteTimestamp, pad.uid, true);
+
+
+                //Ainda na existe no server
+                if (p != null)
+                {
+                    p.WriteTimestamp = pad.WriteTimestamp;
+                    p.Value = pad.Value;
                 }
                 else
                 {
-                    objectsInServer[pad.uid] = padTransaction;
+                    //ja existe no server
+                    objectsInServer[pad.uid].getCommitted().WriteTimestamp = pad.WriteTimestamp;
+                    objectsInServer[pad.uid].getCommitted().Value = pad.Value;
                 }
+
+                //PadIntTransaction padTransaction = new PadIntTransaction(pad.uid);
+                //padTransaction.setCommited(pad);
+
+                //if (!objectsInServer.ContainsKey(pad.uid)){
+                //    objectsInServer.Add(pad.uid, padTransaction);
+                //}
+                //else
+                //{
+                //    objectsInServer[pad.uid] = padTransaction;
+                //}
+
+                //objectWaitHandle[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);//esta errado? se for criado, todas as threads devem puder passar por handle certo?
+                //pendingTransactions[uid] = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            
             }
 
             //transferencia concluida
-            Console.WriteLine("transferenciua concluida");
+            Console.WriteLine("transferencia concluida");
             waitForPadIntTransfer.Set();
 
         }
 
         public void AddTIDToPendingTable(string url, ulong tid, int startRange, int endRange)
         {
-            //Console.WriteLine("url: " + url + " tid: " + tid);
+            Console.WriteLine("url: " + url + " tid: " + tid);
 
 
             pendingTransactionSplitted.Add(Tuple.Create(url, tid, startRange, endRange));
 
+            //nao estao a decorrer transaccoes
             if (transactions.Count == 0)
             {
-                checkTableOfPendingTransactions(tid + 1);
+               checkTableOfPendingTransactions(tid + 1);
             }
 
         }

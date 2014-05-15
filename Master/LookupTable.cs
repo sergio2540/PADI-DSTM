@@ -83,8 +83,10 @@ namespace Master
                 ServerPair pair = row.GetServerPair();
                 if (url.Equals(pair.GetPrimary()))
                     return true;
-                else if (url.Equals(pair.GetReplica()))
-                    return false;
+
+                //else if (url.Equals(pair.GetReplica()))
+                //    return false;
+            
             }
 
             //DEVERIA SER LANCADA UMA EXCEPCAO POR NAO EXISTIR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -124,6 +126,9 @@ namespace Master
          
         public void SetNewReplica(String oldReplicaUrl, String newReplicaUrl) {
 
+            Console.WriteLine("oldReplica: " + oldReplicaUrl);
+            Console.WriteLine("newReplicaUrl: " + newReplicaUrl);
+            
             GetRowGivenReplica(oldReplicaUrl).GetServerPair().SetReplica(newReplicaUrl);
         
         }

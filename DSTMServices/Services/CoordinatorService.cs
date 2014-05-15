@@ -230,8 +230,8 @@ namespace DSTMServices
 
                 //Recuperacao concluida
                 //Tenta executar novamente
-                lookupService.AddParticipant(currentTid, uid);
-                answerValue = serverRef.ReadPadInt(currentTid, uid);
+                //lookupService.AddParticipant(currentTid, uid);
+                ReadPadInt(uid);
 
                 //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
@@ -284,8 +284,8 @@ namespace DSTMServices
 
                 //Recuperacao concluida
                 //Tenta executar novamente
-                lookupService.AddParticipant(currentTid, uid);
-                serverRef.WritePadInt(currentTid, uid, value);
+                //lookupService.AddParticipant(currentTid, uid);
+                WritePadInt(uid, value);
 
                 //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
@@ -304,18 +304,24 @@ namespace DSTMServices
             try
             {
                 server = lookupService.GetServer(uid);
+
+                if (currentTid == 0)
+                {
+                    currentTid = server.GetTid();
+                }
+
+                lookupService.AddParticipant(currentTid, uid);
                 padInt = server.CreatePadInt(currentTid, uid);
 
+            
             }
             catch (SocketException e)
             {
 
                 //Recuperacao
                 masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
-                
-                //Recuperacao concluida
-                server = lookupService.GetServer(uid);
-                padInt = server.CreatePadInt(currentTid, uid);
+
+                CreatePadInt(uid);
 
                 
                 //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -349,19 +355,34 @@ namespace DSTMServices
             try
             {
                 server = lookupService.GetServer(uid);
+
+                Console.WriteLine("server: " + uid + " ");
+                
                 remote = server.AccessPadInt(currentTid, uid);
+                if (remote == null)
+                {
+                    Console.WriteLine("remote null");
+                }
+                Console.WriteLine("remote uid: " + uid);
 
             }
             catch (SocketException e)
             {
+
+                Console.WriteLine("exception: " +e.Message);
 
                 //Recuperacao
                 masterService.Master.RemoveServer(lookupService.GetServerEndpoint(uid));
 
                 //Recuperacao concluida
                 //Tenta executar novamente
-                lookupService.AddParticipant(currentTid, uid);
-                remote = server.AccessPadInt(currentTid, uid);
+                //lookupService.AddParticipant(currentTid, uid);
+
+                server = lookupService.GetServer(uid);
+                
+            
+                
+                AccessPadInt(uid);
 
                 //throw new NotImplementedException(); //////////////////////////////////////////////tEMOS DE IMPLEMENTAR ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }

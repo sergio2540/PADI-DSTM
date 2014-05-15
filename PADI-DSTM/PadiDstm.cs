@@ -91,12 +91,15 @@ namespace PADI_DSTM
 
         public static PadInt CreatePadInt(int uid)
         {
-            return coordinatorService.CreatePadInt(uid);
+            int hash = LookupService.Hash(uid);
+            return coordinatorService.CreatePadInt(hash);
+
         }
 
         public static PadInt AccessPadInt(int uid)
         {
-            return coordinatorService.AccessPadInt(uid);
+            int hash = LookupService.Hash(uid);
+            return coordinatorService.AccessPadInt(hash);
         }
 
     }

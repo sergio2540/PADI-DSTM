@@ -24,7 +24,7 @@ namespace PADI_Tests
         static Process master;
         static Process server;
 
-        
+
         private static string GetIp()
         {
             string strHostName = System.Net.Dns.GetHostName();

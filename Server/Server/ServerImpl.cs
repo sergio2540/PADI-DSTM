@@ -88,7 +88,7 @@ namespace Server
             if (ServerApp.inFreezeMode)
                 ServerApp.frozenCalls.WaitOne();
 
-            return transactionalManager.CreatePadInt(uid);
+            return transactionalManager.CreatePadInt(tid, uid, false);
         }
 
         public PadInt AccessPadInt(ulong tid, int uid)

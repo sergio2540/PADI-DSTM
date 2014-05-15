@@ -114,11 +114,11 @@ namespace DSTMServices
         public String GetServerEndpoint(int uid)
         {
 
-            int hash = Hash(uid);
-            String endpoint = master.GetPrimaryEndpoint(hash);
+           
+            String endpoint = master.GetPrimaryEndpoint(uid);
 
             Console.WriteLine("UID: " + uid);
-            Console.WriteLine("Hash: " +hash);
+            //Console.WriteLine("Hash: " +hash);
             
             //master.GetReplicaEndpoint(uid);
 
@@ -135,7 +135,9 @@ namespace DSTMServices
 
 
                 String endpoint = GetServerEndpoint(uid);
-
+                
+                Console.WriteLine(endpoint);
+                
                 IServer server = (IServer)Activator.GetObject(typeof(IServer), endpoint);
                 servers[uid] = server;
                 return server;

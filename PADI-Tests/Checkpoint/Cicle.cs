@@ -70,6 +70,11 @@ namespace PADI_Tests.CheckPoint
             //
         }
 
+
+        public void test(){
+
+        }
+
         private TestContext testContextInstance;
 
         /// <summary>

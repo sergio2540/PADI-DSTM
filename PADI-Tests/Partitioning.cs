@@ -67,61 +67,62 @@ namespace PADI_Tests
         [TestMethod]
         public void TestPartitioning()
         {
-            Thread.Sleep(2000);
+            
             bool beginSuccess = false;
-            int uid2 = 4; //object 1 uid
-            int uid3 = 10;
+            int uid2 = -1000; //object 1 uid
+            int uid3 = 1000;
             // int uid2 = 2; //object 2 uid
             const int DEFAULT_PADINT_VALUE = 0;
             const int WRITE_VALUE = 5;
 
             bool result = PadiDstm.Init();
 
-            Assert.IsTrue(result, "Failed to load library.");
+            Assert.IsTrue(result);
 
             //T1
             beginSuccess = PadiDstm.TxBegin();
             //bool status = PadiDstm.Status();
-            Assert.IsTrue(beginSuccess, "Failed to begin transaction.");
+            Assert.IsTrue(beginSuccess);
 
             PadInt padInt1 = PadiDstm.CreatePadInt(uid2);
-            Assert.IsNotNull(padInt1, "CreatePadint returned null for uid:" + uid2);
+            PadInt padInt2 = PadiDstm.CreatePadInt(uid3);
+
+            Assert.IsNotNull(padInt1);
 
 
-            //int firstRead = padInt1.Read();
-            //Assert.AreEqual(firstRead, DEFAULT_PADINT_VALUE, String.Format("Read:{0} Expected:{1}", firstRead, DEFAULT_PADINT_VALUE));
-            int value = padInt1.Read();
+            int firstRead = padInt1.Read();
+            Assert.AreEqual(firstRead, DEFAULT_PADINT_VALUE);
 
-            Console.WriteLine(value);
 
-            padInt1.Write(10);
+            padInt2.Write(WRITE_VALUE);
             //int secondRead = padInt1.Read();
             //Assert.AreEqual(secondRead, WRITE_VALUE, String.Format("Read:{0} Expected:{1}", secondRead, WRITE_VALUE));
          
             bool didCommit = PadiDstm.TxCommit();
 
-            bool status = PadiDstm.Status();
+            //bool status = PadiDstm.Status();
 
             StartServer();
 
-            Console.WriteLine("depois de arrancar o 2 server");
+            Console.WriteLine("Depois de arrancar o 2 server");
 
 
-            Debug.WriteLine("antes do thread sleep de 15s");
-            Thread.Sleep(15000);
-            status = PadiDstm.Status();
-            Debug.WriteLine("depois do thread sleep de 15segundos");
-
+            
+            Thread.Sleep(5000);
+            bool status = PadiDstm.Status();
+           
             beginSuccess = PadiDstm.TxBegin();
 
-            Assert.IsTrue(beginSuccess, "Nao deu true");
-            if (beginSuccess)
-                Console.WriteLine("success");
-            PadInt pad = PadiDstm.CreatePadInt(uid3);
+            Assert.IsTrue(beginSuccess);
+            
+            PadInt pad = PadiDstm.AccessPadInt(uid3);
+            Assert.IsNotNull(pad);
 
 
+            int readAfterStart = pad.Read();
+            Assert.AreEqual(readAfterStart, WRITE_VALUE, String.Format("Read:{0} Expected:{1}", readAfterStart, WRITE_VALUE));
 
-            int thirdRead = pad.Read();
+
 
             Assert.IsTrue(didCommit, "Failed to commit transaction.");
             didCommit = PadiDstm.TxCommit();
